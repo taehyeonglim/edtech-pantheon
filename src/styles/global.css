@@ -147,6 +147,7 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .profile-content > .content-lead { font: 500 23px/1.65 var(--serif); color: var(--paper); margin-bottom: 60px; max-width: 770px; }
 .quote-card { border: 1px solid rgba(213,161,91,.36); border-left: 3px solid var(--gold); padding: 22px 24px; margin: 0 0 28px; background: rgba(213,161,91,.045); max-width: 750px; }
 .quote-card p { color: var(--paper); font: 500 21px/1.55 var(--serif); margin: 0 0 15px; }
+.quote-card small { display: block; color: var(--dim); font-size: 10px; margin: -4px 0 14px; }
 .content-block { padding: 42px 0; border-top: 1px solid var(--line); }
 .content-block h2 { font: 500 31px/1.1 var(--serif); letter-spacing: -.04em; margin-bottom: 22px; }
 .content-block h2 .block-index { font: 10px var(--mono); color: var(--gold); vertical-align: middle; margin-right: 12px; letter-spacing: .08em; }
