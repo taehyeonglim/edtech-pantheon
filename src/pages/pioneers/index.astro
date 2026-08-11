@@ -27,5 +27,7 @@ import { pioneers } from '../../data/pioneers';
     };
     bar?.addEventListener('click', (event) => { const target = event.target; if (!(target instanceof HTMLButtonElement)) return; active = target.dataset.filter || 'all'; bar.querySelectorAll('.filter-button').forEach((button) => button.classList.toggle('active', button === target)); update(); });
     search?.addEventListener('input', update);
+    const initialQuery = new URLSearchParams(window.location.search).get('q');
+    if (initialQuery && search) { search.value = initialQuery; update(); }
   </script>
 </BaseLayout>
