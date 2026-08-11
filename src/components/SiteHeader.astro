@@ -1,0 +1,21 @@
+---
+const base = `${import.meta.env.BASE_URL}/`;
+const current = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href={base} aria-label="EdTech Pantheon 홈">
+      <span class="brand-mark" aria-hidden="true">EP</span>
+      <span class="brand-copy"><strong>EDTECH</strong><span>PANTHEON</span></span>
+    </a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a class:list={{ active: current === `${base}` || current === base.slice(0, -1) }} href={base}>명예의전당</a>
+      <a class:list={{ active: current.includes('/connections') }} href={`${base}connections/`}>관계도</a>
+      <a class:list={{ active: current.includes('/timeline') }} href={`${base}timeline/`}>연표</a>
+      <a class:list={{ active: current.includes('/compare') }} href={`${base}compare/`}>비교실</a>
+      <a class:list={{ active: current.includes('/methodology') }} href={`${base}methodology/`}>방법론</a>
+    </nav>
+    <a class="header-note" href={`${base}about/`}>RESEARCH ARCHIVE <span aria-hidden="true">↗</span></a>
+  </div>
+</header>

@@ -1,0 +1,29 @@
+import type { Source } from './types';
+
+export const sources: Source[] = [
+  { id: 'dewey-1916', tier: 'A', type: '원저서', authors: 'John Dewey', title: 'Democracy and Education', year: '1916', publisher: 'Macmillan', url: 'https://archive.org/details/democracyandeduc00dewe' },
+  { id: 'dewey-1938', tier: 'A', type: '원저서', authors: 'John Dewey', title: 'Experience and Education', year: '1938', publisher: 'Macmillan', url: 'https://archive.org/details/experienceeducat00dewe' },
+  { id: 'thorndike-1913', tier: 'A', type: '원저서', authors: 'Edward L. Thorndike', title: 'Educational Psychology: The Original Nature of Man', year: '1913', publisher: 'Teachers College, Columbia University', url: 'https://archive.org/details/educationalpsych01thor' },
+  { id: 'vygotsky-1978', tier: 'B', type: '편집 번역서', authors: 'L. S. Vygotsky; ed. Michael Cole et al.', title: 'Mind in Society: The Development of Higher Psychological Processes', year: '1978', publisher: 'Harvard University Press', url: 'https://www.hup.harvard.edu/books/9780674576292' },
+  { id: 'vygotsky-1934', tier: 'A', type: '원저서', authors: 'L. S. Vygotsky', title: 'Thought and Language', year: '1934', url: 'https://www.marxists.org/archive/vygotsky/works/1934/thought-language/' },
+  { id: 'skinner-1954', tier: 'A', type: '원논문', authors: 'B. F. Skinner', title: 'The Science of Learning and the Art of Teaching', year: '1954', publisher: 'Harvard Educational Review, 24(2)', url: 'https://doi.org/10.17763/haer.24.2.u13788470u5661w1' },
+  { id: 'skinner-1957', tier: 'A', type: '원저서', authors: 'B. F. Skinner', title: 'Verbal Behavior', year: '1957', publisher: 'Appleton-Century-Crofts', url: 'https://archive.org/details/verbalbehavior00sk' },
+  { id: 'bloom-1956', tier: 'A', type: '편집서', authors: 'Benjamin S. Bloom (ed.)', title: 'Taxonomy of Educational Objectives: The Classification of Educational Goals', year: '1956', publisher: 'Longmans, Green', url: 'https://archive.org/details/taxonomyofeducat00bloo' },
+  { id: 'bloom-1968', tier: 'B', type: '연구서', authors: 'Benjamin S. Bloom', title: 'Learning for Mastery', year: '1968', publisher: 'UCLA Evaluation Comment', details: 'Evaluation Comment, 1(2)', url: 'https://eric.ed.gov/?id=ED053419' },
+  { id: 'gagne-1965', tier: 'A', type: '원저서', authors: 'Robert M. Gagné', title: 'The Conditions of Learning', year: '1965', publisher: 'Holt, Rinehart and Winston', url: 'https://archive.org/details/conditionsoflear0000gagn' },
+  { id: 'gagne-1985', tier: 'B', type: '연구서', authors: 'Robert M. Gagné; Leslie J. Briggs; Walter W. Wager', title: 'Principles of Instructional Design', year: '1985', publisher: 'Holt, Rinehart and Winston', url: 'https://archive.org/details/principlesofinst0000gagn' },
+  { id: 'bruner-1960', tier: 'A', type: '원저서', authors: 'Jerome S. Bruner', title: 'The Process of Education', year: '1960', publisher: 'Harvard University Press', url: 'https://archive.org/details/processofeducati00brun' },
+  { id: 'bruner-1966', tier: 'A', type: '원저서', authors: 'Jerome S. Bruner', title: 'Toward a Theory of Instruction', year: '1966', publisher: 'Harvard University Press', url: 'https://archive.org/details/towardtheoryofin00brun' },
+  { id: 'bandura-1977', tier: 'A', type: '원저서', authors: 'Albert Bandura', title: 'Social Learning Theory', year: '1977', publisher: 'Prentice Hall', url: 'https://archive.org/details/sociallearningth00band' },
+  { id: 'bandura-1997', tier: 'A', type: '원저서', authors: 'Albert Bandura', title: 'Self-Efficacy: The Exercise of Control', year: '1997', publisher: 'W. H. Freeman', url: 'https://archive.org/details/selfefficacyexer0000band' },
+  { id: 'merrill-2002', tier: 'B', type: '원논문', authors: 'M. David Merrill', title: 'First Principles of Instruction', year: '2002', publisher: 'Educational Technology Research and Development, 50(3)', url: 'https://doi.org/10.1007/BF02505024', doi: '10.1007/BF02505024' },
+  { id: 'keller-1987', tier: 'B', type: '원논문', authors: 'John M. Keller', title: 'Development and Use of the ARCS Model of Motivational Design', year: '1987', publisher: 'Journal of Instructional Development, 10(3)', url: 'https://doi.org/10.1007/BF02905780', doi: '10.1007/BF02905780' },
+  { id: 'papert-1980', tier: 'A', type: '원저서', authors: 'Seymour Papert', title: 'Mindstorms: Children, Computers, and Powerful Ideas', year: '1980', publisher: 'Basic Books', url: 'https://archive.org/details/mindstormschildr0000pape' },
+  { id: 'mayer-1997', tier: 'B', type: '원논문', authors: 'Richard E. Mayer; Roxana Moreno', title: 'A Split-Attention Effect in Multimedia Learning', year: '1997', publisher: 'Journal of Educational Psychology, 90(2)', url: 'https://doi.org/10.1037/0022-0663.90.2.312', doi: '10.1037/0022-0663.90.2.312' },
+  { id: 'mayer-2005', tier: 'B', type: '연구서', authors: 'Richard E. Mayer', title: 'The Cambridge Handbook of Multimedia Learning', year: '2005', publisher: 'Cambridge University Press', url: 'https://doi.org/10.1017/CBO9780511816819', doi: '10.1017/CBO9780511816819' },
+  { id: 'schunk-2012', tier: 'B', type: '연구서', authors: 'Dale H. Schunk', title: 'Learning Theories: An Educational Perspective', year: '2012', publisher: 'Pearson', url: 'https://www.pearson.com/en-us/subject-catalog/p/learning-theories-an-educational-perspective/P200000003303' },
+  { id: 'reiser-2017', tier: 'B', type: '편집서', authors: 'Robert A. Reiser; John V. Dempsey (eds.)', title: 'Trends and Issues in Instructional Design and Technology', year: '2017', publisher: 'Pearson', url: 'https://www.pearson.com/en-us/subject-catalog/p/trends-and-issues-in-instructional-design-and-technology/P200000006222' },
+  { id: 'apa-ethics', tier: 'C', type: '기관 자료', authors: 'American Psychological Association', title: 'APA Style: Citing Sources', year: '2024', url: 'https://apastyle.apa.org/style-grammar-guidelines/references' }
+];
+
+export const sourceById = Object.fromEntries(sources.map((source) => [source.id, source])) as Record<string, Source>;

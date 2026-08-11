@@ -1,0 +1,20 @@
+---
+import { sourceById } from '../data/sources';
+const { ids = [], compact = false } = Astro.props;
+const uniqueIds = [...new Set(ids as string[])];
+const linkedSources = uniqueIds.map((id) => sourceById[id]).filter(Boolean);
+---
+
+{linkedSources.length > 0 && (
+  <div class:list={["citation-list", { compact }]}>
+    <span class="citation-label">근거</span>
+    <div class="citation-links">
+      {linkedSources.map((source) => (
+        <a href={source.url} target="_blank" rel="noreferrer" title={`${source.authors}. ${source.title}`}>
+          <span class={`tier tier-${source.tier}`}>{source.tier}</span>
+          <span>{source.authors.split(';')[0]}</span><span class="citation-year">{source.year ?? 'n.d.'}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+)}

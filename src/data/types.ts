@@ -1,0 +1,55 @@
+export type SourceTier = 'A' | 'B' | 'C';
+
+export type Source = {
+  id: string;
+  tier: SourceTier;
+  type: string;
+  authors: string;
+  title: string;
+  year?: string;
+  publisher?: string;
+  details?: string;
+  url: string;
+  doi?: string;
+};
+
+export type TimelineEvent = {
+  year: number;
+  label: string;
+  description: string;
+  sourceIds: string[];
+};
+
+export type Pioneer = {
+  id: string;
+  slug: string;
+  nameKo: string;
+  nameEn: string;
+  initials: string;
+  life: string;
+  role: string;
+  era: string;
+  domains: string[];
+  school: string;
+  accent: string;
+  thesis: string;
+  summary: string;
+  quote: string;
+  quoteSourceId?: string;
+  concepts: string[];
+  works: { title: string; year: string; note: string; sourceIds: string[] }[];
+  sections: { title: string; body: string; sourceIds: string[] }[];
+  timeline: TimelineEvent[];
+  sourceIds: string[];
+};
+
+export type Relationship = {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  label: string;
+  description: string;
+  confidence: 'documented' | 'scholarly-consensus' | 'contested';
+  sourceIds: string[];
+};

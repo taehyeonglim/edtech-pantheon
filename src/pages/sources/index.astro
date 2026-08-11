@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SourceCard from '../../components/SourceCard.astro';
+import { sources } from '../../data/sources';
+---
+<BaseLayout title="통합 참고문헌">
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE SOURCE ROOM / BIBLIOGRAPHY</div><h1>문장 뒤에<br />남는 것들.</h1><p>원저서, 연구서, 동료평가 논문과 기관 자료를 한 곳에 모았습니다. 등급 배지는 자료의 성격을 뜻하며, 자료의 질을 자동으로 보증하지는 않습니다.</p><div class="hero-meta"><span><b>{sources.length}</b> SOURCES</span><span><b>{sources.filter((s) => s.tier === 'A').length}</b> PRIMARY / EDITED</span><span><b>{sources.filter((s) => s.tier === 'B').length}</b> SCHOLARLY</span></div></div></section>
+  <section class="section sources-page"><div class="shell"><div class="source-grid">{sources.map((source) => <SourceCard source={source} />)}</div></div></section>
+</BaseLayout>

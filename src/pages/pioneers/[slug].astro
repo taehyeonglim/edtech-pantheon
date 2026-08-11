@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CitationList from '../../components/CitationList.astro';
+import { pioneers } from '../../data/pioneers';
+import { sourceById } from '../../data/sources';
+const base = `${import.meta.env.BASE_URL}/`;
+export function getStaticPaths() { return pioneers.map((pioneer) => ({ params: { slug: pioneer.slug }, props: { pioneer } })); }
+const { pioneer } = Astro.props;
+const sourceCount = pioneer.sourceIds.length;
+const index = pioneers.findIndex((item) => item.id === pioneer.id) + 1;
+const related = pioneers.filter((item) => item.id !== pioneer.id && item.domains.some((domain) => pioneer.domains.includes(domain))).slice(0, 4);
+---
+<BaseLayout title={`${pioneer.nameKo} — ${pioneer.nameEn}`} description={pioneer.summary}>
+  <article>
+    <section class="profile-hero" style={`--profile-accent:${pioneer.accent}`}><div class="shell"><div class="profile-top"><div class="profile-portrait" aria-label={`${pioneer.nameKo} 문자 초상`}><span class="profile-index">PIONEER / {String(index).padStart(2, '0')}</span><span class="portrait-initials">{pioneer.initials}</span></div><div><div class="eyebrow">{pioneer.era}</div><h1>{pioneer.nameKo}</h1><p class="profile-name-en">{pioneer.nameEn}</p><p class="profile-role">{pioneer.life} · {pioneer.role} · {pioneer.school}</p><div class="tag-row">{pioneer.domains.map((domain) => <span>{domain}</span>)}</div></div></div><p class="profile-thesis">{pioneer.thesis}</p></div></section>
+    <div class="shell profile-layout"><div class="profile-content"><p class="content-lead">{pioneer.summary}</p>{pioneer.quote && <div class="quote-card"><p>“{pioneer.quote}”</p><CitationList ids={pioneer.quoteSourceId ? [pioneer.quoteSourceId] : []} /></div>}{pioneer.sections.map((section, sectionIndex) => <section class="content-block"><h2><span class="block-index">{String(sectionIndex + 1).padStart(2, '0')}</span>{section.title}</h2><p>{section.body}</p><CitationList ids={section.sourceIds} /></section>)}<section class="content-block"><h2><span class="block-index">{String(pioneer.sections.length + 1).padStart(2, '0')}</span>대표 저작</h2><div class="work-list">{pioneer.works.map((work) => <div class="work-card"><span class="work-year">{work.year}</span><h3>{work.title}</h3><p>{work.note}</p><CitationList ids={work.sourceIds} compact /></div>)}</div></section><section class="content-block"><h2><span class="block-index">{String(pioneer.sections.length + 2).padStart(2, '0')}</span>생애와 개념의 연표</h2><div class="timeline">{pioneer.timeline.map((event) => <div class="timeline-item"><span class="timeline-year">{event.year}</span><h3>{event.label}</h3><p>{event.description}</p><CitationList ids={event.sourceIds} compact /></div>)}</div></section></div><aside class="profile-aside"><div class="aside-card"><span class="aside-label">CORE CONCEPTS</span><h3>이 인물의<br />핵심 어휘</h3><div class="concept-list">{pioneer.concepts.map((concept) => <a href={`${base}pioneers/?q=${encodeURIComponent(concept)}`}>{concept} ↗</a>)}</div></div><div class="aside-card"><span class="aside-label">EVIDENCE INDEX</span><h3>{sourceCount} sources</h3><p>A·B등급 원저서와 연구서를 중심으로 구성한 이 페이지의 근거 목록입니다.</p><span class="profile-source-count">{pioneer.sourceIds.map((id) => sourceById[id]?.year ?? '').filter(Boolean).join(' · ')}</span></div><div class="aside-card"><span class="aside-label">CONTINUE READING</span><h3>같은 방의<br />선구자</h3><div class="concept-list">{related.map((item) => <a href={`${base}pioneers/${item.slug}/`}>{item.nameKo} <span>{item.initials}</span></a>)}</div></div></aside></div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+import type { Pioneer } from '../data/types';
+const { pioneer, featured = false } = Astro.props as { pioneer: Pioneer; featured?: boolean };
+const base = `${import.meta.env.BASE_URL}/`;
+const order = ['dewey', 'thorndike', 'vygotsky', 'skinner', 'bloom', 'gagne', 'bruner', 'bandura', 'merrill', 'keller', 'papert', 'mayer'];
+const displayIndex = order.indexOf(pioneer.id) + 1;
+---
+
+<a class:list={["pioneer-card", { featured }]} href={`${base}pioneers/${pioneer.slug}/`} data-pioneer-card data-name={`${pioneer.nameKo} ${pioneer.nameEn} ${pioneer.concepts.join(' ')}`} data-era={pioneer.era} data-domains={pioneer.domains.join(',')}>
+  <div class="card-portrait" style={`--accent:${pioneer.accent}`} aria-hidden="true">
+    <span class="portrait-grid"></span>
+    <span class="portrait-initials">{pioneer.initials}</span>
+    <span class="portrait-index">{String(displayIndex).padStart(2, '0')}</span>
+    <span class="portrait-line"></span>
+  </div>
+  <div class="card-body">
+    <div class="card-kicker"><span>{pioneer.era}</span><span>{pioneer.life}</span></div>
+    <h3>{pioneer.nameKo}</h3>
+    <p class="card-name-en">{pioneer.nameEn}</p>
+    <p class="card-role">{pioneer.role}</p>
+    <div class="tag-row">{pioneer.domains.map((domain) => <span>{domain}</span>)}</div>
+    <div class="card-arrow" aria-hidden="true">↗</div>
+  </div>
+</a>

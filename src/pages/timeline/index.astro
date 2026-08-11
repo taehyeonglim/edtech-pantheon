@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CitationList from '../../components/CitationList.astro';
+import { pioneers } from '../../data/pioneers';
+const base = `${import.meta.env.BASE_URL}/`;
+const events = pioneers.flatMap((pioneer) => pioneer.timeline.map((event) => ({ ...event, pioneer }))).sort((a, b) => a.year - b.year);
+---
+<BaseLayout title="통합 연표">
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE TIMELINE / 1898—2005</div><h1>한 세기의<br /><em style="color:var(--gold-light);font-style:normal">학습 실험</em></h1><p>인물의 생애만 나열하지 않고, 주요 저작과 개념이 교육공학의 언어를 어떻게 바꾸었는지 시간의 흐름으로 읽습니다.</p></div></section>
+  <section class="section timeline-page"><div class="shell"><div class="timeline-intro"><p>연표는 “누가 먼저였는가”를 가리는 순위표가 아닙니다. 같은 시대에 서로 다른 질문이 어떻게 등장했고, 후대의 연구자가 어떤 언어를 이어받았는지 보기 위한 탐색 장치입니다.</p><div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 번역·편집서의 경우 영어권 교육 연구에서 널리 유통된 판본의 연도를 표시하며, 각 이벤트에 연결된 출처에서 확인할 수 있습니다.</div></div><div class="timeline-rail">{events.map((event) => <div class="global-event"><span class="global-event-year">{event.year}</span><h3>{event.label}</h3><p>{event.description}</p><div class="event-person"><a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a> · {event.pioneer.nameEn}</div><CitationList ids={event.sourceIds} compact /></div>)}</div></div></section>
+</BaseLayout>
