@@ -343,6 +343,7 @@ p {
   border-bottom: 1px solid rgba(20, 42, 43, 0.18);
 }
 .hall-carousel-progress {
+  position: relative;
   width: min(100%, 280px);
   height: 2px;
   overflow: hidden;
@@ -356,6 +357,27 @@ p {
   transform: scaleX(0.125);
   transform-origin: left center;
   transition: transform 0.35s ease;
+}
+.hall-carousel[data-auto-playing="true"] .hall-carousel-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 28%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(240, 200, 121, 0.9),
+    transparent
+  );
+  animation: hall-auto-sweep 3.8s linear infinite;
+}
+@keyframes hall-auto-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(460%);
+  }
 }
 .hall-carousel-status {
   color: #6d7770;
@@ -386,6 +408,30 @@ p {
   color: rgba(20, 42, 43, 0.22);
   cursor: default;
 }
+.hall-carousel-controls .hall-auto-toggle {
+  position: relative;
+  width: 66px;
+  color: #8b5d20;
+  font: 11px/1 var(--mono);
+}
+.hall-carousel[data-auto-playing="true"] .hall-auto-toggle::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  right: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #aa742d;
+  box-shadow: 0 0 0 4px rgba(170, 116, 45, 0.12);
+  animation: hall-auto-pulse 1.9s ease-in-out infinite;
+}
+@keyframes hall-auto-pulse {
+  50% {
+    opacity: 0.38;
+    transform: scale(0.75);
+  }
+}
 .hall-carousel-track {
   display: grid;
   grid-auto-flow: column;
@@ -400,6 +446,9 @@ p {
 }
 .hall-carousel-track::-webkit-scrollbar {
   display: none;
+}
+.hall-carousel-track.is-jumping {
+  scroll-behavior: auto;
 }
 .hall-slide {
   display: grid;
@@ -418,6 +467,10 @@ p {
 .hall-slide:hover {
   transform: translateY(-5px);
   box-shadow: 0 16px 30px rgba(20, 42, 43, 0.16);
+}
+.hall-slide.is-active {
+  border-color: rgba(156, 105, 40, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(240, 200, 121, 0.12);
 }
 .hall-slide-portrait {
   position: relative;

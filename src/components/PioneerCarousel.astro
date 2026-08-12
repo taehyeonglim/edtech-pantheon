@@ -12,14 +12,24 @@ const base = `${import.meta.env.BASE_URL}/`;
     <div class="hall-carousel-progress" aria-hidden="true">
       <span data-hall-progress></span>
     </div>
-    <p class="hall-carousel-status" aria-live="polite" data-hall-status>
+    <p class="hall-carousel-status" aria-live="off" data-hall-status>
       01–03 / {String(pioneers.length).padStart(2, '0')}
     </p>
     <div class="hall-carousel-controls">
-      <button type="button" data-hall-prev aria-label="이전 인물 묶음" aria-controls="hall-pioneer-reel">
+      <button
+        class="hall-auto-toggle"
+        type="button"
+        data-hall-toggle
+        aria-label="자동 재생 일시정지"
+        aria-controls="hall-pioneer-reel"
+        title="자동 재생 일시정지"
+      >
+        <span data-hall-toggle-icon aria-hidden="true">Ⅱ</span>
+      </button>
+      <button type="button" data-hall-prev aria-label="이전 인물" aria-controls="hall-pioneer-reel">
         <span aria-hidden="true">←</span>
       </button>
-      <button type="button" data-hall-next aria-label="다음 인물 묶음" aria-controls="hall-pioneer-reel">
+      <button type="button" data-hall-next aria-label="다음 인물" aria-controls="hall-pioneer-reel">
         <span aria-hidden="true">→</span>
       </button>
     </div>
@@ -85,75 +95,231 @@ const base = `${import.meta.env.BASE_URL}/`;
     })}
   </div>
 
-  <p class="hall-carousel-hint">버튼·방향키·스와이프로 인물을 넘겨보세요.</p>
+  <p class="hall-carousel-hint">자동으로 순환합니다 · 마우스를 올리거나 포커스하면 잠시 멈춥니다.</p>
 </div>
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-hall-carousel]').forEach((carousel) => {
+    if (carousel.dataset.hallReady) return;
+    carousel.dataset.hallReady = 'true';
+
     const track = carousel.querySelector<HTMLElement>('[data-hall-track]');
     const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-hall-slide]'));
     const previous = carousel.querySelector<HTMLButtonElement>('[data-hall-prev]');
     const next = carousel.querySelector<HTMLButtonElement>('[data-hall-next]');
+    const toggle = carousel.querySelector<HTMLButtonElement>('[data-hall-toggle]');
+    const toggleIcon = carousel.querySelector<HTMLElement>('[data-hall-toggle-icon]');
     const status = carousel.querySelector<HTMLElement>('[data-hall-status]');
     const progress = carousel.querySelector<HTMLElement>('[data-hall-progress]');
 
-    if (!track || !slides.length || !previous || !next || !status || !progress) return;
+    if (!track || !slides.length || !previous || !next || !toggle || !toggleIcon || !status || !progress) return;
 
+    const total = slides.length;
+    const cloneCount = Math.min(3, total);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const autoDelay = 3800;
+    const normalizeDelay = 650;
+
+    slides.forEach((slide, index) => {
+      slide.dataset.hallIndex = String(index);
+    });
+
+    const makeClone = (slide: HTMLElement) => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.dataset.hallClone = '';
+      clone.setAttribute('aria-hidden', 'true');
+      clone.tabIndex = -1;
+      return clone;
+    };
+
+    slides.slice(0, cloneCount).forEach((slide) => track.append(makeClone(slide)));
+    slides.slice(-cloneCount).reverse().forEach((slide) => track.prepend(makeClone(slide)));
+
+    const reel = Array.from(track.querySelectorAll<HTMLElement>('[data-hall-slide]'));
+    let activePhysicalIndex = cloneCount;
     let activeIndex = 0;
     let frame = 0;
+    let normalizeTimer = 0;
+    let autoTimer = 0;
+    let userPaused = reducedMotion.matches;
+    let hoverPaused = false;
+    let focusPaused = false;
+    let inViewport = true;
 
     const visibleCount = () => {
-      const first = slides[0];
-      const second = slides[1];
+      const first = reel[0];
+      const second = reel[1];
       if (!first) return 1;
       const step = second ? second.offsetLeft - first.offsetLeft : first.offsetWidth;
       return Math.max(1, Math.round(track.clientWidth / Math.max(step, 1)));
     };
 
-    const maxStart = () => Math.max(0, slides.length - visibleCount());
+    const slideLeft = (slide: HTMLElement) => (
+      slide.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft
+    );
 
-    const update = () => {
+    const nearestPhysicalIndex = () => {
       const trackLeft = track.getBoundingClientRect().left;
-      activeIndex = slides.reduce((nearest, slide, index) => {
-        const currentDistance = Math.abs(slides[nearest].getBoundingClientRect().left - trackLeft);
+      return reel.reduce((nearest, slide, index) => {
+        const currentDistance = Math.abs(reel[nearest].getBoundingClientRect().left - trackLeft);
         const nextDistance = Math.abs(slide.getBoundingClientRect().left - trackLeft);
         return nextDistance < currentDistance ? index : nearest;
       }, 0);
-      activeIndex = Math.min(activeIndex, maxStart());
+    };
 
+    const jumpTo = (physicalIndex: number) => {
+      const target = reel[physicalIndex];
+      if (!target) return;
+      track.classList.add('is-jumping');
+      track.scrollLeft = slideLeft(target);
+      activePhysicalIndex = physicalIndex;
+      requestAnimationFrame(() => track.classList.remove('is-jumping'));
+    };
+
+    const update = () => {
+      activePhysicalIndex = nearestPhysicalIndex();
+      activeIndex = Number(reel[activePhysicalIndex]?.dataset.hallIndex ?? 0);
       const start = activeIndex + 1;
-      const end = Math.min(slides.length, activeIndex + visibleCount());
+      const end = activeIndex + visibleCount();
       const format = (value: number) => String(value).padStart(2, '0');
-      status.textContent = `${format(start)}–${format(end)} / ${format(slides.length)}`;
-      progress.style.transform = `scaleX(${end / slides.length})`;
-      previous.disabled = activeIndex === 0;
-      next.disabled = end >= slides.length;
+      const range = (first: number, last: number) => (
+        first === last ? format(first) : `${format(first)}–${format(last)}`
+      );
+
+      if (visibleCount() === 1) {
+        status.textContent = `${format(start)} / ${format(total)}`;
+      } else if (end <= total) {
+        status.textContent = `${range(start, end)} / ${format(total)}`;
+      } else {
+        status.textContent = `${range(start, total)} · ${range(1, end - total)} / ${format(total)}`;
+      }
+
+      progress.style.transform = `scaleX(${start / total})`;
+      reel.forEach((slide, index) => slide.classList.toggle('is-active', index === activePhysicalIndex));
     };
 
-    const goTo = (index: number) => {
-      const targetIndex = Math.min(Math.max(index, 0), maxStart());
-      const target = slides[targetIndex];
-      const left = target.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
-      track.scrollTo({ left, behavior: 'smooth' });
+    const normalizeLoop = () => {
+      const physicalIndex = nearestPhysicalIndex();
+      if (physicalIndex >= cloneCount + total) {
+        jumpTo(physicalIndex - total);
+      } else if (physicalIndex < cloneCount) {
+        jumpTo(physicalIndex + total);
+      }
+      update();
     };
 
-    previous.addEventListener('click', () => goTo(activeIndex - visibleCount()));
-    next.addEventListener('click', () => goTo(activeIndex + visibleCount()));
+    const scheduleNormalize = () => {
+      window.clearTimeout(normalizeTimer);
+      normalizeTimer = window.setTimeout(normalizeLoop, normalizeDelay);
+    };
+
+    const goBy = (amount: number) => {
+      activePhysicalIndex = nearestPhysicalIndex();
+      const targetIndex = Math.min(Math.max(activePhysicalIndex + amount, 0), reel.length - 1);
+      const target = reel[targetIndex];
+      if (!target) return;
+      track.scrollTo({ left: slideLeft(target), behavior: 'smooth' });
+      scheduleNormalize();
+    };
+
+    const stopAuto = () => {
+      window.clearTimeout(autoTimer);
+      autoTimer = 0;
+      carousel.dataset.autoPlaying = 'false';
+    };
+
+    const canAutoPlay = () => !userPaused && !hoverPaused && !focusPaused && inViewport && !document.hidden;
+
+    const scheduleAuto = (delay = autoDelay) => {
+      window.clearTimeout(autoTimer);
+      if (!canAutoPlay()) {
+        stopAuto();
+        return;
+      }
+      carousel.dataset.autoPlaying = 'true';
+      autoTimer = window.setTimeout(() => {
+        goBy(1);
+        scheduleAuto();
+      }, delay);
+    };
+
+    const syncToggle = () => {
+      const playing = canAutoPlay();
+      toggleIcon.textContent = userPaused ? '▶' : 'Ⅱ';
+      toggle.setAttribute('aria-label', userPaused ? '자동 재생 시작' : '자동 재생 일시정지');
+      toggle.title = userPaused ? '자동 재생 시작' : '자동 재생 일시정지';
+      status.setAttribute('aria-live', userPaused ? 'polite' : 'off');
+      if (playing) scheduleAuto();
+      else stopAuto();
+    };
+
+    const manualMove = (amount: number) => {
+      stopAuto();
+      goBy(amount);
+      scheduleAuto(autoDelay * 1.35);
+    };
+
+    previous.addEventListener('click', () => manualMove(-1));
+    next.addEventListener('click', () => manualMove(1));
+    toggle.addEventListener('click', () => {
+      userPaused = !userPaused;
+      syncToggle();
+    });
     track.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        goTo(activeIndex - 1);
+        manualMove(-1);
       }
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        goTo(activeIndex + 1);
+        manualMove(1);
       }
     });
     track.addEventListener('scroll', () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(update);
+      scheduleNormalize();
     }, { passive: true });
-    window.addEventListener('resize', update, { passive: true });
+
+    carousel.addEventListener('mouseenter', () => {
+      hoverPaused = true;
+      stopAuto();
+    });
+    carousel.addEventListener('mouseleave', () => {
+      hoverPaused = false;
+      scheduleAuto();
+    });
+    carousel.addEventListener('focusin', () => {
+      focusPaused = true;
+      stopAuto();
+    });
+    carousel.addEventListener('focusout', () => {
+      window.setTimeout(() => {
+        focusPaused = carousel.contains(document.activeElement);
+        scheduleAuto();
+      }, 0);
+    });
+    track.addEventListener('pointerdown', stopAuto, { passive: true });
+    track.addEventListener('pointerup', () => scheduleAuto(autoDelay * 1.35), { passive: true });
+    document.addEventListener('visibilitychange', syncToggle);
+    reducedMotion.addEventListener('change', (event) => {
+      if (event.matches) userPaused = true;
+      syncToggle();
+    });
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(([entry]) => {
+        inViewport = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.15);
+        syncToggle();
+      }, { threshold: [0, 0.15] });
+      observer.observe(carousel);
+    }
+    window.addEventListener('resize', () => {
+      update();
+      scheduleNormalize();
+    }, { passive: true });
+
+    jumpTo(cloneCount);
     update();
+    syncToggle();
   });
 </script>
