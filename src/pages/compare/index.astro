@@ -15,14 +15,83 @@ const comparePioneers = pioneers.map((pioneer) => {
 ---
 <BaseLayout title="비교실">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE COMPARISON ROOM</div><h1>같은 질문,<br />다른 대답.</h1><p>최대 세 명의 선구자를 선택해 학습관, 교수자의 역할, 설계 원리와 남은 논쟁을 같은 표에서 비교합니다.</p></div></section>
-  <section class="section compare-page"><div class="shell"><div class="compare-controls" data-compare-controls><label>COMPARE / 최대 3명</label>{pioneers.map((pioneer) => <button data-id={pioneer.id} aria-pressed="false">{pioneer.nameKo}</button>)}<span class="compare-help">이름을 눌러 비교 패널에 추가하세요.</span></div><div class="compare-board" data-compare-board><div class="graph-detail-empty"><span>02</span><p>두 명 이상을 선택하면 비교표가 열립니다.</p></div></div></div></section>
+  <section class="section compare-page">
+    <div class="shell">
+      <div class="compare-controls" data-compare-controls>
+        <div class="compare-controls-head">
+          <div>
+            <span class="compare-controls-kicker">PORTRAIT ROSTER / 최대 3명</span>
+            <h2>비교할 인물을 고르세요</h2>
+          </div>
+          <p class="compare-help" data-compare-status aria-live="polite">0 / 3 선택 · 두 명 이상을 선택하세요.</p>
+        </div>
+        <div class="compare-roster-grid">
+          {comparePioneers.map((pioneer) => {
+            const portraitStyle = pioneer.portrait ? [
+              pioneer.portrait.objectPosition && `object-position:${pioneer.portrait.objectPosition}`,
+              pioneer.portrait.objectScale && `transform:scale(${pioneer.portrait.objectScale})`,
+              pioneer.portrait.transformOrigin && `transform-origin:${pioneer.portrait.transformOrigin}`
+            ].filter(Boolean).join(';') : undefined;
+
+            return (
+              <button
+                class="compare-select-card"
+                data-id={pioneer.id}
+                aria-pressed="false"
+                aria-label={`${pioneer.nameKo}, ${pioneer.life}, 비교 대상에 추가`}
+                style={`--person-accent:${pioneer.accent}`}
+              >
+                <span class="compare-select-photo-wrap">
+                  <span class:list={["compare-select-photo", { 'is-fallback': !pioneer.portrait }]}>
+                    {pioneer.portrait
+                      ? <img src={pioneer.portrait.src} alt={pioneer.portrait.alt} loading="lazy" draggable="false" style={portraitStyle} />
+                      : <span aria-hidden="true">{pioneer.initials}</span>}
+                  </span>
+                  <span class="nationality-badge is-compact compare-select-nationality" title={pioneer.nationality.note} aria-label={`국적: ${pioneer.nationality.label}`}>
+                    <b aria-hidden="true">{pioneer.nationality.flag}</b>
+                  </span>
+                </span>
+                <span class="compare-select-identity">
+                  <strong>{pioneer.nameKo}</strong>
+                  <span>{pioneer.nameEn}</span>
+                  <small>{pioneer.life} · {pioneer.domains[0]}</small>
+                </span>
+                <span class="compare-select-rank" data-selection-rank aria-hidden="true">+</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div class="compare-board" data-compare-board><div class="graph-detail-empty"><span>02</span><p>위의 인물 카드에서 두 명 이상을 선택하면 비교표가 열립니다.</p></div></div>
+    </div>
+  </section>
   <script is:inline define:vars={{ pioneers: comparePioneers }}>
     const controls = document.querySelector('[data-compare-controls]');
     const board = document.querySelector('[data-compare-board]');
+    const status = document.querySelector('[data-compare-status]');
     const selected = [];
+    const updateControls = () => {
+      const limitReached = selected.length >= 3;
+      controls?.classList.toggle('is-at-limit', limitReached);
+      controls?.querySelectorAll('[data-id]').forEach((card) => {
+        if (!(card instanceof HTMLButtonElement)) return;
+        const selectedIndex = selected.indexOf(card.dataset.id);
+        const isSelected = selectedIndex >= 0;
+        card.classList.toggle('selected', isSelected);
+        card.setAttribute('aria-pressed', String(isSelected));
+        card.setAttribute('aria-disabled', String(limitReached && !isSelected));
+        const rank = card.querySelector('[data-selection-rank]');
+        if (rank) rank.textContent = isSelected ? String(selectedIndex + 1).padStart(2, '0') : '+';
+      });
+      if (status) {
+        status.textContent = selected.length < 2
+          ? `${selected.length} / 3 선택 · ${2 - selected.length}명을 더 선택하세요.`
+          : `${selected.length} / 3 선택 · 비교표가 열렸습니다.`;
+      }
+    };
     const render = () => {
       if (!board) return;
-      if (selected.length < 2) { board.innerHTML = '<div class="graph-detail-empty"><span>02</span><p>두 명 이상을 선택하면 비교표가 열립니다.</p></div>'; return; }
+      if (selected.length < 2) { board.innerHTML = '<div class="graph-detail-empty"><span>02</span><p>위의 인물 카드에서 두 명 이상을 선택하면 비교표가 열립니다.</p></div>'; return; }
       const people = selected.map((id) => pioneers.find((p) => p.id === id)).filter(Boolean);
       const rows = [
         ['핵심 명제', ...people.map((p) => p.thesis)],
@@ -33,6 +102,19 @@ const comparePioneers = pioneers.map((pioneer) => {
       ];
       board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-portrait-wrap"><span class="compare-portrait${p.portrait ? '' : ' is-fallback'}" style="--person-accent:${p.accent}">${p.portrait ? `<img src="${p.portrait.src}" alt="${p.portrait.alt}" draggable="false"${p.portrait.objectPosition || p.portrait.objectScale ? ` style="${p.portrait.objectPosition ? `object-position:${p.portrait.objectPosition};` : ''}${p.portrait.objectScale ? `transform:scale(${p.portrait.objectScale});` : ''}${p.portrait.transformOrigin ? `transform-origin:${p.portrait.transformOrigin};` : ''}"` : ''}>` : p.initials}</span><span class="nationality-badge is-compact compare-nationality" title="${p.nationality.note}" aria-label="국적: ${p.nationality.label}"><b aria-hidden="true">${p.nationality.flag}</b></span></span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
     };
-    controls?.addEventListener('click', (event) => { const button = event.target; if (!(button instanceof HTMLButtonElement) || !button.dataset.id) return; const id = button.dataset.id; const index = selected.indexOf(id); if (index >= 0) selected.splice(index, 1); else if (selected.length < 3) selected.push(id); else return; button.classList.toggle('selected', selected.includes(id)); button.setAttribute('aria-pressed', String(selected.includes(id))); render(); });
+    controls?.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const button = target.closest('[data-id]');
+      if (!(button instanceof HTMLButtonElement) || !button.dataset.id) return;
+      const id = button.dataset.id;
+      const index = selected.indexOf(id);
+      if (index >= 0) selected.splice(index, 1);
+      else if (selected.length < 3) selected.push(id);
+      else return;
+      updateControls();
+      render();
+    });
+    updateControls();
   </script>
 </BaseLayout>
