@@ -1,6 +1,7 @@
 ---
 import type { Pioneer } from '../data/types';
 import { portraitById } from '../data/portraits';
+import NationalityBadge from './NationalityBadge.astro';
 const { pioneer, featured = false } = Astro.props as { pioneer: Pioneer; featured?: boolean };
 const base = `${import.meta.env.BASE_URL}/`;
 const portrait = portraitById[pioneer.id];
@@ -15,6 +16,7 @@ const displayIndex = order.indexOf(pioneer.id) + 1;
     {!portrait && <span class="portrait-initials">{pioneer.initials}</span>}
     <span class="portrait-index">{String(displayIndex).padStart(2, '0')}</span>
     <span class="portrait-line"></span>
+    <NationalityBadge pioneerId={pioneer.id} className="card-nationality" />
   </div>
   <div class="card-body">
     <div class="card-kicker"><span>{pioneer.era}</span><span>{pioneer.life}</span></div>

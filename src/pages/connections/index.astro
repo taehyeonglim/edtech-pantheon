@@ -4,13 +4,15 @@ import RelationshipGraph from '../../components/RelationshipGraph';
 import { pioneers } from '../../data/pioneers';
 import { relationships } from '../../data/relationships';
 import { portraitById } from '../../data/portraits';
+import { nationalityById } from '../../data/nationalities';
 const base = `${import.meta.env.BASE_URL}/`;
 const graphPortraits = Object.fromEntries(pioneers.map((pioneer) => {
   const portrait = portraitById[pioneer.id];
-  return [pioneer.id, portrait ? { src: portrait.src } : null];
+  const nationality = nationalityById[pioneer.id];
+  return [pioneer.id, portrait ? { src: portrait.src, nationality } : null];
 }));
 ---
 <BaseLayout title="관계도">
-  <section class="page-hero"><div class="shell"><div class="eyebrow">THE MAP / RELATIONSHIPS</div><h1>사상은<br />서로를 통과한다.</h1><p>영향, 계승, 대비, 논쟁을 같은 선으로 뭉개지 않습니다. 관계의 종류와 확실성, 그리고 그 판단을 뒷받침하는 출처를 함께 보여줍니다.</p><div class="hero-meta"><span><b>{relationships.length}</b> DOCUMENTED CONNECTIONS</span><span><b>{pioneers.length}</b> NODES</span><span><b>5</b> RELATION TYPES</span></div></div></section>
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE MAP / RELATIONSHIPS</div><h1>사상은<br />서로를 통과한다.</h1><p>영향, 계승, 대비, 논쟁을 같은 선으로 뭉개지 않습니다. 가로축은 각 인물의 출생연도를 나타내며, 초상에 마우스를 올리면 전체 생애를 확인할 수 있습니다.</p><div class="hero-meta"><span><b>{relationships.length}</b> DOCUMENTED CONNECTIONS</span><span><b>{pioneers.length}</b> NODES</span><span><b>5</b> RELATION TYPES</span><span><b>1850—1950</b> BIRTH AXIS</span></div></div></section>
   <section class="section graph-page"><div class="shell"><RelationshipGraph client:load pioneers={pioneers} relationships={relationships} portraits={graphPortraits} baseUrl={base} /></div></section>
 </BaseLayout>

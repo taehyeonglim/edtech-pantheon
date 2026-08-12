@@ -57,6 +57,13 @@ export type Portrait = {
   };
 };
 
+export type Nationality = {
+  flag: string;
+  label: string;
+  note: string;
+  sourceUrl: string;
+};
+
 export type BiographySection = {
   title: string;
   body: string;

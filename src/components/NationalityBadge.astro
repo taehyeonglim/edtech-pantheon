@@ -1,0 +1,16 @@
+---
+import { nationalityById } from '../data/nationalities';
+const { pioneerId, compact = false, className = '' } = Astro.props;
+const nationality = nationalityById[pioneerId];
+---
+
+{nationality && (
+  <span
+    class:list={['nationality-badge', { 'is-compact': compact }, className]}
+    title={nationality.note}
+    aria-label={`국적: ${nationality.label}`}
+  >
+    <b aria-hidden="true">{nationality.flag}</b>
+    {!compact && <small>{nationality.label}</small>}
+  </span>
+)}

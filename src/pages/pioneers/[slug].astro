@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CitationList from '../../components/CitationList.astro';
+import NationalityBadge from '../../components/NationalityBadge.astro';
 import { pioneers } from '../../data/pioneers';
 import { sourceById } from '../../data/sources';
 import { portraitById } from '../../data/portraits';
@@ -19,6 +20,7 @@ const biography = biographyById[pioneer.id] ?? [];
     <section class="profile-hero" style={`--profile-accent:${pioneer.accent}`}><div class="shell"><div class="profile-top"><div class:list={["profile-portrait", { 'has-photo': portrait }]} aria-label={portrait?.alt ?? `${pioneer.nameKo} 검증된 사진 미확보`}>
       {portrait ? <img src={`${base}${portrait.src}`} alt={portrait.alt} /> : <><span class="profile-photo-missing">VERIFIED<br />PHOTO<br />NOT FOUND</span><span class="portrait-initials">{pioneer.initials}</span></>}
       <span class="profile-index">PIONEER / {String(index).padStart(2, '0')}</span>
+      <NationalityBadge pioneerId={pioneer.id} className="profile-nationality" />
       {portrait && <a class="profile-photo-verification" href={portrait.verification.url} target="_blank" rel="noreferrer" title={portrait.verification.basis}>신원 검증 · {portrait.verification.authority} ↗</a>}
       {portrait && <a class="profile-photo-credit" href={portrait.sourceUrl} target="_blank" rel="noreferrer">{portrait.license} · {portrait.credit} ↗</a>}
     </div><div><div class="eyebrow">{pioneer.era}</div><h1>{pioneer.nameKo}</h1><p class="profile-name-en">{pioneer.nameEn}</p><p class="profile-role">{pioneer.life} · {pioneer.role} · {pioneer.school}</p><div class="tag-row">{pioneer.domains.map((domain) => <span>{domain}</span>)}</div></div></div><p class="profile-thesis">{pioneer.thesis}</p></div></section>
