@@ -7,6 +7,16 @@ const base = `${import.meta.env.BASE_URL}/`;
 const events = pioneers.flatMap((pioneer) => pioneer.timeline.map((event) => ({ ...event, pioneer }))).sort((a, b) => a.year - b.year);
 const timelineStart = events[0]?.year ?? 1898;
 const timelineEnd = events[events.length - 1]?.year ?? new Date().getFullYear();
+const makeYearTicks = (start: number, end: number) => {
+  const ticks = new Set([start, end]);
+  for (let year = Math.ceil(start / 5) * 5; year <= end; year += 5) ticks.add(year);
+  return [...ticks].sort((a, b) => a - b);
+};
+const groupEventsByYear = (eraEvents: typeof events) => {
+  const groups = new Map<number, typeof events>();
+  eraEvents.forEach((event) => groups.set(event.year, [...(groups.get(event.year) ?? []), event]));
+  return [...groups.entries()].map(([year, groupedEvents]) => ({ year, events: groupedEvents }));
+};
 const eras = [
   {
     id: 'foundations', start: timelineStart, end: 1939, label: 'FOUNDATIONS',
@@ -28,7 +38,15 @@ const eras = [
     title: '디지털·문제·통합의 시대',
     description: '멀티미디어, 문제 중심 설계와 설계·개발 연구가 디지털 학습 환경에서 통합된 구간.'
   }
-].map((era) => ({ ...era, events: events.filter((event) => event.year >= era.start && event.year <= era.end) }));
+].map((era) => {
+  const eraEvents = events.filter((event) => event.year >= era.start && event.year <= era.end);
+  return {
+    ...era,
+    events: eraEvents,
+    yearGroups: groupEventsByYear(eraEvents),
+    ticks: makeYearTicks(era.start, era.end)
+  };
+});
 ---
 <BaseLayout title="통합 연표">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE TIMELINE / {timelineStart}—{timelineEnd}</div><h1>한 세기의<br /><em style="color:var(--gold-light);font-style:normal">학습 실험</em></h1><p>인물의 생애만 나열하지 않고, 주요 저작과 개념이 교육공학의 언어를 어떻게 바꾸었는지 시간의 흐름으로 읽습니다.</p><div class="hero-meta"><span><b>{events.length}</b> DOCUMENTED EVENTS</span><span><b>{eras.length}</b> EDITORIAL ERAS</span><span><b>{eras.length}</b> CONNECTED COLUMNS</span></div></div></section>
@@ -36,7 +54,7 @@ const eras = [
     <div class="shell">
       <div class="timeline-intro">
         <p>연표는 “누가 먼저였는가”를 가리는 순위표가 아닙니다. 같은 시대에 서로 다른 질문이 어떻게 등장했고, 후대의 연구자가 어떤 언어를 이어받았는지 보기 위한 탐색 장치입니다.</p>
-        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 아래 네 구간은 공식 시대 구분이 아니라 하나의 시간선을 여러 열로 이어 읽기 위한 편집적 묶음이며, 각 이벤트의 근거는 연결된 출처에서 확인할 수 있습니다.</div>
+        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 각 열의 세로 위치는 해당 구간 안의 실제 연도 간격에 비례합니다. 같은 해와 인접 연도의 기록이 겹치면 카드는 아래로 이동하지만, 점선이 원래 연도 좌표를 계속 가리킵니다.</div>
       </div>
       <div class="timeline-columns">
         {eras.map((era, eraIndex) => (
@@ -49,44 +67,74 @@ const eras = [
               <p>{era.description}</p>
               <span class="timeline-era-count">{era.events.length} EVENTS</span>
             </header>
-            <ol class="timeline-track">
-              {era.events.map((event) => {
-                const portrait = portraitById[event.pioneer.id];
-                const portraitStyle = portrait ? [
-                  portrait.objectPosition && `object-position:${portrait.objectPosition}`,
-                  portrait.objectScale && `transform:scale(${portrait.objectScale})`,
-                  portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`
-                ].filter(Boolean).join(';') : undefined;
+            <div
+              class="timeline-year-space"
+              data-timeline-year-space
+              data-era-start={era.start}
+              data-era-end={era.end}
+            >
+              <div class="timeline-year-axis" aria-hidden="true">
+                {era.ticks.map((year) => {
+                  const tickPosition = ((year - era.start) / Math.max(1, era.end - era.start)) * 100;
+                  return <span class:list={["timeline-axis-tick", { edge: year === era.start || year === era.end }]} style={`--tick-position:${tickPosition}%`}><b>{year}</b><i></i></span>;
+                })}
+              </div>
+              <ol class="timeline-year-groups" data-timeline-year-groups>
+                {era.yearGroups.map((yearGroup) => {
+                  const yearPosition = ((yearGroup.year - era.start) / Math.max(1, era.end - era.start)) * 100;
+                  return (
+                    <li
+                      class:list={["timeline-year-group", { 'has-multiple': yearGroup.events.length > 1 }]}
+                      data-timeline-year-group
+                      data-event-year={yearGroup.year}
+                      style={`--year-position:${yearPosition}%;--anchor-offset:0px;--connector-height:0px`}
+                    >
+                      <span class="timeline-year-count" aria-label={`${yearGroup.year}년 사건 ${yearGroup.events.length}건`}>
+                        {yearGroup.events.length > 1 ? `${yearGroup.events.length}×` : ''}
+                      </span>
+                      <div class="timeline-year-events">
+                        {yearGroup.events.map((event) => {
+                          const portrait = portraitById[event.pioneer.id];
+                          const portraitStyle = portrait ? [
+                            portrait.objectPosition && `object-position:${portrait.objectPosition}`,
+                            portrait.objectScale && `transform:scale(${portrait.objectScale})`,
+                            portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`
+                          ].filter(Boolean).join(';') : undefined;
 
-                return (
-                  <li class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
-                    <div class="global-event-top">
-                      <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
-                      <span>{event.pioneer.school}</span>
-                    </div>
-                    <h3>{event.label}</h3>
-                    <p>{event.description}</p>
-                    <div class="event-person">
-                      <a
-                        class:list={["event-person-portrait", { 'has-photo': portrait }]}
-                        href={`${base}pioneers/${event.pioneer.slug}/`}
-                        aria-label={`${event.pioneer.nameKo} 상세 기록`}
-                        title={event.pioneer.nameKo}
-                      >
-                        {portrait
-                          ? <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={portraitStyle} />
-                          : <span aria-hidden="true">{event.pioneer.initials}</span>}
-                      </a>
-                      <div class="event-person-name">
-                        <a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a>
-                        <small>{event.pioneer.nameEn}</small>
+                          return (
+                            <article class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
+                              <div class="global-event-top">
+                                <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
+                                <span>{event.pioneer.school}</span>
+                              </div>
+                              <h3>{event.label}</h3>
+                              <p>{event.description}</p>
+                              <div class="event-person">
+                                <a
+                                  class:list={["event-person-portrait", { 'has-photo': portrait }]}
+                                  href={`${base}pioneers/${event.pioneer.slug}/`}
+                                  aria-label={`${event.pioneer.nameKo} 상세 기록`}
+                                  title={event.pioneer.nameKo}
+                                >
+                                  {portrait
+                                    ? <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={portraitStyle} />
+                                    : <span aria-hidden="true">{event.pioneer.initials}</span>}
+                                </a>
+                                <div class="event-person-name">
+                                  <a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a>
+                                  <small>{event.pioneer.nameEn}</small>
+                                </div>
+                              </div>
+                              <CitationList ids={event.sourceIds} compact />
+                            </article>
+                          );
+                        })}
                       </div>
-                    </div>
-                    <CitationList ids={event.sourceIds} compact />
-                  </li>
-                );
-              })}
-            </ol>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
             <footer class="timeline-era-footer">
               {eraIndex < eras.length - 1
                 ? <><span>NEXT PERIOD</span><strong>{eras[eraIndex + 1].start} →</strong></>
@@ -97,4 +145,43 @@ const eras = [
       </div>
     </div>
   </section>
+  <script>
+    const layoutTimelineYears = () => {
+      document.querySelectorAll<HTMLElement>('[data-timeline-year-space]').forEach((space) => {
+        const groups = Array.from(space.querySelectorAll<HTMLElement>('[data-timeline-year-group]'));
+        const groupLayer = space.querySelector<HTMLElement>('[data-timeline-year-groups]');
+        const start = Number(space.dataset.eraStart);
+        const end = Number(space.dataset.eraEnd);
+        const axisHeight = Number.parseFloat(getComputedStyle(space).getPropertyValue('--timeline-axis-height')) || 3600;
+        let occupiedUntil = 0;
+
+        groups.forEach((group) => {
+          const year = Number(group.dataset.eventYear);
+          const desiredTop = ((year - start) / Math.max(1, end - start)) * axisHeight;
+          const actualTop = Math.max(desiredTop, occupiedUntil);
+          const displacement = Math.max(0, actualTop - desiredTop);
+          group.style.top = `${actualTop}px`;
+          group.style.setProperty('--anchor-offset', `${-displacement}px`);
+          group.style.setProperty('--connector-height', `${displacement}px`);
+          group.classList.toggle('is-displaced', displacement > 2);
+          occupiedUntil = actualTop + group.offsetHeight + 18;
+        });
+
+        const finalHeight = Math.max(axisHeight, occupiedUntil + 24);
+        space.style.height = `${finalHeight}px`;
+        if (groupLayer) groupLayer.style.height = `${finalHeight}px`;
+      });
+    };
+
+    let timelineLayoutFrame = 0;
+    const scheduleTimelineLayout = () => {
+      cancelAnimationFrame(timelineLayoutFrame);
+      timelineLayoutFrame = requestAnimationFrame(layoutTimelineYears);
+    };
+
+    scheduleTimelineLayout();
+    window.addEventListener('load', scheduleTimelineLayout, { once: true });
+    window.addEventListener('resize', scheduleTimelineLayout, { passive: true });
+    document.fonts?.ready.then(scheduleTimelineLayout);
+  </script>
 </BaseLayout>
