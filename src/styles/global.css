@@ -145,8 +145,21 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .profile-portrait .portrait-initials { left: 19px; bottom: 23px; font-size: 78px; }
 .profile-portrait .profile-index { top: 23px; left: 20px; color: var(--gold); font: 10px var(--mono); }
 .profile-photo-missing { position: absolute; left: 20px; bottom: 23px; color: var(--gold-light); font: 10px/1.25 var(--mono); letter-spacing: .12em; z-index: 2; }
+.profile-photo-verification { position: absolute; top: 43px; right: 13px; z-index: 3; max-width: 72%; padding: 5px 7px; border: 1px solid rgba(213,161,91,.52); background: rgba(10,18,20,.76); color: var(--gold-light); font: 8px/1.25 var(--mono); text-align: right; }
+.profile-photo-verification:hover { border-color: var(--gold-light); color: var(--paper); }
 .profile-photo-credit { position: absolute; right: 13px; bottom: 11px; z-index: 3; max-width: 85%; color: rgba(240,235,223,.76); font: 8px/1.25 var(--mono); text-align: right; }
 .profile-photo-credit:hover { color: var(--gold-light); }
+.portrait-audit-intro { margin-bottom: 18px; }
+.portrait-audit-list { display: grid; gap: 8px; }
+.portrait-audit-item { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.018); }
+.portrait-audit-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+.portrait-audit-head span, .portrait-audit-head small { display: block; color: var(--dim); font: 8px/1.35 var(--mono); letter-spacing: .06em; }
+.portrait-audit-head h3 { margin: 4px 0 2px; color: var(--paper); font: 500 20px/1.15 var(--serif); }
+.portrait-audit-head strong { flex: 0 0 auto; color: var(--gold-light); font: 8px/1.2 var(--mono); letter-spacing: .08em; }
+.portrait-audit-item > p { margin: 13px 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.portrait-audit-links { display: flex; flex-wrap: wrap; gap: 7px 14px; }
+.portrait-audit-links a { color: var(--gold-light); font: 8px/1.3 var(--mono); }
+.portrait-audit-links a:hover { color: var(--paper); }
 .profile-hero h1 { font: 600 clamp(45px, 7vw, 88px)/.92 var(--serif); letter-spacing: -.065em; margin: 15px 0 9px; }
 .profile-name-en { font: 14px var(--mono); color: var(--gold-light); margin-bottom: 17px; }
 .profile-role { color: var(--muted); margin-bottom: 18px; }

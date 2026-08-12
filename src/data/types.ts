@@ -49,6 +49,12 @@ export type Portrait = {
   credit: string;
   license: string;
   sourceUrl: string;
+  verification: {
+    authority: string;
+    url: string;
+    basis: string;
+    checkedOn: string;
+  };
 };
 
 export type BiographySection = {
