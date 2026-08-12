@@ -46,6 +46,9 @@ const validateArchive = () => {
     if ((biographies[pioneer.id]?.length ?? 0) < 3) {
       errors.push(`${pioneer.id}: 상세 생애가 3개 장보다 적음`);
     }
+    if (pioneer.timeline.length < 3) {
+      errors.push(`${pioneer.id}: 연표 사건이 3개보다 적음`);
+    }
     if (
       pioneer.birthYear !== null &&
       pioneer.deathYear !== null &&
@@ -83,6 +86,25 @@ const validateArchive = () => {
       errors.push(`${relationship.id}: 자기 자신과의 관계`);
     }
     checkSources(`${relationship.id}.sourceIds`, relationship.sourceIds);
+  }
+
+  const relationshipDegree = new Map(
+    pioneers.map((pioneer) => [pioneer.id, 0]),
+  );
+  for (const relationship of relationships) {
+    relationshipDegree.set(
+      relationship.source,
+      (relationshipDegree.get(relationship.source) ?? 0) + 1,
+    );
+    relationshipDegree.set(
+      relationship.target,
+      (relationshipDegree.get(relationship.target) ?? 0) + 1,
+    );
+  }
+  for (const [pioneerId, degree] of relationshipDegree) {
+    if (degree < 2) {
+      errors.push(`${pioneerId}: 관계도 연결이 ${degree}개로 최소 2개 미만`);
+    }
   }
 
   if (errors.length > 0) {

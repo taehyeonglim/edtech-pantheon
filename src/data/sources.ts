@@ -1,4 +1,5 @@
 import type { Source } from "./types";
+import { expandedSources } from "./sources-expansion";
 
 export const sources: Source[] = [
   {
@@ -783,6 +784,7 @@ export const sources: Source[] = [
     year: "2024",
     url: "https://apastyle.apa.org/style-grammar-guidelines/references",
   },
+  ...expandedSources,
 ];
 
 export const sourceById = Object.fromEntries(

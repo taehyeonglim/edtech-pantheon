@@ -360,6 +360,185 @@ export const portraits: Record<string, Portrait | null> = {
       checkedOn: "2026-08-13",
     },
   },
+  heinich: {
+    src: "portraits/robert-heinich.jpg",
+    alt: "인디애나대학교 교육공학자 로버트 하이니히 초상",
+    objectPosition: "50% 34%",
+    credit: "Indiana University School of Education, Chalkboard",
+    license: "Institutional memorial image; rights not stated",
+    sourceUrl:
+      "https://education.indiana.edu/alumni/alumni-magazine/PDF/Chalkboard-2020-Spring.pdf",
+    verification: {
+      authority: "Indiana University School of Education",
+      url: "https://education.indiana.edu/alumni/alumni-magazine/PDF/Chalkboard-2020-Spring.pdf",
+      basis:
+        "대학 공식 동문지의 Robert Heinich 추모 기사에서 인물명과 함께 배치된 사진을 원문 PDF에서 직접 추출했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  glaser: {
+    src: "portraits/robert-glaser.jpg",
+    alt: "학습과 교육측정 연구자 로버트 글레이저 초상",
+    objectPosition: "50% 25%",
+    credit: "Association for Psychological Science",
+    license: "Institutional remembrance image; rights not stated",
+    sourceUrl:
+      "https://www.psychologicalscience.org/observer/remembering-robert-glaser",
+    verification: {
+      authority: "Association for Psychological Science",
+      url: "https://www.psychologicalscience.org/observer/remembering-robert-glaser",
+      basis:
+        "APS 공식 추모 기사가 Robert Glaser의 이름·생몰연도·연구 경력과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  novak: {
+    src: "portraits/joseph-novak.jpg",
+    alt: "개념도 연구자 조지프 D. 노백 초상",
+    credit: "Florida Institute for Human & Machine Cognition",
+    license: "Institutional profile image; rights not stated",
+    sourceUrl: "https://www.ihmc.us/joseph-novak/",
+    verification: {
+      authority: "Florida Institute for Human & Machine Cognition",
+      url: "https://www.ihmc.us/joseph-novak/",
+      basis:
+        "IHMC 공식 연구자 페이지가 Joseph D. Novak의 이름·학력·개념도 연구 이력과 함께 게시한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  gilbert: {
+    src: "portraits/thomas-gilbert.jpg",
+    alt: "수행공학 연구자 토머스 F. 길버트 초상",
+    objectPosition: "50% 24%",
+    credit: "Performance Thinking Network / Six Boxes",
+    license: "Professional memorial image; rights not stated",
+    sourceUrl: "https://www.sixboxes.com/Inspiration.html",
+    verification: {
+      authority: "Performance Thinking Network",
+      url: "https://www.sixboxes.com/Inspiration.html",
+      basis:
+        "길버트에게 직접 배운 연구자가 운영하는 전문 아카이브의 Thomas F. Gilbert 추모·사상 계보 페이지에 게시된 식별 사진을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  brown: {
+    src: "portraits/ann-brown.jpg",
+    alt: "학습과학 연구자 앤 L. 브라운 초상",
+    objectPosition: "50% 24%",
+    credit: "Federation of Associations in Behavioral & Brain Sciences",
+    license: "Professional honor profile image; rights not stated",
+    sourceUrl: "https://fabbs.org/about/in-honor-of/ann-l-brown-phd/",
+    verification: {
+      authority:
+        "Federation of Associations in Behavioral & Brain Sciences",
+      url: "https://fabbs.org/about/in-honor-of/ann-l-brown-phd/",
+      basis:
+        "FABBS 명예 인물 페이지가 Ann L. Brown의 이름·학습과 기억 연구 경력과 함께 제공한 초상을 UC Berkeley 부고와 교차 확인했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  collins: {
+    src: "portraits/allan-collins.jpg",
+    alt: "노스웨스턴대학교 학습과학자 앨런 콜린스 초상",
+    credit: "Northwestern University School of Education and Social Policy",
+    license: "Institutional profile image; rights not stated",
+    sourceUrl:
+      "https://sesp.northwestern.edu/people/faculty/allan-m-collins.html",
+    verification: {
+      authority: "Northwestern University",
+      url: "https://sesp.northwestern.edu/people/faculty/allan-m-collins.html",
+      basis:
+        "대학 공식 교수 페이지가 Allan Collins의 이름·직함·인지적 도제 및 설계연구 경력과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  clark: {
+    src: "portraits/richard-clark.jpg",
+    alt: "USC 교육심리·교육공학 연구자 리처드 E. 클라크 초상",
+    credit: "USC Rossier School of Education",
+    license: "Institutional profile image; rights not stated",
+    sourceUrl:
+      "https://rossier.usc.edu/faculty-research/directory/richard-clark",
+    verification: {
+      authority: "University of Southern California",
+      url: "https://rossier.usc.edu/faculty-research/directory/richard-clark",
+      basis:
+        "USC 공식 교수 페이지가 Richard E. Clark의 이름·직함·교육공학 연구 경력과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  kozma: {
+    src: "portraits/robert-kozma.jpg",
+    alt: "교육공학 연구자 로버트 B. 코즈마 강연 초상",
+    objectPosition: "50% 24%",
+    credit: "Fundació Jaume Bofill / UOC Debates on Education",
+    license: "Official event video still; rights not stated",
+    sourceUrl:
+      "https://www.equitat.org/en/videos/robert-b-kozma-icts-and-transformation-education-knowledge-economy",
+    verification: {
+      authority: "Fundació Jaume Bofill and Universitat Oberta de Catalunya",
+      url: "https://www.equitat.org/en/videos/robert-b-kozma-icts-and-transformation-education-knowledge-economy",
+      basis:
+        "공식 강연 페이지 제목과 영상 명찰에 Robert Kozma가 명시된 프레임에서 얼굴 영역을 추출했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  moore: {
+    src: "portraits/michael-moore.jpg",
+    alt: "원격교육 연구자 마이클 G. 무어 초상",
+    credit: "Michael G. Moore official author site",
+    license: "Author profile image; rights not stated",
+    sourceUrl: "https://michaelgmoore.com/a/",
+    verification: {
+      authority: "Michael G. Moore",
+      url: "https://michaelgmoore.com/a/",
+      basis:
+        "연구자가 운영하는 공식 저자 페이지가 이름·Penn State 경력·거래적 거리 이론 설명과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  wenger: {
+    src: "portraits/etienne-wenger.jpg",
+    alt: "실천공동체 연구자 에티엔 웽거-트레이너 초상",
+    credit: "Wenger-Trayner",
+    license: "Author-provided press photo; rights not stated",
+    sourceUrl: "https://www.wenger-trayner.com/etienne/",
+    verification: {
+      authority: "Wenger-Trayner",
+      url: "https://www.wenger-trayner.com/etienne/",
+      basis:
+        "연구자 공식 전기 페이지가 Etienne Wenger-Trayner의 이름·실천공동체 연구 이력과 함께 제공한 사용 가능 사진을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  scardamalia: {
+    src: "portraits/marlene-scardamalia.jpg",
+    alt: "지식구축 연구자 말린 스카더말리아 초상",
+    credit: "National Academy of Education",
+    license: "Institutional member profile image; rights not stated",
+    sourceUrl: "https://naeducation.org/member/marlene-scardamalia/",
+    verification: {
+      authority: "National Academy of Education",
+      url: "https://naeducation.org/member/marlene-scardamalia/",
+      basis:
+        "NAEd 공식 회원 페이지가 Marlene Scardamalia의 이름·소속·지식구축 연구 이력과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
+  merrienboer: {
+    src: "portraits/jeroen-van-merrienboer.jpg",
+    alt: "4C/ID 모형 연구자 예룬 반 메리엔보어 초상",
+    credit: "4C/ID official site",
+    license: "Institutional memorial image; rights not stated",
+    sourceUrl: "https://www.4cid.org/in-memoriam/",
+    verification: {
+      authority: "4C/ID",
+      url: "https://www.4cid.org/in-memoriam/",
+      basis:
+        "4C/ID 공식 추모 페이지가 Jeroen van Merriënboer의 이름·생몰연도·모형 개발 경력과 함께 제공한 초상을 사용했다.",
+      checkedOn: "2026-08-13",
+    },
+  },
 };
 
 export const portraitById = portraits;

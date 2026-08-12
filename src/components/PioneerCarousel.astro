@@ -41,7 +41,7 @@ const base = `${import.meta.env.BASE_URL}/`;
     aria-label="교육공학 선구자 회전형 명예의전당"
   >
     <span class="hall-orbit-arc" aria-hidden="true"></span>
-    <span class="hall-orbit-axis" aria-hidden="true">EP / 24</span>
+    <span class="hall-orbit-axis" aria-hidden="true">EP / {String(pioneers.length).padStart(2, '0')}</span>
 
     {pioneers.map((pioneer, index) => {
       const portrait = portraitById[pioneer.id];

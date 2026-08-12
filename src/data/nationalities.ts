@@ -155,6 +155,84 @@ export const nationalities: Record<string, Nationality> = {
     sourceUrl:
       "https://gsi.berkeley.edu/programs-services/hsl-project/hsl-speakers/lave/",
   },
+  heinich: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국 교육공학 연구자이자 인디애나대학교 교수.",
+    sourceUrl:
+      "https://education.indiana.edu/alumni/alumni-magazine/PDF/Chalkboard-2020-Spring.pdf",
+  },
+  glaser: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국의 교육심리학자이자 피츠버그대학교 LRDC 설립자.",
+    sourceUrl:
+      "https://www.psychologicalscience.org/observer/remembering-robert-glaser",
+  },
+  novak: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국 미네소타주 출생의 미국 과학교육 연구자.",
+    sourceUrl:
+      "https://news.cornell.edu/stories/2023/11/joseph-novak-pioneer-education-theory-dies-92",
+  },
+  gilbert: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국의 수행공학·행동공학 연구자.",
+    sourceUrl: "https://www.sixboxes.com/Inspiration.html",
+  },
+  brown: {
+    flag: "🇬🇧 🇺🇸",
+    label: "영국 출생·미국 활동",
+    note: "영국 포츠머스 출생으로 미국 대학에서 학습과 기억을 연구한 교육심리학자.",
+    sourceUrl:
+      "https://newsarchive.berkeley.edu/news/media/releases/99legacy/6-10-1999.html",
+  },
+  collins: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국의 인지과학·학습과학 연구자이자 노스웨스턴대학교 명예교수.",
+    sourceUrl:
+      "https://sesp.northwestern.edu/people/faculty/allan-m-collins.html",
+  },
+  clark: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국의 교육심리·교육공학 연구자이자 USC 명예교수.",
+    sourceUrl:
+      "https://rossier.usc.edu/faculty-research/directory/richard-clark",
+  },
+  kozma: {
+    flag: "🇺🇸",
+    label: "미국",
+    note: "미국의 교육공학·교육정책 연구자이자 SRI International 출신 연구자.",
+    sourceUrl: "https://sri.academia.edu/RobertKozma",
+  },
+  moore: {
+    flag: "🇬🇧 🇺🇸",
+    label: "영국 출생·미국 활동",
+    note: "영국에서 성장·수학하고 미국에서 원격교육 연구를 이끈 학자.",
+    sourceUrl: "https://michaelgmoore.com/a/",
+  },
+  wenger: {
+    flag: "🇨🇭",
+    label: "스위스",
+    note: "스위스 출신의 사회학습·실천공동체 연구자.",
+    sourceUrl: "https://www.wenger-trayner.com/etienne/",
+  },
+  scardamalia: {
+    flag: "🇨🇦",
+    label: "캐나다",
+    note: "캐나다의 학습과학·지식구축 연구자이자 토론토대학교 교수.",
+    sourceUrl: "https://naeducation.org/member/marlene-scardamalia/",
+  },
+  merrienboer: {
+    flag: "🇳🇱",
+    label: "네덜란드",
+    note: "네덜란드의 교수설계 연구자이자 4C/ID 모형 개발자.",
+    sourceUrl: "https://www.4cid.org/in-memoriam/",
+  },
 };
 
 export const nationalityById = nationalities;

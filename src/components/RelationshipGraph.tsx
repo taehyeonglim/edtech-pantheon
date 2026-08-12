@@ -17,7 +17,8 @@ type Props = {
 };
 
 const currentYear = new Date().getFullYear();
-const laneCount = 8;
+const laneCount = 10;
+const laneBounds = { start: 9.5, end: 95 };
 const axisPadding = { top: 5.5, bottom: 5.5 };
 
 const confidenceLabel: Record<Relationship["confidence"], string> = {
@@ -89,7 +90,9 @@ export default function RelationshipGraph({
         return [
           pioneer.id,
           {
-            x: 11.5 + lane * 11.05,
+            x:
+              laneBounds.start +
+              (lane * (laneBounds.end - laneBounds.start)) / (laneCount - 1),
             y: yearToY(anchorYear),
             anchorYear,
             estimatedAnchor: pioneer.birthYear === null,

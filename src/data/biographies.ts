@@ -1,4 +1,5 @@
 import type { BiographySection } from "./types";
+import { expandedBiographies } from "./biographies-expansion";
 
 export const biographies: Record<string, BiographySection[]> = {
   dewey: [
@@ -429,6 +430,7 @@ export const biographies: Record<string, BiographySection[]> = {
       sourceIds: ["lave-wenger-1991", "bio-lave-berkeley"],
     },
   ],
+  ...expandedBiographies,
 };
 
 export const biographyById = biographies;

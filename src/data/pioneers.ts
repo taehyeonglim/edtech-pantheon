@@ -1,4 +1,5 @@
 import type { Pioneer } from "./types";
+import { expandedPioneers } from "./pioneers-expansion";
 
 export const pioneers: Pioneer[] = [
   {
@@ -1714,6 +1715,7 @@ export const pioneers: Pioneer[] = [
       "lave-wenger-1991",
     ],
   },
+  ...expandedPioneers,
 ];
 
 export const pioneerById = Object.fromEntries(

@@ -1770,8 +1770,8 @@ p {
 }
 .graph-canvas {
   width: 100%;
-  min-width: 1180px;
-  height: 1560px;
+  min-width: 1500px;
+  height: 1880px;
   position: relative;
   border: 1px solid var(--line);
   background:
@@ -3305,7 +3305,7 @@ p {
     margin: 0;
   }
   .graph-canvas {
-    height: 1560px;
+    height: 1880px;
   }
   .timeline-era-legend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3545,7 +3545,7 @@ p {
     margin-top: 10px;
   }
   .graph-canvas {
-    height: 1560px;
+    height: 1880px;
   }
   .graph-node {
     transform: translate(-50%, -24px);
