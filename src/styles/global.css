@@ -2347,96 +2347,140 @@ p {
   font-size: 15px;
   max-width: 560px;
 }
-.timeline-columns {
+.timeline-era-legend {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 22px;
-  align-items: start;
-  padding-top: 72px;
+  gap: 1px;
+  margin-top: 58px;
+  border: 1px solid var(--line);
+  background: var(--line);
 }
-.timeline-era {
+.timeline-era-legend article {
   min-width: 0;
-  border-top: 1px solid var(--gold);
+  min-height: 224px;
+  padding: 18px 18px 20px;
+  background: var(--navy);
 }
-.timeline-era-header {
-  min-height: 235px;
-  position: sticky;
-  z-index: 12;
-  top: 78px;
-  padding: 18px 8px 27px;
-  background: linear-gradient(180deg, var(--navy) 84%, rgba(16, 25, 27, 0));
+.timeline-era-legend article:nth-child(even) {
+  background: rgba(255, 255, 255, 0.016);
 }
-.timeline-era-number {
-  color: var(--gold);
-  font: 9px var(--mono);
-  letter-spacing: 0.1em;
-}
-.timeline-era-kicker {
-  margin-top: 22px;
-  color: var(--gold-light);
-  font: 9px var(--mono);
-  letter-spacing: 0.12em;
-}
-.timeline-era-header h2 {
-  max-width: 290px;
-  margin: 6px 0 10px;
-  color: var(--paper);
-  font: 500 29px/1.1 var(--serif);
-  letter-spacing: -0.025em;
-}
-.timeline-era-range {
+.timeline-era-legend-top {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  color: var(--gold-light);
-  font: 13px var(--mono);
-}
-.timeline-era-range span {
-  color: var(--dim);
-}
-.timeline-era-header p {
-  margin: 17px 0 0;
-  max-width: 320px;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.65;
-}
-.timeline-era-count {
-  position: absolute;
-  top: 19px;
-  right: 8px;
-  color: var(--dim);
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--gold);
   font: 8px var(--mono);
   letter-spacing: 0.08em;
 }
-.timeline-year-space {
-  --timeline-axis-height: 5200px;
+.timeline-era-legend-top b {
+  color: var(--dim);
+  font-weight: 400;
+}
+.timeline-era-legend-range {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-top: 27px;
+  color: var(--gold-light);
+  font: 13px var(--mono);
+}
+.timeline-era-legend-range i {
+  color: var(--dim);
+  font-style: normal;
+}
+.timeline-era-legend h2 {
+  margin: 8px 0 12px;
+  color: var(--paper);
+  font: 500 25px/1.12 var(--serif);
+  letter-spacing: -0.025em;
+}
+.timeline-era-legend p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+.timeline-scroll-hint {
+  margin: 30px 0 10px;
+  color: var(--dim);
+  font: 9px var(--mono);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+.timeline-shared-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid var(--gold);
+  scrollbar-color: rgba(213, 161, 91, 0.5) rgba(255, 255, 255, 0.04);
+  scrollbar-width: thin;
+}
+.timeline-shared-scroll:focus-visible {
+  outline-offset: 6px;
+}
+.timeline-shared-frame {
+  min-width: 1080px;
+}
+.timeline-lane-head {
+  display: grid;
+  grid-template-columns: 62px repeat(4, minmax(0, 1fr));
+  min-height: 70px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(16, 25, 27, 0.97);
+}
+.timeline-axis-heading,
+.timeline-lane-heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px;
+}
+.timeline-axis-heading {
+  padding-left: 0;
+}
+.timeline-axis-heading span,
+.timeline-lane-heading span {
+  color: var(--gold);
+  font: 8px var(--mono);
+  letter-spacing: 0.09em;
+}
+.timeline-axis-heading b,
+.timeline-lane-heading b {
+  margin-top: 5px;
+  color: var(--dim);
+  font: 7px var(--mono);
+  font-weight: 400;
+}
+.timeline-lane-heading {
+  border-left: 1px solid var(--line);
+}
+.timeline-shared-canvas {
+  --timeline-axis-height: 8200px;
   position: relative;
   height: var(--timeline-axis-height);
   min-height: var(--timeline-axis-height);
-  margin-top: 12px;
 }
-.timeline-year-axis {
+.timeline-shared-axis,
+.timeline-era-bands,
+.timeline-lanes {
   position: absolute;
-  z-index: 0;
   inset: 0;
+}
+.timeline-shared-axis {
+  z-index: 1;
   height: var(--timeline-axis-height);
   pointer-events: none;
 }
-.timeline-year-axis::before {
+.timeline-shared-axis::before {
   content: "";
   position: absolute;
   top: 0;
   bottom: 0;
   left: 47px;
   width: 1px;
-  background: linear-gradient(
-    var(--gold-light),
-    rgba(213, 161, 91, 0.38) 96%,
-    var(--gold)
-  );
+  background: linear-gradient(var(--gold-light), rgba(213, 161, 91, 0.38) 96%, var(--gold));
 }
-.timeline-year-axis::after {
+.timeline-shared-axis::after {
   content: "↓";
   position: absolute;
   left: 43px;
@@ -2468,7 +2512,7 @@ p {
   left: 42px;
   right: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(255, 255, 255, 0.065);
 }
 .timeline-axis-tick i::before {
   content: "";
@@ -2485,31 +2529,76 @@ p {
   color: var(--gold-light);
 }
 .timeline-axis-tick.edge i {
-  background: rgba(213, 161, 91, 0.18);
+  background: rgba(213, 161, 91, 0.3);
 }
-.timeline-year-groups {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
+.timeline-era-bands {
+  z-index: 0;
   left: 62px;
+  height: var(--timeline-axis-height);
+  pointer-events: none;
+}
+.timeline-era-band {
+  position: absolute;
+  top: var(--band-start);
+  right: 0;
+  left: 0;
+  height: var(--band-height);
+  min-height: 1px;
+  border-top: 1px solid rgba(213, 161, 91, 0.2);
+  background: linear-gradient(90deg, rgba(213, 161, 91, 0.025), transparent 48%);
+}
+.timeline-era-band.alternate {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.006) 60%, transparent);
+}
+.timeline-era-band span,
+.timeline-era-band b {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  padding-left: 10px;
+  background: color-mix(in srgb, var(--navy) 86%, transparent);
+  color: rgba(213, 161, 91, 0.58);
+  font: 8px var(--mono);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+.timeline-era-band b {
+  top: 25px;
+  color: rgba(169, 190, 179, 0.45);
+  font-family: var(--sans);
+  letter-spacing: 0;
+}
+.timeline-lanes {
+  z-index: 2;
+  left: 62px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: var(--timeline-axis-height);
+}
+.timeline-lane {
+  position: relative;
+  min-width: 0;
   height: var(--timeline-axis-height);
   list-style: none;
   margin: 0;
   padding: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
 }
-.timeline-year-group {
+.timeline-lane:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+.timeline-lane-event {
   position: absolute;
   top: var(--year-position);
-  left: 0;
-  width: 100%;
+  right: 11px;
+  left: 11px;
 }
-.timeline-year-group::before {
+.timeline-lane-event::before {
   content: "";
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   top: calc(var(--anchor-offset) - 4px);
-  left: -19px;
+  left: -16px;
   width: 9px;
   height: 9px;
   border: 2px solid var(--gold-light);
@@ -2517,11 +2606,11 @@ p {
   background: var(--navy);
   box-shadow: 0 0 0 4px rgba(13, 21, 23, 0.9);
 }
-.timeline-year-group::after {
+.timeline-lane-event::after {
   content: "";
   position: absolute;
   top: var(--anchor-offset);
-  left: -15px;
+  left: -12px;
   width: 1px;
   height: var(--connector-height);
   background: repeating-linear-gradient(
@@ -2530,32 +2619,14 @@ p {
     transparent 4px 8px
   );
 }
-.timeline-year-events {
-  position: relative;
-  display: grid;
-  gap: 8px;
-}
-.timeline-year-events::before {
+.timeline-lane-event .global-event::before {
   content: "";
   position: absolute;
   top: 9px;
-  left: -14px;
-  width: 14px;
+  left: -12px;
+  width: 12px;
   height: 1px;
   background: rgba(213, 161, 91, 0.55);
-}
-.timeline-year-count {
-  position: absolute;
-  z-index: 4;
-  top: 3px;
-  left: -44px;
-  color: var(--gold-light);
-  font: 7px var(--mono);
-  letter-spacing: 0.04em;
-}
-.timeline-year-group:not(.is-displaced):not(.has-multiple)
-  .timeline-year-count {
-  display: none;
 }
 .global-event {
   position: relative;
@@ -2703,25 +2774,6 @@ p {
 .global-event .citation-links a {
   font-size: 8px;
 }
-.timeline-era-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 21px 0 0 62px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-.timeline-era-footer span {
-  color: var(--dim);
-  font: 8px var(--mono);
-  letter-spacing: 0.08em;
-}
-.timeline-era-footer strong {
-  color: var(--gold);
-  font: 10px var(--mono);
-  font-weight: 400;
-}
-
 .compare-page {
   padding-bottom: 100px;
 }
@@ -3119,11 +3171,8 @@ p {
   .graph-canvas {
     height: 1040px;
   }
-  .timeline-columns {
+  .timeline-era-legend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .timeline-year-space {
-    --timeline-axis-height: 4300px;
   }
   .source-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -3420,17 +3469,14 @@ p {
     grid-template-columns: 1fr;
     gap: 30px;
   }
-  .timeline-columns {
+  .timeline-era-legend {
     grid-template-columns: 1fr;
-    padding-top: 54px;
   }
-  .timeline-era-header {
+  .timeline-era-legend article {
     min-height: 0;
-    top: 64px;
   }
-  .timeline-year-space {
-    --timeline-axis-height: 3600px;
-    margin-bottom: 42px;
+  .timeline-scroll-hint {
+    text-align: left;
   }
   .source-grid {
     grid-template-columns: 1fr;
