@@ -1,7 +1,14 @@
-import { useMemo, useState } from 'react';
-import type { Pioneer, Relationship } from '../data/types';
+import { useMemo, useState } from "react";
+import type { Pioneer, Relationship } from "../data/types";
 
-type GraphPortrait = { src: string; nationality: { flag: string; label: string; note: string } };
+type GraphPortrait = {
+  src: string;
+  objectPosition?: string;
+  objectScale?: number;
+  transformOrigin?: string;
+  nationality: { flag: string; label: string; note: string };
+};
+
 type Props = {
   pioneers: Pioneer[];
   relationships: Relationship[];
@@ -9,43 +16,119 @@ type Props = {
   baseUrl: string;
 };
 
-const verticalPositions: Record<string, number> = {
-  dewey: 27, thorndike: 69, vygotsky: 43, skinner: 77, bloom: 57, gagne: 18,
-  bruner: 37, bandura: 79, merrill: 27, keller: 63, papert: 47, mayer: 78
+const currentYear = new Date().getFullYear();
+const laneCount = 8;
+const axisPadding = { left: 4.5, right: 4.5 };
+
+const confidenceLabel: Record<Relationship["confidence"], string> = {
+  documented: "직접 기록됨",
+  "scholarly-consensus": "학술적 합의",
+  contested: "해석적 연결",
 };
 
-const birthAxis = { start: 1850, end: 1950, left: 7.5, right: 92.5 };
-const birthTicks = [1850, 1870, 1890, 1910, 1930, 1950];
-const lifeYears = (life: string) => {
-  const years = life.match(/\d{4}/g)?.map(Number) ?? [];
-  return { birth: years[0], death: years[1] ?? null };
-};
-const yearToX = (year: number) => Number((birthAxis.left + ((year - birthAxis.start) / (birthAxis.end - birthAxis.start)) * (birthAxis.right - birthAxis.left)).toFixed(2));
-
-const confidenceLabel: Record<Relationship['confidence'], string> = {
-  documented: '직접 기록됨',
-  'scholarly-consensus': '학술적 합의',
-  contested: '해석적 연결'
+const layerLabel: Record<Relationship["layer"] | "all", string> = {
+  all: "전체 연결",
+  lineage: "사상 계보",
+  comparison: "개념 비교",
 };
 
-export default function RelationshipGraph({ pioneers, relationships, portraits, baseUrl }: Props) {
+const getAnchorYear = (pioneer: Pioneer) =>
+  pioneer.birthYear ?? Math.min(...pioneer.timeline.map((event) => event.year));
+
+export default function RelationshipGraph({
+  pioneers,
+  relationships,
+  portraits,
+  baseUrl,
+}: Props) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [filter, setFilter] = useState('전체');
-  const pioneerById = useMemo(() => Object.fromEntries(pioneers.map((pioneer) => [pioneer.id, pioneer])), [pioneers]);
-  const positions = useMemo(() => Object.fromEntries(pioneers.map((pioneer) => {
-    const { birth } = lifeYears(pioneer.life);
-    return [pioneer.id, { x: yearToX(birth), y: verticalPositions[pioneer.id] ?? 50 }];
-  })), [pioneers]);
-  const types = useMemo(() => ['전체', ...Array.from(new Set(relationships.map((relationship) => relationship.type)))], [relationships]);
-  const visible = useMemo(() => filter === '전체' ? relationships : relationships.filter((relationship) => relationship.type === filter), [filter, relationships]);
-  const active = visible.find((relationship) => relationship.id === activeId) ?? null;
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Relationship["layer"] | "all">("all");
+
+  const pioneerById = useMemo(
+    () => Object.fromEntries(pioneers.map((pioneer) => [pioneer.id, pioneer])),
+    [pioneers],
+  );
+
+  const axis = useMemo(() => {
+    const knownBirths = pioneers
+      .map((pioneer) => pioneer.birthYear)
+      .filter((year): year is number => year !== null);
+    const knownDeaths = pioneers
+      .map((pioneer) => pioneer.deathYear)
+      .filter((year): year is number => year !== null);
+    const start = Math.floor((Math.min(...knownBirths) - 5) / 10) * 10;
+    const end =
+      Math.ceil((Math.max(currentYear, ...knownDeaths) + 4) / 10) * 10;
+    const tickStep = end - start > 160 ? 20 : 10;
+    const ticks = Array.from(
+      { length: Math.floor((end - start) / tickStep) + 1 },
+      (_, index) => start + index * tickStep,
+    );
+    return { start, end, ticks };
+  }, [pioneers]);
+
+  const yearToX = (year: number) =>
+    axisPadding.left +
+    ((year - axis.start) / (axis.end - axis.start)) *
+      (100 - axisPadding.left - axisPadding.right);
+
+  const positions = useMemo(() => {
+    const laneLastYear = Array.from({ length: laneCount }, () => -Infinity);
+    const ordered = [...pioneers].sort(
+      (a, b) =>
+        getAnchorYear(a) - getAnchorYear(b) || a.nameEn.localeCompare(b.nameEn),
+    );
+
+    return Object.fromEntries(
+      ordered.map((pioneer) => {
+        const anchorYear = getAnchorYear(pioneer);
+        const lane = laneLastYear.indexOf(Math.min(...laneLastYear));
+        laneLastYear[lane] = anchorYear;
+        return [
+          pioneer.id,
+          {
+            x: yearToX(anchorYear),
+            y: 10.5 + lane * 11.1,
+            anchorYear,
+            estimatedAnchor: pioneer.birthYear === null,
+          },
+        ];
+      }),
+    ) as Record<
+      string,
+      { x: number; y: number; anchorYear: number; estimatedAnchor: boolean }
+    >;
+  }, [pioneers, axis.start, axis.end]);
+
+  const visible = useMemo(
+    () =>
+      filter === "all"
+        ? relationships
+        : relationships.filter((relationship) => relationship.layer === filter),
+    [filter, relationships],
+  );
+  const active =
+    visible.find((relationship) => relationship.id === activeId) ?? null;
   const selectedPioneer = selectedNodeId ? pioneerById[selectedNodeId] : null;
-  const selectedLifespan = selectedPioneer ? lifeYears(selectedPioneer.life) : null;
   const selectedRelationships = selectedNodeId
-    ? visible.filter((relationship) => relationship.source === selectedNodeId || relationship.target === selectedNodeId)
+    ? visible.filter(
+        (relationship) =>
+          relationship.source === selectedNodeId ||
+          relationship.target === selectedNodeId,
+      )
     : [];
-  const selectedNeighborIds = new Set(selectedRelationships.flatMap((relationship) => [relationship.source, relationship.target]));
+  const selectedNeighborIds = new Set(
+    selectedRelationships.flatMap((relationship) => [
+      relationship.source,
+      relationship.target,
+    ]),
+  );
+  const lifespanPioneer = pioneerById[hoveredNodeId ?? selectedNodeId ?? ""];
+  const lifespanPosition = lifespanPioneer
+    ? positions[lifespanPioneer.id]
+    : null;
 
   const clearSelection = () => {
     setActiveId(null);
@@ -63,112 +146,396 @@ export default function RelationshipGraph({ pioneers, relationships, portraits, 
     if (!keepNode) setSelectedNodeId(null);
   };
 
-  return <div className="graph-app">
-    <div className="graph-toolbar">
-      <div className="graph-filter-label">관계 유형</div>
-      <div className="graph-filters" role="tablist" aria-label="관계 유형 필터">
-        {types.map((type) => <button key={type} type="button" className={filter === type ? 'selected' : ''} onClick={() => { setFilter(type); clearSelection(); }} role="tab" aria-selected={filter === type}>{type}</button>)}
-      </div>
-      <span className="graph-count">{visible.length} connections</span>
-    </div>
-    <div className="graph-canvas" aria-label="교육공학 선구자 관계도">
-      <div className="graph-time-axis" aria-hidden="true">
-        <span className="graph-axis-title">BIRTH YEAR / 출생연도</span>
-        {birthTicks.map((year) => <span key={year} className="graph-time-tick" style={{ left: `${yearToX(year)}%` }}><b>{year}</b></span>)}
-      </div>
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="graph-lines" aria-hidden="true">
-        {visible.map((relationship) => {
-          const source = positions[relationship.source];
-          const target = positions[relationship.target];
-          const isActive = active?.id === relationship.id;
-          const isRelated = !active && Boolean(selectedNodeId) && (relationship.source === selectedNodeId || relationship.target === selectedNodeId);
-          const isDimmed = Boolean(active || selectedNodeId) && !isActive && !isRelated;
-          return <line
-            key={relationship.id}
-            x1={source.x}
-            y1={source.y}
-            x2={target.x}
-            y2={target.y}
-            className={`${isActive ? 'active' : ''} ${isRelated ? 'related' : ''} ${isDimmed ? 'dimmed' : ''}`}
-            style={{ '--edge-accent': selectedPioneer?.accent ?? pioneerById[relationship.source].accent } as React.CSSProperties}
-          />;
-        })}
-      </svg>
-      {pioneers.map((pioneer) => {
-        const pos = positions[pioneer.id];
-        const portrait = portraits[pioneer.id];
-        const lifespan = lifeYears(pioneer.life);
-        const lifespanEnd = lifespan.death ?? '현재';
-        const isSelected = !active && selectedNodeId === pioneer.id;
-        const isConnected = active
-          ? active.source === pioneer.id || active.target === pioneer.id
-          : Boolean(selectedNodeId) && selectedNeighborIds.has(pioneer.id) && !isSelected;
-        const isDimmed = Boolean(active || selectedNodeId) && !isSelected && !isConnected;
-        return <button
-          key={pioneer.id}
-          type="button"
-          className={`graph-node ${isSelected ? 'selected' : ''} ${isConnected ? 'connected' : ''} ${isDimmed ? 'dimmed' : ''}`}
-          style={{ left: `${pos.x}%`, top: `${pos.y}%`, '--node-accent': pioneer.accent } as React.CSSProperties}
-          onClick={() => selectNode(pioneer.id)}
-          aria-label={`${pioneer.nameKo}, ${pioneer.nameEn}. 생애 ${lifespan.birth}년부터 ${lifespanEnd}${lifespan.death ? '년' : ''}까지. 연결 관계 보기`}
-          aria-pressed={isSelected}
+  return (
+    <div className="graph-app">
+      <div className="graph-toolbar">
+        <div className="graph-filter-label">관계 레이어</div>
+        <div
+          className="graph-filters"
+          role="tablist"
+          aria-label="관계 레이어 필터"
         >
-          <span className="graph-node-ring">
-            {portrait
-              ? <img src={`${baseUrl}${portrait.src}`} alt="" draggable={false} />
-              : <span>{pioneer.initials}</span>}
-          </span>
-          {portrait && <span className="nationality-badge is-compact graph-nationality" title={portrait.nationality.note} aria-label={`국적: ${portrait.nationality.label}`}><b aria-hidden="true">{portrait.nationality.flag}</b></span>}
-          <span className="graph-node-label">{pioneer.nameKo}</span>
-          <span className="graph-lifespan" aria-hidden="true"><b>{lifespan.birth}</b><i></i><b>{lifespanEnd}</b></span>
-        </button>;
-      })}
-      {!active && !selectedPioneer && <div className="graph-hint">마우스 오버: 생애 · 클릭: 직접 연결</div>}
-    </div>
-    <div className={`graph-detail ${active || selectedPioneer ? 'has-selection' : ''}`} aria-live="polite">
-      {active ? <>
-        <div className="detail-kicker"><span className="relation-pill">{active.type}</span><span>{confidenceLabel[active.confidence]}</span></div>
-        <h3>{pioneerById[active.source].nameKo} <span>→</span> {pioneerById[active.target].nameKo}</h3>
-        <p className="detail-label">{active.label}</p><p>{active.description}</p>
-        <div className="detail-sources">근거 출처 {active.sourceIds.map((id) => <span key={id}>{id}</span>)}</div>
-        <div className="detail-links"><a href={`${baseUrl}pioneers/${pioneerById[active.source].slug}/`}>{pioneerById[active.source].nameKo} 읽기 ↗</a><a href={`${baseUrl}pioneers/${pioneerById[active.target].slug}/`}>{pioneerById[active.target].nameKo} 읽기 ↗</a></div>
-        <div className="graph-detail-actions">
-          {selectedPioneer && <button type="button" onClick={() => setActiveId(null)}>← {selectedPioneer.nameKo}의 전체 연결</button>}
-          <button type="button" onClick={clearSelection}>선택 해제</button>
+          {(["all", "lineage", "comparison"] as const).map((layer) => (
+            <button
+              key={layer}
+              type="button"
+              className={filter === layer ? "selected" : ""}
+              onClick={() => {
+                setFilter(layer);
+                clearSelection();
+              }}
+              role="tab"
+              aria-selected={filter === layer}
+            >
+              {layerLabel[layer]}
+            </button>
+          ))}
         </div>
-      </> : selectedPioneer ? <div className="graph-person-detail">
-        <div className="graph-person-summary">
-          <span className="graph-person-photo-wrap">
-            <span className="graph-person-photo" style={{ '--node-accent': selectedPioneer.accent } as React.CSSProperties}>
-              {portraits[selectedPioneer.id]
-                ? <img src={`${baseUrl}${portraits[selectedPioneer.id]!.src}`} alt="" />
-                : selectedPioneer.initials}
+        <span className="graph-legend">
+          <i className="lineage" />
+          계보 <i className="comparison" />
+          비교
+        </span>
+        <span className="graph-count">{visible.length} connections</span>
+      </div>
+
+      <div className="graph-scroll">
+        <div className="graph-canvas" aria-label="교육공학 선구자 관계도">
+          <div className="graph-time-axis" aria-hidden="true">
+            <span className="graph-axis-title">
+              YEAR / 초상은 출생연도 · 생년 미확인 인물은 첫 확인 경력 연도
             </span>
-            {portraits[selectedPioneer.id] && <span className="nationality-badge graph-person-nationality" title={portraits[selectedPioneer.id]!.nationality.note} aria-label={`국적: ${portraits[selectedPioneer.id]!.nationality.label}`}><b aria-hidden="true">{portraits[selectedPioneer.id]!.nationality.flag}</b><small>{portraits[selectedPioneer.id]!.nationality.label}</small></span>}
-          </span>
-          <div>
-            <div className="detail-kicker">SELECTED PIONEER · {selectedRelationships.length} CONNECTIONS</div>
-            <h3>{selectedPioneer.nameKo}</h3>
-            <p className="detail-label">{selectedPioneer.nameEn} · {selectedLifespan?.birth}—{selectedLifespan?.death ?? '현재'}</p>
-            <p>{selectedPioneer.thesis}</p>
-            <div className="detail-links"><a href={`${baseUrl}pioneers/${selectedPioneer.slug}/`}>인물 상세 읽기 ↗</a></div>
+            {axis.ticks.map((year) => (
+              <span
+                key={year}
+                className="graph-time-tick"
+                style={{ left: `${yearToX(year)}%` }}
+              >
+                <b>{year}</b>
+              </span>
+            ))}
           </div>
+
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="graph-lines"
+            aria-hidden="true"
+          >
+            {visible.map((relationship) => {
+              const source = positions[relationship.source];
+              const target = positions[relationship.target];
+              const isActive = active?.id === relationship.id;
+              const isRelated =
+                !active &&
+                Boolean(selectedNodeId) &&
+                (relationship.source === selectedNodeId ||
+                  relationship.target === selectedNodeId);
+              const isDimmed =
+                Boolean(active || selectedNodeId) && !isActive && !isRelated;
+              return (
+                <line
+                  key={relationship.id}
+                  x1={source.x}
+                  y1={source.y}
+                  x2={target.x}
+                  y2={target.y}
+                  className={`${relationship.layer} ${isActive ? "active" : ""} ${isRelated ? "related" : ""} ${isDimmed ? "dimmed" : ""}`}
+                  style={
+                    {
+                      "--edge-accent":
+                        selectedPioneer?.accent ??
+                        pioneerById[relationship.source].accent,
+                    } as React.CSSProperties
+                  }
+                />
+              );
+            })}
+          </svg>
+
+          {lifespanPioneer?.birthYear && lifespanPosition && (
+            <div
+              className="graph-life-range"
+              style={
+                {
+                  left: `${yearToX(lifespanPioneer.birthYear)}%`,
+                  top: `${lifespanPosition.y}%`,
+                  width: `${Math.max(
+                    1,
+                    yearToX(lifespanPioneer.deathYear ?? currentYear) -
+                      yearToX(lifespanPioneer.birthYear),
+                  )}%`,
+                  "--life-color": lifespanPioneer.accent,
+                } as React.CSSProperties
+              }
+              aria-hidden="true"
+            >
+              <span>{lifespanPioneer.birthYear}</span>
+              <i />
+              <span>{lifespanPioneer.deathYear ?? currentYear}</span>
+            </div>
+          )}
+
+          {pioneers.map((pioneer) => {
+            const pos = positions[pioneer.id];
+            const portrait = portraits[pioneer.id];
+            const isSelected = !active && selectedNodeId === pioneer.id;
+            const isConnected = active
+              ? active.source === pioneer.id || active.target === pioneer.id
+              : Boolean(selectedNodeId) &&
+                selectedNeighborIds.has(pioneer.id) &&
+                !isSelected;
+            const isDimmed =
+              Boolean(active || selectedNodeId) && !isSelected && !isConnected;
+            const lifeText = pioneer.birthYear
+              ? `${pioneer.birthYear}—${pioneer.deathYear ?? "현재"}`
+              : "생몰연도 공개 전거 미확인";
+
+            return (
+              <button
+                key={pioneer.id}
+                type="button"
+                className={`graph-node ${isSelected ? "selected" : ""} ${isConnected ? "connected" : ""} ${isDimmed ? "dimmed" : ""} ${pos.estimatedAnchor ? "estimated-anchor" : ""}`}
+                style={
+                  {
+                    left: `${pos.x}%`,
+                    top: `${pos.y}%`,
+                    "--node-accent": pioneer.accent,
+                  } as React.CSSProperties
+                }
+                onMouseEnter={() => setHoveredNodeId(pioneer.id)}
+                onMouseLeave={() => setHoveredNodeId(null)}
+                onFocus={() => setHoveredNodeId(pioneer.id)}
+                onBlur={() => setHoveredNodeId(null)}
+                onClick={() => selectNode(pioneer.id)}
+                aria-label={`${pioneer.nameKo}, ${pioneer.nameEn}. ${lifeText}. 연결 관계 보기`}
+                aria-pressed={isSelected}
+              >
+                <span className="graph-node-ring">
+                  {portrait ? (
+                    <img
+                      src={`${baseUrl}${portrait.src}`}
+                      alt=""
+                      draggable={false}
+                      style={{
+                        objectPosition: portrait.objectPosition,
+                        transform: portrait.objectScale
+                          ? `scale(${portrait.objectScale})`
+                          : undefined,
+                        transformOrigin: portrait.transformOrigin,
+                      }}
+                    />
+                  ) : (
+                    <span>{pioneer.initials}</span>
+                  )}
+                </span>
+                {portrait && (
+                  <span
+                    className="nationality-badge is-compact graph-nationality"
+                    title={portrait.nationality.note}
+                    aria-label={`국적: ${portrait.nationality.label}`}
+                  >
+                    <b aria-hidden="true">{portrait.nationality.flag}</b>
+                  </span>
+                )}
+                <span className="graph-node-label">{pioneer.nameKo}</span>
+                <span className="graph-node-years">{lifeText}</span>
+                <span className="graph-lifespan" aria-hidden="true">
+                  {pioneer.birthYear ? (
+                    <>
+                      <b>{pioneer.birthYear}</b>
+                      <i />
+                      <b>{pioneer.deathYear ?? "현재"}</b>
+                    </>
+                  ) : (
+                    <b>생몰연도 공개 전거 미확인</b>
+                  )}
+                </span>
+              </button>
+            );
+          })}
+          {!active && !selectedPioneer && (
+            <div className="graph-hint">
+              마우스 오버: 생애선 · 클릭: 직접 연결
+            </div>
+          )}
         </div>
-        <div className="graph-node-relations" aria-label={`${selectedPioneer.nameKo}의 직접 연결`}>
-          {selectedRelationships.length > 0
-            ? selectedRelationships.map((relationship) => {
-              const counterpartId = relationship.source === selectedPioneer.id ? relationship.target : relationship.source;
-              return <button key={relationship.id} type="button" onClick={() => selectRelationship(relationship.id, true)}>
-                <span>{relationship.type}</span>
-                <strong>{pioneerById[counterpartId].nameKo}</strong>
-                <small>{relationship.label} →</small>
-              </button>;
-            })
-            : <p>선택한 유형에 해당하는 직접 연결이 없습니다.</p>}
-        </div>
-        <button className="graph-clear-selection" type="button" onClick={clearSelection}>선택 해제</button>
-      </div> : <div className="graph-detail-empty"><span>01</span><p>초상을 선택하면 해당 인물과 직접 이어진 선·인물·관계 근거를 한 번에 확인할 수 있습니다.</p></div>}
+      </div>
+
+      <div
+        className={`graph-detail ${active || selectedPioneer ? "has-selection" : ""}`}
+        aria-live="polite"
+      >
+        {active ? (
+          <>
+            <div className="detail-kicker">
+              <span className="relation-pill">
+                {layerLabel[active.layer]} · {active.type}
+              </span>
+              <span>{confidenceLabel[active.confidence]}</span>
+            </div>
+            <h3>
+              {pioneerById[active.source].nameKo}{" "}
+              <span>{active.layer === "lineage" ? "→" : "↔"}</span>{" "}
+              {pioneerById[active.target].nameKo}
+            </h3>
+            <p className="detail-label">{active.label}</p>
+            <p>{active.description}</p>
+            <div className="detail-sources">
+              근거 출처{" "}
+              {active.sourceIds.map((id) => (
+                <span key={id}>{id}</span>
+              ))}
+            </div>
+            <div className="detail-links">
+              <a
+                href={`${baseUrl}pioneers/${pioneerById[active.source].slug}/`}
+              >
+                {pioneerById[active.source].nameKo} 읽기 ↗
+              </a>
+              <a
+                href={`${baseUrl}pioneers/${pioneerById[active.target].slug}/`}
+              >
+                {pioneerById[active.target].nameKo} 읽기 ↗
+              </a>
+            </div>
+            <div className="graph-detail-actions">
+              {selectedPioneer && (
+                <button type="button" onClick={() => setActiveId(null)}>
+                  ← {selectedPioneer.nameKo}의 전체 연결
+                </button>
+              )}
+              <button type="button" onClick={clearSelection}>
+                선택 해제
+              </button>
+            </div>
+          </>
+        ) : selectedPioneer ? (
+          <div className="graph-person-detail">
+            <div className="graph-person-summary">
+              <span className="graph-person-photo-wrap">
+                <span
+                  className="graph-person-photo"
+                  style={
+                    {
+                      "--node-accent": selectedPioneer.accent,
+                    } as React.CSSProperties
+                  }
+                >
+                  {portraits[selectedPioneer.id] ? (
+                    <img
+                      src={`${baseUrl}${portraits[selectedPioneer.id]!.src}`}
+                      alt=""
+                      style={{
+                        objectPosition:
+                          portraits[selectedPioneer.id]!.objectPosition,
+                        transform: portraits[selectedPioneer.id]!.objectScale
+                          ? `scale(${portraits[selectedPioneer.id]!.objectScale})`
+                          : undefined,
+                        transformOrigin:
+                          portraits[selectedPioneer.id]!.transformOrigin,
+                      }}
+                    />
+                  ) : (
+                    selectedPioneer.initials
+                  )}
+                </span>
+                {portraits[selectedPioneer.id] && (
+                  <span
+                    className="nationality-badge graph-person-nationality"
+                    title={portraits[selectedPioneer.id]!.nationality.note}
+                    aria-label={`국적: ${portraits[selectedPioneer.id]!.nationality.label}`}
+                  >
+                    <b aria-hidden="true">
+                      {portraits[selectedPioneer.id]!.nationality.flag}
+                    </b>
+                    <small>
+                      {portraits[selectedPioneer.id]!.nationality.label}
+                    </small>
+                  </span>
+                )}
+              </span>
+              <div>
+                <div className="detail-kicker">
+                  SELECTED PIONEER · {selectedRelationships.length} CONNECTIONS
+                </div>
+                <h3>{selectedPioneer.nameKo}</h3>
+                <p className="detail-label">
+                  {selectedPioneer.nameEn} · {selectedPioneer.life}
+                </p>
+                <p>{selectedPioneer.thesis}</p>
+                <div className="detail-links">
+                  <a href={`${baseUrl}pioneers/${selectedPioneer.slug}/`}>
+                    인물 상세 읽기 ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div
+              className="graph-node-relations"
+              aria-label={`${selectedPioneer.nameKo}의 직접 연결`}
+            >
+              {selectedRelationships.length > 0 ? (
+                selectedRelationships.map((relationship) => {
+                  const counterpartId =
+                    relationship.source === selectedPioneer.id
+                      ? relationship.target
+                      : relationship.source;
+                  return (
+                    <button
+                      key={relationship.id}
+                      type="button"
+                      onClick={() => selectRelationship(relationship.id, true)}
+                    >
+                      <span>{layerLabel[relationship.layer]}</span>
+                      <strong>{pioneerById[counterpartId].nameKo}</strong>
+                      <small>{relationship.label} →</small>
+                    </button>
+                  );
+                })
+              ) : (
+                <p>선택한 레이어에 해당하는 직접 연결이 없습니다.</p>
+              )}
+            </div>
+            <button
+              className="graph-clear-selection"
+              type="button"
+              onClick={clearSelection}
+            >
+              선택 해제
+            </button>
+          </div>
+        ) : (
+          <div className="graph-detail-empty">
+            <span>01</span>
+            <p>
+              초상을 선택하면 해당 인물과 직접 이어진 선·인물·관계 근거를 한
+              번에 확인할 수 있습니다.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="graph-table-wrap">
+        <table className="graph-table">
+          <caption className="sr-only">교육공학 선구자 관계 목록</caption>
+          <thead>
+            <tr>
+              <th>연결</th>
+              <th>레이어·유형</th>
+              <th>핵심 문장</th>
+              <th>근거</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((relationship) => (
+              <tr
+                key={relationship.id}
+                className={active?.id === relationship.id ? "selected" : ""}
+              >
+                <td>
+                  <button
+                    type="button"
+                    aria-pressed={active?.id === relationship.id}
+                    onClick={() => selectRelationship(relationship.id)}
+                  >
+                    {pioneerById[relationship.source].nameKo}{" "}
+                    {relationship.layer === "lineage" ? "→" : "↔"}{" "}
+                    {pioneerById[relationship.target].nameKo}
+                  </button>
+                </td>
+                <td>
+                  <span className="relation-pill">
+                    {layerLabel[relationship.layer]} · {relationship.type}
+                  </span>
+                </td>
+                <td>{relationship.label}</td>
+                <td>{relationship.sourceIds.length} sources</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div className="graph-table-wrap"><table className="graph-table"><caption className="sr-only">교육공학 선구자 관계 목록</caption><thead><tr><th>연결</th><th>유형</th><th>핵심 문장</th><th>근거</th></tr></thead><tbody>{visible.map((relationship) => <tr key={relationship.id} className={active?.id === relationship.id ? 'selected' : ''}><td><button type="button" aria-pressed={active?.id === relationship.id} onClick={() => selectRelationship(relationship.id)}>{pioneerById[relationship.source].nameKo} → {pioneerById[relationship.target].nameKo}</button></td><td><span className="relation-pill">{relationship.type}</span></td><td>{relationship.label}</td><td>{relationship.sourceIds.length} sources</td></tr>)}</tbody></table></div>
-  </div>;
+  );
 }

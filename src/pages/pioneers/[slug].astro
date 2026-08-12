@@ -13,12 +13,13 @@ const sourceCount = pioneer.sourceIds.length;
 const index = pioneers.findIndex((item) => item.id === pioneer.id) + 1;
 const related = pioneers.filter((item) => item.id !== pioneer.id && item.domains.some((domain) => pioneer.domains.includes(domain))).slice(0, 4);
 const portrait = portraitById[pioneer.id];
+const portraitStyle = portrait ? [portrait.objectPosition && `object-position:${portrait.objectPosition}`, portrait.objectScale && `transform:scale(${portrait.objectScale})`, portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`].filter(Boolean).join(';') : undefined;
 const biography = biographyById[pioneer.id] ?? [];
 ---
 <BaseLayout title={`${pioneer.nameKo} — ${pioneer.nameEn}`} description={pioneer.summary}>
   <article>
     <section class="profile-hero" style={`--profile-accent:${pioneer.accent}`}><div class="shell"><div class="profile-top"><div class:list={["profile-portrait", { 'has-photo': portrait }]} aria-label={portrait?.alt ?? `${pioneer.nameKo} 검증된 사진 미확보`}>
-      {portrait ? <img src={`${base}${portrait.src}`} alt={portrait.alt} /> : <><span class="profile-photo-missing">VERIFIED<br />PHOTO<br />NOT FOUND</span><span class="portrait-initials">{pioneer.initials}</span></>}
+      {portrait ? <img src={`${base}${portrait.src}`} alt={portrait.alt} style={portraitStyle} /> : <><span class="profile-photo-missing">VERIFIED<br />PHOTO<br />NOT FOUND</span><span class="portrait-initials">{pioneer.initials}</span></>}
       <span class="profile-index">PIONEER / {String(index).padStart(2, '0')}</span>
       <NationalityBadge pioneerId={pioneer.id} className="profile-nationality" />
       {portrait && <a class="profile-photo-verification" href={portrait.verification.url} target="_blank" rel="noreferrer" title={portrait.verification.basis}>신원 검증 · {portrait.verification.authority} ↗</a>}

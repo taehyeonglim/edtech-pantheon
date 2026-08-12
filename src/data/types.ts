@@ -1,4 +1,4 @@
-export type SourceTier = 'A' | 'B' | 'C';
+export type SourceTier = "A" | "B" | "C";
 
 export type Source = {
   id: string;
@@ -26,6 +26,8 @@ export type Pioneer = {
   nameKo: string;
   nameEn: string;
   initials: string;
+  birthYear: number | null;
+  deathYear: number | null;
   life: string;
   role: string;
   era: string;
@@ -46,6 +48,9 @@ export type Pioneer = {
 export type Portrait = {
   src: string;
   alt: string;
+  objectPosition?: string;
+  objectScale?: number;
+  transformOrigin?: string;
   credit: string;
   license: string;
   sourceUrl: string;
@@ -77,6 +82,7 @@ export type Relationship = {
   type: string;
   label: string;
   description: string;
-  confidence: 'documented' | 'scholarly-consensus' | 'contested';
+  layer: "lineage" | "comparison";
+  confidence: "documented" | "scholarly-consensus" | "contested";
   sourceIds: string[];
 };

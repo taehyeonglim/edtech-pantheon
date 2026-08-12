@@ -43,7 +43,7 @@ const portraitAudit = pioneers.map((pioneer) => ({
         <p>초상은 공개 라이선스 자료를 우선하며, 없을 때는 대학·학술 인터뷰·본인 연구자 프로필처럼 인물 식별 근거가 분명한 기록으로 범위를 한정합니다. 상세 페이지에는 원본 출처·저작자·권리 상태를 그대로 표시하며, 권리가 명시되지 않은 사진을 공개 라이선스로 오인하지 않도록 구분합니다.</p>
         <p>신원 감사에서는 ① 출처가 붙인 인물명, ② 촬영 시점과 생몰연도의 양립 가능성, ③ 당시 소속·행사 맥락, ④ 별도의 대학·기념재단·전문 아카이브 사진과 얼굴 일치를 차례로 확인합니다. 한 항목이라도 충돌하면 사진을 사용하지 않습니다.</p>
         <h2>초상 신원 감사</h2>
-        <p class="portrait-audit-intro">12명 전원의 원본·권리 정보와 별도의 신원 대조 근거입니다. 국적 표기는 {nationalityCheckedOn}에 기관 약력과 전기 자료로 다시 확인했으며, 복수·역사적 국적은 단일 국가로 축약하지 않았습니다.</p>
+        <p class="portrait-audit-intro">{pioneers.length}명 전원의 원본·권리 정보와 별도의 신원 대조 근거입니다. 국적 표기는 {nationalityCheckedOn}에 기관 약력과 전기 자료로 다시 확인했으며, 복수·역사적 국적은 단일 국가로 축약하지 않았습니다.</p>
         <div class="portrait-audit-list">
           {portraitAudit.map(({ pioneer, portrait, nationality }) => portrait && (
             <article class="portrait-audit-item">

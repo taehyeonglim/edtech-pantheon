@@ -4,33 +4,38 @@ import CitationList from '../../components/CitationList.astro';
 import { pioneers } from '../../data/pioneers';
 const base = `${import.meta.env.BASE_URL}/`;
 const events = pioneers.flatMap((pioneer) => pioneer.timeline.map((event) => ({ ...event, pioneer }))).sort((a, b) => a.year - b.year);
-const timelineStart = events[0]?.year;
-const timelineEnd = events[events.length - 1]?.year;
+const timelineStart = events[0]?.year ?? 1898;
+const timelineEnd = events[events.length - 1]?.year ?? new Date().getFullYear();
 const eras = [
   {
-    id: 'foundations', start: 1898, end: 1957, label: 'FOUNDATIONS',
-    title: '실험·경험·행동의 기초',
-    description: '측정, 경험, 문화, 행동을 둘러싼 서로 다른 학습의 기초 언어가 등장한 구간.'
+    id: 'foundations', start: timelineStart, end: 1939, label: 'FOUNDATIONS',
+    title: '실험·경험·발달의 기초',
+    description: '측정, 경험, 발달, 문화와 자동화된 학습을 둘러싼 기초 언어가 등장한 구간.'
   },
   {
-    id: 'formation', start: 1960, end: 1985, label: 'FORMATION',
-    title: '인지·사회·설계의 형성',
-    description: '교육과정, 사회학습, 학습 조건과 교수설계가 구체적인 모형으로 조직된 구간.'
+    id: 'formation', start: 1940, end: 1969, label: 'FORMATION',
+    title: '목표·행동·인지의 형성',
+    description: '교육목표, 프로그램 학습, 학습 조건과 인지적 표상이 설계 언어로 조직된 구간.'
   },
   {
-    id: 'integration', start: 1987, end: 2013, label: 'INTEGRATION',
-    title: '동기·디지털·통합의 확장',
-    description: '동기설계, 구성주의 컴퓨팅, 멀티미디어와 문제 중심 설계가 확장된 구간.'
+    id: 'systems', start: 1970, end: 1994, label: 'SYSTEMS & CONTEXT',
+    title: '체제·맥락·구성의 확장',
+    description: '체제적 교수설계, 상황학습, 인지부하와 구성주의 학습환경이 서로 다른 축으로 확장된 구간.'
+  },
+  {
+    id: 'integration', start: 1995, end: timelineEnd, label: 'INTEGRATION',
+    title: '디지털·문제·통합의 시대',
+    description: '멀티미디어, 문제 중심 설계와 설계·개발 연구가 디지털 학습 환경에서 통합된 구간.'
   }
 ].map((era) => ({ ...era, events: events.filter((event) => event.year >= era.start && event.year <= era.end) }));
 ---
 <BaseLayout title="통합 연표">
-  <section class="page-hero"><div class="shell"><div class="eyebrow">THE TIMELINE / {timelineStart}—{timelineEnd}</div><h1>한 세기의<br /><em style="color:var(--gold-light);font-style:normal">학습 실험</em></h1><p>인물의 생애만 나열하지 않고, 주요 저작과 개념이 교육공학의 언어를 어떻게 바꾸었는지 시간의 흐름으로 읽습니다.</p><div class="hero-meta"><span><b>{events.length}</b> DOCUMENTED EVENTS</span><span><b>{eras.length}</b> EDITORIAL ERAS</span><span><b>3</b> COLUMN VIEW</span></div></div></section>
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE TIMELINE / {timelineStart}—{timelineEnd}</div><h1>한 세기의<br /><em style="color:var(--gold-light);font-style:normal">학습 실험</em></h1><p>인물의 생애만 나열하지 않고, 주요 저작과 개념이 교육공학의 언어를 어떻게 바꾸었는지 시간의 흐름으로 읽습니다.</p><div class="hero-meta"><span><b>{events.length}</b> DOCUMENTED EVENTS</span><span><b>{eras.length}</b> EDITORIAL ERAS</span><span><b>{eras.length}</b> CONNECTED COLUMNS</span></div></div></section>
   <section class="section timeline-page">
     <div class="shell">
       <div class="timeline-intro">
         <p>연표는 “누가 먼저였는가”를 가리는 순위표가 아닙니다. 같은 시대에 서로 다른 질문이 어떻게 등장했고, 후대의 연구자가 어떤 언어를 이어받았는지 보기 위한 탐색 장치입니다.</p>
-        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 아래 세 구간은 공식 시대 구분이 아니라 시간선을 여러 열로 읽기 위한 편집적 묶음이며, 각 이벤트의 근거는 연결된 출처에서 확인할 수 있습니다.</div>
+        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 아래 네 구간은 공식 시대 구분이 아니라 하나의 시간선을 여러 열로 이어 읽기 위한 편집적 묶음이며, 각 이벤트의 근거는 연결된 출처에서 확인할 수 있습니다.</div>
       </div>
       <div class="timeline-columns">
         {eras.map((era, eraIndex) => (

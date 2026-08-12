@@ -2,10 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PioneerCard from '../../components/PioneerCard.astro';
 import { pioneers } from '../../data/pioneers';
+const domains = [...new Set(pioneers.flatMap((pioneer) => pioneer.domains))].sort((a, b) => a.localeCompare(b, 'ko'));
+const eventYears = pioneers.flatMap((pioneer) => pioneer.timeline.map((event) => event.year));
+const timelineStart = Math.min(...eventYears);
+const timelineEnd = Math.max(...eventYears);
 ---
 <BaseLayout title="선구자 목록">
-  <section class="page-hero"><div class="shell"><div class="eyebrow">THE HALL / INDEX</div><h1>선구자 목록</h1><p>교육공학의 이론·설계·동기·디지털 학습을 만든 12명의 지적 초상. 이름, 원어, 시대, 핵심 영역으로 검색하세요.</p><div class="hero-meta"><span><b>12</b> PIONEERS</span><span><b>5</b> DOMAINS</span><span><b>1916—2005</b> TIMELINE</span></div></div></section>
-  <section class="section"><div class="shell"><div class="filter-bar" data-filter-bar><button class="filter-button active" data-filter="all">전체</button><button class="filter-button" data-filter="교수설계">교수설계</button><button class="filter-button" data-filter="학습과학">학습과학</button><button class="filter-button" data-filter="사회문화학습">사회문화학습</button><button class="filter-button" data-filter="동기">동기</button><button class="filter-button" data-filter="디지털 학습">디지털 학습</button><input type="search" placeholder="이름 또는 개념 검색" aria-label="이름 또는 개념 검색" data-search /><span class="filter-count" data-count>12 results</span></div><div class="pioneer-grid" data-card-grid>{pioneers.map((pioneer) => <PioneerCard pioneer={pioneer} />)}</div><div class="empty-state" data-empty>검색 결과가 없습니다. 다른 이름이나 개념을 입력해 보세요.</div></div></section>
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE HALL / INDEX</div><h1>선구자 목록</h1><p>교육공학의 학습이론·설계·미디어·동기·디지털 학습을 만든 {pioneers.length}명의 지적 초상. 이름, 원어, 시대, 핵심 영역으로 검색하세요.</p><div class="hero-meta"><span><b>{pioneers.length}</b> PIONEERS</span><span><b>{domains.length}</b> DOMAINS</span><span><b>{timelineStart}—{timelineEnd}</b> TIMELINE</span></div></div></section>
+  <section class="section"><div class="shell"><div class="filter-bar" data-filter-bar><button class="filter-button active" data-filter="all">전체</button>{domains.map((domain) => <button class="filter-button" data-filter={domain}>{domain}</button>)}<input type="search" placeholder="이름 또는 개념 검색" aria-label="이름 또는 개념 검색" data-search /><span class="filter-count" data-count>{pioneers.length} results</span></div><div class="pioneer-grid" data-card-grid>{pioneers.map((pioneer) => <PioneerCard pioneer={pioneer} />)}</div><div class="empty-state" data-empty>검색 결과가 없습니다. 다른 이름이나 개념을 입력해 보세요.</div></div></section>
   <script>
     const bar = document.querySelector('[data-filter-bar]');
     const cards = [...document.querySelectorAll('[data-pioneer-card]')] as HTMLElement[];
