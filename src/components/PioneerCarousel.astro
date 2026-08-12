@@ -1,0 +1,159 @@
+---
+import type { Pioneer } from '../data/types';
+import { portraitById } from '../data/portraits';
+import NationalityBadge from './NationalityBadge.astro';
+
+const { pioneers } = Astro.props as { pioneers: Pioneer[] };
+const base = `${import.meta.env.BASE_URL}/`;
+---
+
+<div class="hall-carousel" data-hall-carousel>
+  <div class="hall-carousel-chrome">
+    <div class="hall-carousel-progress" aria-hidden="true">
+      <span data-hall-progress></span>
+    </div>
+    <p class="hall-carousel-status" aria-live="polite" data-hall-status>
+      01–03 / {String(pioneers.length).padStart(2, '0')}
+    </p>
+    <div class="hall-carousel-controls">
+      <button type="button" data-hall-prev aria-label="이전 인물 묶음" aria-controls="hall-pioneer-reel">
+        <span aria-hidden="true">←</span>
+      </button>
+      <button type="button" data-hall-next aria-label="다음 인물 묶음" aria-controls="hall-pioneer-reel">
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="hall-carousel-track"
+    id="hall-pioneer-reel"
+    data-hall-track
+    tabindex="0"
+    role="region"
+    aria-roledescription="캐러셀"
+    aria-label="교육공학 선구자 명예의전당"
+  >
+    {pioneers.map((pioneer, index) => {
+      const portrait = portraitById[pioneer.id];
+      const number = String(index + 1).padStart(2, '0');
+
+      return (
+        <a
+          class="hall-slide"
+          href={`${base}pioneers/${pioneer.slug}/`}
+          data-hall-slide
+          aria-roledescription="슬라이드"
+          aria-label={`${index + 1} / ${pioneers.length}: ${pioneer.nameKo}`}
+          style={`--accent:${pioneer.accent}`}
+        >
+          <div class:list={["hall-slide-portrait", { 'has-photo': portrait }]}>
+            {portrait ? (
+              <>
+                <img
+                  class="hall-slide-backdrop"
+                  src={`${base}${portrait.src}`}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                />
+                <img
+                  class="hall-slide-image"
+                  src={`${base}${portrait.src}`}
+                  alt={portrait.alt}
+                  loading={index < 3 ? 'eager' : 'lazy'}
+                />
+              </>
+            ) : (
+              <span class="hall-slide-initials" aria-hidden="true">{pioneer.initials}</span>
+            )}
+            <span class="hall-slide-number">{number}</span>
+            <NationalityBadge pioneerId={pioneer.id} className="hall-slide-nationality" />
+          </div>
+          <div class="hall-slide-body">
+            <div class="hall-slide-meta">
+              <span>{pioneer.era}</span>
+              <span>{pioneer.life}</span>
+            </div>
+            <h3>{pioneer.nameKo}</h3>
+            <p class="hall-slide-name">{pioneer.nameEn}</p>
+            <p class="hall-slide-thesis">{pioneer.thesis}</p>
+            <span class="hall-slide-link">기록 읽기 <b aria-hidden="true">↗</b></span>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+
+  <p class="hall-carousel-hint">버튼·방향키·스와이프로 인물을 넘겨보세요.</p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hall-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector<HTMLElement>('[data-hall-track]');
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-hall-slide]'));
+    const previous = carousel.querySelector<HTMLButtonElement>('[data-hall-prev]');
+    const next = carousel.querySelector<HTMLButtonElement>('[data-hall-next]');
+    const status = carousel.querySelector<HTMLElement>('[data-hall-status]');
+    const progress = carousel.querySelector<HTMLElement>('[data-hall-progress]');
+
+    if (!track || !slides.length || !previous || !next || !status || !progress) return;
+
+    let activeIndex = 0;
+    let frame = 0;
+
+    const visibleCount = () => {
+      const first = slides[0];
+      const second = slides[1];
+      if (!first) return 1;
+      const step = second ? second.offsetLeft - first.offsetLeft : first.offsetWidth;
+      return Math.max(1, Math.round(track.clientWidth / Math.max(step, 1)));
+    };
+
+    const maxStart = () => Math.max(0, slides.length - visibleCount());
+
+    const update = () => {
+      const trackLeft = track.getBoundingClientRect().left;
+      activeIndex = slides.reduce((nearest, slide, index) => {
+        const currentDistance = Math.abs(slides[nearest].getBoundingClientRect().left - trackLeft);
+        const nextDistance = Math.abs(slide.getBoundingClientRect().left - trackLeft);
+        return nextDistance < currentDistance ? index : nearest;
+      }, 0);
+      activeIndex = Math.min(activeIndex, maxStart());
+
+      const start = activeIndex + 1;
+      const end = Math.min(slides.length, activeIndex + visibleCount());
+      const format = (value: number) => String(value).padStart(2, '0');
+      status.textContent = `${format(start)}–${format(end)} / ${format(slides.length)}`;
+      progress.style.transform = `scaleX(${end / slides.length})`;
+      previous.disabled = activeIndex === 0;
+      next.disabled = end >= slides.length;
+    };
+
+    const goTo = (index: number) => {
+      const targetIndex = Math.min(Math.max(index, 0), maxStart());
+      const target = slides[targetIndex];
+      const left = target.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+      track.scrollTo({ left, behavior: 'smooth' });
+    };
+
+    previous.addEventListener('click', () => goTo(activeIndex - visibleCount()));
+    next.addEventListener('click', () => goTo(activeIndex + visibleCount()));
+    track.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goTo(activeIndex - 1);
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goTo(activeIndex + 1);
+      }
+    });
+    track.addEventListener('scroll', () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  });
+</script>

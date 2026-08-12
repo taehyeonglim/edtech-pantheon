@@ -320,6 +320,253 @@ p {
 .paper .section-link {
   color: #a36d27;
 }
+.hall-view-all {
+  display: block;
+  width: fit-content;
+  margin: 12px 0 0 auto;
+  color: #8b5d20;
+  font: 10px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hall-carousel {
+  position: relative;
+  border-top: 1px solid rgba(20, 42, 43, 0.28);
+  border-bottom: 1px solid rgba(20, 42, 43, 0.28);
+}
+.hall-carousel-chrome {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto auto;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(20, 42, 43, 0.18);
+}
+.hall-carousel-progress {
+  width: min(100%, 280px);
+  height: 2px;
+  overflow: hidden;
+  background: rgba(20, 42, 43, 0.15);
+}
+.hall-carousel-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #9c6928;
+  transform: scaleX(0.125);
+  transform-origin: left center;
+  transition: transform 0.35s ease;
+}
+.hall-carousel-status {
+  color: #6d7770;
+  font: 10px var(--mono);
+  letter-spacing: 0.08em;
+}
+.hall-carousel-controls {
+  display: flex;
+  align-self: stretch;
+}
+.hall-carousel-controls button {
+  width: 58px;
+  border: 0;
+  border-left: 1px solid rgba(20, 42, 43, 0.18);
+  background: transparent;
+  color: var(--navy);
+  font: 22px/1 var(--sans);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.hall-carousel-controls button:hover:not(:disabled) {
+  background: var(--navy);
+  color: var(--paper);
+}
+.hall-carousel-controls button:disabled {
+  color: rgba(20, 42, 43, 0.22);
+  cursor: default;
+}
+.hall-carousel-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 36px) / 3);
+  gap: 18px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 24px 0 20px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.hall-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+.hall-slide {
+  display: grid;
+  grid-template-rows: 338px 1fr;
+  min-width: 0;
+  min-height: 570px;
+  overflow: hidden;
+  color: #f1eee5;
+  background: var(--navy-2);
+  border: 1px solid rgba(20, 42, 43, 0.24);
+  scroll-snap-align: start;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.hall-slide:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 30px rgba(20, 42, 43, 0.16);
+}
+.hall-slide-portrait {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 75% 25%,
+      color-mix(in srgb, var(--accent) 65%, transparent),
+      transparent 38%
+    ),
+    linear-gradient(145deg, #1c3030, #0e1719);
+}
+.hall-slide-portrait::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 16, 18, 0.1) 35%,
+      rgba(9, 16, 18, 0.72) 100%
+    ),
+    linear-gradient(90deg, rgba(9, 16, 18, 0.22), transparent 35%);
+  pointer-events: none;
+}
+.hall-slide-backdrop,
+.hall-slide-image {
+  position: absolute;
+  display: block;
+}
+.hall-slide-backdrop {
+  z-index: 0;
+  inset: -22px;
+  width: calc(100% + 44px);
+  height: calc(100% + 44px);
+  object-fit: cover;
+  filter: blur(20px) saturate(0.65);
+  opacity: 0.34;
+  transform: scale(1.08);
+}
+.hall-slide-image {
+  z-index: 1;
+  inset: 18px 14px 20px;
+  width: calc(100% - 28px);
+  height: calc(100% - 38px);
+  object-fit: contain;
+  object-position: center;
+  filter: grayscale(0.08) contrast(1.03);
+  transition:
+    filter 0.3s ease,
+    transform 0.45s ease;
+}
+.hall-slide:hover .hall-slide-image {
+  filter: grayscale(0) contrast(1.03);
+  transform: scale(1.015);
+}
+.hall-slide-initials {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #eee8db;
+  font: 600 84px/1 var(--serif);
+  letter-spacing: -0.08em;
+}
+.hall-slide-number {
+  position: absolute;
+  z-index: 3;
+  top: 19px;
+  left: 20px;
+  color: #f0c879;
+  font: 10px var(--mono);
+  letter-spacing: 0.12em;
+}
+.hall-slide-number::after {
+  content: "";
+  display: inline-block;
+  width: 42px;
+  height: 1px;
+  margin: 0 0 3px 10px;
+  background: rgba(240, 200, 121, 0.62);
+}
+.hall-slide-nationality {
+  position: absolute;
+  z-index: 3;
+  right: 18px;
+  bottom: 16px;
+}
+.hall-slide-body {
+  position: relative;
+  padding: 22px 23px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hall-slide-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 13px;
+  color: var(--gold-light);
+  font: 9px var(--mono);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.hall-slide-body h3 {
+  margin: 0;
+  font: 600 32px/1.05 var(--serif);
+  letter-spacing: -0.04em;
+}
+.hall-slide-name {
+  margin: 5px 0 0;
+  color: #9faaa6;
+  font: 9px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hall-slide-thesis {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 17px 0 30px;
+  color: #c5ceca;
+  font-size: 12px;
+  line-height: 1.7;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.hall-slide-link {
+  position: absolute;
+  right: 22px;
+  bottom: 19px;
+  color: var(--gold-light);
+  font: 9px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hall-slide-link b {
+  margin-left: 5px;
+  font-size: 15px;
+}
+.hall-carousel-hint {
+  margin: 0;
+  padding: 0 0 16px;
+  color: #7a827d;
+  font: 9px var(--mono);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
 .pioneer-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2406,6 +2653,12 @@ p {
   .pioneer-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .hall-carousel-track {
+    grid-auto-columns: calc((100% - 18px) / 2);
+  }
+  .hall-slide {
+    grid-template-rows: 330px 1fr;
+  }
   .profile-layout {
     grid-template-columns: 1fr;
     gap: 45px;
@@ -2477,6 +2730,37 @@ p {
   .section-head .section-note {
     text-align: left;
     margin-top: 12px;
+  }
+  .hall-view-all {
+    margin: 12px 0 0;
+  }
+  .hall-carousel-chrome {
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+  }
+  .hall-carousel-progress {
+    width: 100%;
+  }
+  .hall-carousel-controls button {
+    width: 48px;
+  }
+  .hall-carousel-track {
+    grid-auto-columns: 87%;
+    gap: 12px;
+    padding-top: 16px;
+  }
+  .hall-slide {
+    grid-template-rows: 305px 1fr;
+    min-height: 535px;
+  }
+  .hall-slide-body {
+    padding: 19px 18px 22px;
+  }
+  .hall-slide-body h3 {
+    font-size: 29px;
+  }
+  .hall-carousel-hint {
+    text-align: left;
   }
   .pioneer-grid {
     grid-template-columns: 1fr 1fr;
