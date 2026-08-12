@@ -1771,7 +1771,7 @@ p {
 .graph-canvas {
   width: 100%;
   min-width: 1180px;
-  height: 1040px;
+  height: 1560px;
   position: relative;
   border: 1px solid var(--line);
   background:
@@ -1803,31 +1803,34 @@ p {
 .graph-time-axis::after {
   content: "";
   position: absolute;
-  left: 7.5%;
-  right: 7.5%;
-  bottom: 31px;
-  height: 1px;
+  top: 5.5%;
+  bottom: 5.5%;
+  left: 57px;
+  width: 1px;
   background: rgba(213, 161, 91, 0.65);
 }
 .graph-axis-title {
   position: absolute;
-  left: 16px;
-  bottom: 7px;
+  top: 14px;
+  left: 72px;
+  padding: 5px 7px;
+  background: rgba(13, 21, 23, 0.82);
   color: var(--dim);
   font: 8px var(--mono);
   letter-spacing: 0.1em;
 }
 .graph-time-tick {
   position: absolute;
-  top: 0;
-  bottom: 31px;
-  border-left: 1px solid rgba(213, 161, 91, 0.1);
+  right: 0;
+  left: 57px;
+  height: 1px;
+  border-top: 1px solid rgba(213, 161, 91, 0.1);
 }
 .graph-time-tick::after {
   content: "";
   position: absolute;
+  top: -3px;
   left: -2px;
-  bottom: -3px;
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -1835,9 +1838,10 @@ p {
 }
 .graph-time-tick b {
   position: absolute;
-  left: 0;
-  bottom: -22px;
-  transform: translateX(-50%);
+  top: -5px;
+  left: -48px;
+  width: 39px;
+  text-align: right;
   color: #879188;
   font: 8px var(--mono);
   font-weight: 400;
@@ -2054,11 +2058,9 @@ p {
 .graph-life-range {
   position: absolute;
   z-index: 1;
-  display: grid;
-  grid-template-columns: auto minmax(18px, 1fr) auto;
-  align-items: center;
-  gap: 7px;
-  transform: translateY(-1px);
+  width: 3px;
+  min-height: 24px;
+  transform: translateX(-1px);
   pointer-events: none;
   filter: drop-shadow(
     0 0 4px color-mix(in srgb, var(--life-color) 65%, transparent)
@@ -2066,15 +2068,15 @@ p {
   animation: graph-life-in 0.18s ease-out;
 }
 .graph-life-range i {
-  height: 3px;
-  position: relative;
+  position: absolute;
+  inset: 0;
   background: color-mix(in srgb, var(--life-color) 76%, var(--gold-light));
 }
 .graph-life-range i::before,
 .graph-life-range i::after {
   content: "";
   position: absolute;
-  top: -4px;
+  left: -4px;
   width: 11px;
   height: 11px;
   border: 2px solid var(--gold-light);
@@ -2082,28 +2084,36 @@ p {
   background: var(--navy);
 }
 .graph-life-range i::before {
-  left: 0;
+  top: 0;
 }
 .graph-life-range i::after {
-  right: 0;
+  bottom: 0;
 }
 .graph-life-range span {
-  position: relative;
+  position: absolute;
+  left: 12px;
   z-index: 2;
   padding: 3px 5px;
   color: var(--gold-light);
   background: rgba(8, 15, 17, 0.94);
   font: 8px var(--mono);
+  white-space: nowrap;
+}
+.graph-life-range span:first-child {
+  top: -8px;
+}
+.graph-life-range span:last-child {
+  bottom: -8px;
 }
 @keyframes graph-life-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateX(4px);
   }
 }
 .graph-hint {
   position: absolute;
-  top: 14px;
+  bottom: 14px;
   right: 16px;
   z-index: 3;
   padding: 5px 7px;
@@ -3295,7 +3305,7 @@ p {
     margin: 0;
   }
   .graph-canvas {
-    height: 1040px;
+    height: 1560px;
   }
   .timeline-era-legend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3535,7 +3545,7 @@ p {
     margin-top: 10px;
   }
   .graph-canvas {
-    height: 1040px;
+    height: 1560px;
   }
   .graph-node {
     transform: translate(-50%, -24px);

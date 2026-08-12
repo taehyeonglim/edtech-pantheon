@@ -18,7 +18,7 @@ type Props = {
 
 const currentYear = new Date().getFullYear();
 const laneCount = 8;
-const axisPadding = { left: 4.5, right: 4.5 };
+const axisPadding = { top: 5.5, bottom: 5.5 };
 
 const confidenceLabel: Record<Relationship["confidence"], string> = {
   documented: "직접 기록됨",
@@ -69,10 +69,10 @@ export default function RelationshipGraph({
     return { start, end, ticks };
   }, [pioneers]);
 
-  const yearToX = (year: number) =>
-    axisPadding.left +
+  const yearToY = (year: number) =>
+    axisPadding.top +
     ((year - axis.start) / (axis.end - axis.start)) *
-      (100 - axisPadding.left - axisPadding.right);
+      (100 - axisPadding.top - axisPadding.bottom);
 
   const positions = useMemo(() => {
     const laneLastYear = Array.from({ length: laneCount }, () => -Infinity);
@@ -89,8 +89,8 @@ export default function RelationshipGraph({
         return [
           pioneer.id,
           {
-            x: yearToX(anchorYear),
-            y: 10.5 + lane * 11.1,
+            x: 11.5 + lane * 11.05,
+            y: yearToY(anchorYear),
             anchorYear,
             estimatedAnchor: pioneer.birthYear === null,
           },
@@ -183,13 +183,13 @@ export default function RelationshipGraph({
         <div className="graph-canvas" aria-label="교육공학 선구자 관계도">
           <div className="graph-time-axis" aria-hidden="true">
             <span className="graph-axis-title">
-              YEAR / 초상은 출생연도 · 생년 미확인 인물은 첫 확인 경력 연도
+              YEAR ↓ / 초상은 출생연도 · 생년 미확인 인물은 첫 확인 경력 연도
             </span>
             {axis.ticks.map((year) => (
               <span
                 key={year}
                 className="graph-time-tick"
-                style={{ left: `${yearToX(year)}%` }}
+                style={{ top: `${yearToY(year)}%` }}
               >
                 <b>{year}</b>
               </span>
@@ -238,12 +238,12 @@ export default function RelationshipGraph({
               className="graph-life-range"
               style={
                 {
-                  left: `${yearToX(lifespanPioneer.birthYear)}%`,
-                  top: `${lifespanPosition.y}%`,
-                  width: `${Math.max(
+                  left: `${lifespanPosition.x}%`,
+                  top: `${yearToY(lifespanPioneer.birthYear)}%`,
+                  height: `${Math.max(
                     1,
-                    yearToX(lifespanPioneer.deathYear ?? currentYear) -
-                      yearToX(lifespanPioneer.birthYear),
+                    yearToY(lifespanPioneer.deathYear ?? currentYear) -
+                      yearToY(lifespanPioneer.birthYear),
                   )}%`,
                   "--life-color": lifespanPioneer.accent,
                 } as React.CSSProperties
@@ -336,7 +336,7 @@ export default function RelationshipGraph({
           })}
           {!active && !selectedPioneer && (
             <div className="graph-hint">
-              마우스 오버: 생애선 · 클릭: 직접 연결
+              마우스 오버: 세로 생애선 · 클릭: 직접 연결
             </div>
           )}
         </div>

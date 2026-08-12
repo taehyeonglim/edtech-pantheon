@@ -17,6 +17,6 @@ const graphPortraits = Object.fromEntries(pioneers.map((pioneer) => {
 }));
 ---
 <BaseLayout title="관계도">
-  <section class="page-hero"><div class="shell"><div class="eyebrow">THE MAP / RELATIONSHIPS</div><h1>사상은<br />서로를 통과한다.</h1><p>직접 계보와 개념 비교를 같은 선으로 뭉개지 않습니다. 초상은 출생연도에 놓이고, 마우스를 올리면 사망연도 또는 현재까지의 생애선이 시간축 위에 펼쳐집니다. 생년 전거가 없는 인물은 첫 확인 경력 연도에 점선 테두리로 배치합니다.</p><div class="hero-meta"><span><b>{relationships.length}</b> DOCUMENTED CONNECTIONS</span><span><b>{pioneers.length}</b> NODES</span><span><b>2</b> EVIDENCE LAYERS</span><span><b>{axisStart}—{axisEnd}</b> LIFE AXIS</span></div></div></section>
+  <section class="page-hero"><div class="shell"><div class="eyebrow">THE MAP / RELATIONSHIPS</div><h1>사상은<br />서로를 통과한다.</h1><p>직접 계보와 개념 비교를 같은 선으로 뭉개지 않습니다. 세로축은 위에서 아래로 흐르는 연도이며, 초상은 출생연도에 놓입니다. 마우스를 올리면 사망연도 또는 현재까지의 생애선이 아래 방향으로 펼쳐집니다. 생년 전거가 없는 인물은 첫 확인 경력 연도에 점선 테두리로 배치합니다.</p><div class="hero-meta"><span><b>{relationships.length}</b> DOCUMENTED CONNECTIONS</span><span><b>{pioneers.length}</b> NODES</span><span><b>2</b> EVIDENCE LAYERS</span><span><b>{axisStart}—{axisEnd}</b> VERTICAL LIFE AXIS</span></div></div></section>
   <section class="section graph-page"><div class="shell"><RelationshipGraph client:load pioneers={pioneers} relationships={relationships} portraits={graphPortraits} baseUrl={base} /></div></section>
 </BaseLayout>
