@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CitationList from '../../components/CitationList.astro';
 import { pioneers } from '../../data/pioneers';
+import { portraitById } from '../../data/portraits';
 const base = `${import.meta.env.BASE_URL}/`;
 const events = pioneers.flatMap((pioneer) => pioneer.timeline.map((event) => ({ ...event, pioneer }))).sort((a, b) => a.year - b.year);
 const timelineStart = events[0]?.year ?? 1898;
@@ -49,18 +50,42 @@ const eras = [
               <span class="timeline-era-count">{era.events.length} EVENTS</span>
             </header>
             <ol class="timeline-track">
-              {era.events.map((event) => (
-                <li class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
-                  <div class="global-event-top">
-                    <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
-                    <span>{event.pioneer.school}</span>
-                  </div>
-                  <h3>{event.label}</h3>
-                  <p>{event.description}</p>
-                  <div class="event-person"><span aria-hidden="true"></span><a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a><small>{event.pioneer.nameEn}</small></div>
-                  <CitationList ids={event.sourceIds} compact />
-                </li>
-              ))}
+              {era.events.map((event) => {
+                const portrait = portraitById[event.pioneer.id];
+                const portraitStyle = portrait ? [
+                  portrait.objectPosition && `object-position:${portrait.objectPosition}`,
+                  portrait.objectScale && `transform:scale(${portrait.objectScale})`,
+                  portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`
+                ].filter(Boolean).join(';') : undefined;
+
+                return (
+                  <li class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
+                    <div class="global-event-top">
+                      <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
+                      <span>{event.pioneer.school}</span>
+                    </div>
+                    <h3>{event.label}</h3>
+                    <p>{event.description}</p>
+                    <div class="event-person">
+                      <a
+                        class:list={["event-person-portrait", { 'has-photo': portrait }]}
+                        href={`${base}pioneers/${event.pioneer.slug}/`}
+                        aria-label={`${event.pioneer.nameKo} 상세 기록`}
+                        title={event.pioneer.nameKo}
+                      >
+                        {portrait
+                          ? <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={portraitStyle} />
+                          : <span aria-hidden="true">{event.pioneer.initials}</span>}
+                      </a>
+                      <div class="event-person-name">
+                        <a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a>
+                        <small>{event.pioneer.nameEn}</small>
+                      </div>
+                    </div>
+                    <CitationList ids={event.sourceIds} compact />
+                  </li>
+                );
+              })}
             </ol>
             <footer class="timeline-era-footer">
               {eraIndex < eras.length - 1
