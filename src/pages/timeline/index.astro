@@ -8,24 +8,19 @@ const timelineStart = events[0]?.year;
 const timelineEnd = events[events.length - 1]?.year;
 const eras = [
   {
-    id: 'foundations', start: 1898, end: 1939, label: 'FOUNDATIONS',
-    title: '관찰·측정과 경험',
-    description: '실험심리학, 경험 중심 교육, 문화역사적 접근이 각자의 기초 언어를 세운 시기.'
+    id: 'foundations', start: 1898, end: 1957, label: 'FOUNDATIONS',
+    title: '실험·경험·행동의 기초',
+    description: '측정, 경험, 문화, 행동을 둘러싼 서로 다른 학습의 기초 언어가 등장한 구간.'
   },
   {
-    id: 'formation', start: 1940, end: 1969, label: 'FORMATION',
-    title: '수업 이론의 체계화',
-    description: '행동, 목표, 학습 조건, 인지 구조가 수업 설계를 위한 모형으로 조직된 시기.'
+    id: 'formation', start: 1960, end: 1985, label: 'FORMATION',
+    title: '인지·사회·설계의 형성',
+    description: '교육과정, 사회학습, 학습 조건과 교수설계가 구체적인 모형으로 조직된 구간.'
   },
   {
-    id: 'expansion', start: 1970, end: 1989, label: 'EXPANSION',
-    title: '인지·사회·설계의 확장',
-    description: '사회적 학습, 구성, 동기, 교수설계가 서로 다른 설계 언어로 확장된 시기.'
-  },
-  {
-    id: 'integration', start: 1990, end: 2013, label: 'INTEGRATION',
-    title: '디지털 학습과 통합',
-    description: '멀티미디어, 문제 중심 설계, 개정 모형이 디지털 학습 환경과 만난 시기.'
+    id: 'integration', start: 1987, end: 2013, label: 'INTEGRATION',
+    title: '동기·디지털·통합의 확장',
+    description: '동기설계, 구성주의 컴퓨팅, 멀티미디어와 문제 중심 설계가 확장된 구간.'
   }
 ].map((era) => ({ ...era, events: events.filter((event) => event.year >= era.start && event.year <= era.end) }));
 ---
@@ -35,23 +30,22 @@ const eras = [
     <div class="shell">
       <div class="timeline-intro">
         <p>연표는 “누가 먼저였는가”를 가리는 순위표가 아닙니다. 같은 시대에 서로 다른 질문이 어떻게 등장했고, 후대의 연구자가 어떤 언어를 이어받았는지 보기 위한 탐색 장치입니다.</p>
-        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 아래 네 구간은 공식 시대 구분이 아니라 동시대 사건을 함께 읽기 위한 편집적 묶음이며, 각 이벤트의 근거는 연결된 출처에서 확인할 수 있습니다.</div>
+        <div class="method-note">연도는 저작의 초판·발표 연도를 우선합니다. 아래 세 구간은 공식 시대 구분이 아니라 시간선을 여러 열로 읽기 위한 편집적 묶음이며, 각 이벤트의 근거는 연결된 출처에서 확인할 수 있습니다.</div>
       </div>
-      <div class="timeline-eras">
+      <div class="timeline-columns">
         {eras.map((era, eraIndex) => (
           <section class="timeline-era" aria-labelledby={`era-${era.id}`}>
             <header class="timeline-era-header">
-              <div class="timeline-era-number">{String(eraIndex + 1).padStart(2, '0')}</div>
-              <div>
-                <div class="timeline-era-kicker">{era.label} · {era.start}—{era.end}</div>
-                <h2 id={`era-${era.id}`}>{era.title}</h2>
-              </div>
+              <div class="timeline-era-number">PERIOD {String(eraIndex + 1).padStart(2, '0')}</div>
+              <div class="timeline-era-kicker">{era.label}</div>
+              <h2 id={`era-${era.id}`}>{era.title}</h2>
+              <div class="timeline-era-range">{era.start}<span aria-hidden="true">→</span>{era.end}</div>
               <p>{era.description}</p>
               <span class="timeline-era-count">{era.events.length} EVENTS</span>
             </header>
-            <div class="timeline-event-grid">
+            <ol class="timeline-track">
               {era.events.map((event) => (
-                <article class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
+                <li class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
                   <div class="global-event-top">
                     <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
                     <span>{event.pioneer.school}</span>
@@ -60,9 +54,14 @@ const eras = [
                   <p>{event.description}</p>
                   <div class="event-person"><span aria-hidden="true"></span><a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a><small>{event.pioneer.nameEn}</small></div>
                   <CitationList ids={event.sourceIds} compact />
-                </article>
+                </li>
               ))}
-            </div>
+            </ol>
+            <footer class="timeline-era-footer">
+              {eraIndex < eras.length - 1
+                ? <><span>NEXT PERIOD</span><strong>{eras[eraIndex + 1].start} →</strong></>
+                : <><span>ARCHIVE ENDPOINT</span><strong>{era.end}</strong></>}
+            </footer>
           </section>
         ))}
       </div>
