@@ -75,6 +75,10 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .pioneer-card { display: flex; flex-direction: column; min-height: 420px; background: var(--navy-2); border: 1px solid var(--line); transition: transform .3s, border-color .3s, box-shadow .3s; }
 .pioneer-card:hover { transform: translateY(-7px); border-color: var(--gold); box-shadow: 0 17px 35px rgba(0,0,0,.2); }
 .card-portrait { height: 188px; position: relative; overflow: hidden; background: radial-gradient(circle at 78% 26%, color-mix(in srgb, var(--accent) 70%, transparent), transparent 31%), linear-gradient(135deg, #162526, #0f181b); }
+.card-portrait.has-photo { background: #172426; }
+.card-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; filter: grayscale(.12) contrast(1.04); opacity: .88; transition: transform .55s, opacity .3s; }
+.pioneer-card:hover .card-portrait img { transform: scale(1.04); opacity: 1; }
+.card-portrait.has-photo::after { content: ''; position: absolute; inset: 0; width: auto; height: auto; right: auto; top: auto; border: 0; transform: none; opacity: 1; background: linear-gradient(180deg, transparent 38%, rgba(10,18,20,.84) 100%); }
 .card-portrait::before { content: ''; width: 152px; height: 152px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--accent) 80%, white); position: absolute; right: -23px; top: 15px; opacity: .58; }
 .card-portrait::after { content: ''; width: 94px; height: 94px; border: 1px solid color-mix(in srgb, var(--accent) 72%, white); position: absolute; right: 35px; top: 45px; transform: rotate(45deg); opacity: .3; }
 .portrait-grid { position: absolute; inset: 0; opacity: .15; background-image: linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px); background-size: 25px 25px; mask-image: linear-gradient(120deg, black, transparent 80%); }
@@ -130,12 +134,19 @@ h1, h2, h3, h4, p { margin-top: 0; }
 
 .profile-hero { padding: 74px 0 64px; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 85% 20%, rgba(213,161,91,.07), transparent 30%); }
 .profile-top { display: grid; grid-template-columns: 210px 1fr; gap: 42px; align-items: end; }
-.profile-portrait { height: 230px; position: relative; background: linear-gradient(140deg, #1a2d2c, #0b1315); border: 1px solid color-mix(in srgb, var(--profile-accent) 64%, transparent); overflow: hidden; }
+.profile-portrait { height: 280px; position: relative; background: linear-gradient(140deg, #1a2d2c, #0b1315); border: 1px solid color-mix(in srgb, var(--profile-accent) 64%, transparent); overflow: hidden; }
+.profile-portrait.has-photo { background: #172426; }
+.profile-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; filter: grayscale(.08) contrast(1.04); }
+.profile-portrait.has-photo::before { z-index: 1; pointer-events: none; }
+.profile-portrait.has-photo::after { z-index: 1; pointer-events: none; inset: 0; border: 0; background: linear-gradient(180deg, transparent 35%, rgba(10,18,20,.8) 100%); }
 .profile-portrait::before { content: ''; position: absolute; width: 198px; height: 198px; right: -38px; top: 15px; border: 1px solid color-mix(in srgb, var(--profile-accent) 80%, white); border-radius: 50%; box-shadow: 0 0 0 25px rgba(255,255,255,.02), 0 0 0 50px rgba(255,255,255,.018); }
 .profile-portrait::after { content: ''; position: absolute; inset: 16px; border: 1px solid rgba(255,255,255,.1); }
 .profile-portrait span { position: absolute; z-index: 1; }
 .profile-portrait .portrait-initials { left: 19px; bottom: 23px; font-size: 78px; }
 .profile-portrait .profile-index { top: 23px; left: 20px; color: var(--gold); font: 10px var(--mono); }
+.profile-photo-missing { position: absolute; left: 20px; bottom: 23px; color: var(--gold-light); font: 10px/1.25 var(--mono); letter-spacing: .12em; z-index: 2; }
+.profile-photo-credit { position: absolute; right: 13px; bottom: 11px; z-index: 3; max-width: 85%; color: rgba(240,235,223,.76); font: 8px/1.25 var(--mono); text-align: right; }
+.profile-photo-credit:hover { color: var(--gold-light); }
 .profile-hero h1 { font: 600 clamp(45px, 7vw, 88px)/.92 var(--serif); letter-spacing: -.065em; margin: 15px 0 9px; }
 .profile-name-en { font: 14px var(--mono); color: var(--gold-light); margin-bottom: 17px; }
 .profile-role { color: var(--muted); margin-bottom: 18px; }
@@ -149,6 +160,10 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .quote-card p { color: var(--paper); font: 500 21px/1.55 var(--serif); margin: 0 0 15px; }
 .quote-card small { display: block; color: var(--dim); font-size: 10px; margin: -4px 0 14px; }
 .content-block { padding: 42px 0; border-top: 1px solid var(--line); }
+.biography-block { padding-top: 0; border-top: 0; }
+.bio-section { padding: 20px 0 24px; border-bottom: 1px solid rgba(218,226,216,.08); max-width: 760px; }
+.bio-section h3 { color: var(--paper); font: 500 22px/1.2 var(--serif); margin: 0 0 10px; }
+.bio-section p { margin-bottom: 12px; }
 .content-block h2 { font: 500 31px/1.1 var(--serif); letter-spacing: -.04em; margin-bottom: 22px; }
 .content-block h2 .block-index { font: 10px var(--mono); color: var(--gold); vertical-align: middle; margin-right: 12px; letter-spacing: .08em; }
 .content-block p { color: #c2cbc3; max-width: 700px; font-size: 15px; line-height: 1.95; }

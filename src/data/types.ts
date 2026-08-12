@@ -43,6 +43,20 @@ export type Pioneer = {
   sourceIds: string[];
 };
 
+export type Portrait = {
+  src: string;
+  alt: string;
+  credit: string;
+  license: string;
+  sourceUrl: string;
+};
+
+export type BiographySection = {
+  title: string;
+  body: string;
+  sourceIds: string[];
+};
+
 export type Relationship = {
   id: string;
   source: string;
