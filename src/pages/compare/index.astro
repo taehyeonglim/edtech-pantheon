@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
 import { nationalityById } from '../../data/nationalities';
+import { relationships } from '../../data/relationships';
 const base = `${import.meta.env.BASE_URL}/`;
 const comparePioneers = pioneers.map((pioneer) => {
   const portrait = portraitById[pioneer.id];
@@ -12,6 +13,16 @@ const comparePioneers = pioneers.map((pioneer) => {
     nationality: nationalityById[pioneer.id]
   };
 });
+const domains = [...new Set(pioneers.flatMap((pioneer) => pioneer.domains))].sort((a, b) => a.localeCompare(b, 'ko'));
+const compareRelationships = relationships.map(({ source, target, label, layer, type, confidence }) => ({ source, target, label, layer, type, confidence }));
+const comparisonPresets = [
+  { label: '매체 효과 논쟁', ids: ['clark', 'kozma', 'mayer'] },
+  { label: '상황학습과 인지도제', ids: ['lave', 'brown', 'collins'] },
+  { label: '복합학습 설계', ids: ['merrill', 'sweller', 'merrienboer'] },
+  { label: '지식 표상과 구축', ids: ['novak', 'mayer', 'scardamalia'] },
+  { label: '원격학습과 공동체', ids: ['moore', 'lave', 'wenger'] },
+  { label: '수행공학', ids: ['mager', 'gilbert', 'clark'] }
+];
 ---
 <BaseLayout title="비교실">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE COMPARISON ROOM</div><h1>같은 질문,<br />다른 대답.</h1><p>최대 세 명의 선구자를 선택해 학습관, 교수자의 역할, 설계 원리와 남은 논쟁을 같은 표에서 비교합니다.</p></div></section>
@@ -25,6 +36,27 @@ const comparePioneers = pioneers.map((pioneer) => {
           </div>
           <p class="compare-help" data-compare-status aria-live="polite">0 / 3 선택 · 두 명 이상을 선택하세요.</p>
         </div>
+        <div class="compare-presets" aria-label="추천 비교 조합">
+          <span>RELATION-BASED SETS</span>
+          {comparisonPresets.map((preset) => (
+            <button type="button" data-compare-preset={preset.ids.join('|')}>{preset.label}</button>
+          ))}
+        </div>
+        <div class="compare-filter-bar" data-compare-filter>
+          <label class="compare-search-field">
+            <span>인물·개념 검색</span>
+            <input type="search" placeholder="예: 코즈마, 인지부하, 지식구축" data-compare-search />
+          </label>
+          <label>
+            <span>연구 분야</span>
+            <select data-compare-domain>
+              <option value="all">전체 분야</option>
+              {domains.map((domain) => <option value={domain}>{domain}</option>)}
+            </select>
+          </label>
+          <button type="button" data-compare-clear>선택·필터 초기화</button>
+          <p data-compare-result aria-live="polite">{pioneers.length} / {pioneers.length} PIONEERS</p>
+        </div>
         <div class="compare-roster-grid">
           {comparePioneers.map((pioneer) => {
             const portraitStyle = pioneer.portrait ? [
@@ -37,6 +69,8 @@ const comparePioneers = pioneers.map((pioneer) => {
               <button
                 class="compare-select-card"
                 data-id={pioneer.id}
+                data-search={`${pioneer.nameKo} ${pioneer.nameEn} ${pioneer.school} ${pioneer.domains.join(' ')} ${pioneer.concepts.join(' ')}`.toLocaleLowerCase('ko')}
+                data-domains={pioneer.domains.join('|')}
                 aria-pressed="false"
                 aria-label={`${pioneer.nameKo}, ${pioneer.life}, 비교 대상에 추가`}
                 style={`--person-accent:${pioneer.accent}`}
@@ -65,11 +99,33 @@ const comparePioneers = pioneers.map((pioneer) => {
       <div class="compare-board" data-compare-board><div class="graph-detail-empty"><span>02</span><p>위의 인물 카드에서 두 명 이상을 선택하면 비교표가 열립니다.</p></div></div>
     </div>
   </section>
-  <script is:inline define:vars={{ pioneers: comparePioneers }}>
+  <script is:inline define:vars={{ pioneers: comparePioneers, relationshipData: compareRelationships }}>
     const controls = document.querySelector('[data-compare-controls]');
     const board = document.querySelector('[data-compare-board]');
     const status = document.querySelector('[data-compare-status]');
+    const filterRoot = document.querySelector('[data-compare-filter]');
+    const searchInput = filterRoot?.querySelector('[data-compare-search]');
+    const domainSelect = filterRoot?.querySelector('[data-compare-domain]');
+    const clearButton = filterRoot?.querySelector('[data-compare-clear]');
+    const result = filterRoot?.querySelector('[data-compare-result]');
     const selected = [];
+    const normalize = (value) => value.trim().toLocaleLowerCase('ko');
+    const applyRosterFilters = () => {
+      const query = normalize(searchInput?.value ?? '');
+      const domain = domainSelect?.value ?? 'all';
+      let visibleCount = 0;
+      controls?.querySelectorAll('[data-id]').forEach((card) => {
+        if (!(card instanceof HTMLButtonElement)) return;
+        const domains = card.dataset.domains?.split('|') ?? [];
+        const matches =
+          (!query || card.dataset.search?.includes(query)) &&
+          (domain === 'all' || domains.includes(domain));
+        const keepSelected = selected.includes(card.dataset.id);
+        card.hidden = !matches && !keepSelected;
+        if (!card.hidden) visibleCount += 1;
+      });
+      if (result) result.textContent = `${visibleCount} / ${pioneers.length} PIONEERS`;
+    };
     const updateControls = () => {
       const limitReached = selected.length >= 3;
       controls?.classList.toggle('is-at-limit', limitReached);
@@ -88,16 +144,34 @@ const comparePioneers = pioneers.map((pioneer) => {
           ? `${selected.length} / 3 선택 · ${2 - selected.length}명을 더 선택하세요.`
           : `${selected.length} / 3 선택 · 비교표가 열렸습니다.`;
       }
+      applyRosterFilters();
     };
     const render = () => {
       if (!board) return;
       if (selected.length < 2) { board.innerHTML = '<div class="graph-detail-empty"><span>02</span><p>위의 인물 카드에서 두 명 이상을 선택하면 비교표가 열립니다.</p></div>'; return; }
       const people = selected.map((id) => pioneers.find((p) => p.id === id)).filter(Boolean);
+      const selectedRelationships = relationshipData.filter((relationship) =>
+        selected.includes(relationship.source) && selected.includes(relationship.target)
+      );
+      const relationshipCells = people.map((person) => {
+        const direct = selectedRelationships
+          .filter((relationship) => relationship.source === person.id || relationship.target === person.id)
+          .map((relationship) => {
+            const counterpartId = relationship.source === person.id ? relationship.target : relationship.source;
+            const counterpart = people.find((candidate) => candidate.id === counterpartId);
+            const arrow = relationship.layer === 'lineage' ? '→' : '↔';
+            return `${arrow} ${counterpart?.nameKo ?? counterpartId}<br><small>${relationship.label} · ${relationship.type}</small>`;
+          });
+        return direct.length ? direct.join('<br><br>') : '선택 인물 사이 직접 연결 없음';
+      });
       const rows = [
+        ['생몰·국적', ...people.map((p) => `${p.life}<br>${p.nationality.flag} ${p.nationality.label}`)],
+        ['선택 인물 간 관계', ...relationshipCells],
         ['핵심 명제', ...people.map((p) => p.thesis)],
         ['학습관', ...people.map((p) => p.summary)],
         ['핵심 개념', ...people.map((p) => p.concepts.join(' · '))],
         ['대표 저작', ...people.map((p) => p.works.map((w) => `${w.title} (${w.year})`).join('<br>'))],
+        ['주요 연표', ...people.map((p) => p.timeline.map((event) => `${event.year} · ${event.label}`).join('<br>'))],
         ['시대·학파', ...people.map((p) => `${p.era}<br>${p.school}`)],
       ];
       board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-portrait-wrap"><span class="compare-portrait${p.portrait ? '' : ' is-fallback'}" style="--person-accent:${p.accent}">${p.portrait ? `<img src="${p.portrait.src}" alt="${p.portrait.alt}" draggable="false"${p.portrait.objectPosition || p.portrait.objectScale ? ` style="${p.portrait.objectPosition ? `object-position:${p.portrait.objectPosition};` : ''}${p.portrait.objectScale ? `transform:scale(${p.portrait.objectScale});` : ''}${p.portrait.transformOrigin ? `transform-origin:${p.portrait.transformOrigin};` : ''}"` : ''}>` : p.initials}</span><span class="nationality-badge is-compact compare-nationality" title="${p.nationality.note}" aria-label="국적: ${p.nationality.label}"><b aria-hidden="true">${p.nationality.flag}</b></span></span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
@@ -112,6 +186,25 @@ const comparePioneers = pioneers.map((pioneer) => {
       if (index >= 0) selected.splice(index, 1);
       else if (selected.length < 3) selected.push(id);
       else return;
+      updateControls();
+      render();
+    });
+    document.querySelectorAll('[data-compare-preset]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const ids = button.dataset.comparePreset?.split('|').filter(Boolean) ?? [];
+        selected.splice(0, selected.length, ...ids.slice(0, 3));
+        updateControls();
+        render();
+        board?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    searchInput?.addEventListener('input', applyRosterFilters);
+    domainSelect?.addEventListener('change', applyRosterFilters);
+    clearButton?.addEventListener('click', () => {
+      selected.splice(0, selected.length);
+      if (searchInput) searchInput.value = '';
+      if (domainSelect) domainSelect.value = 'all';
       updateControls();
       render();
     });

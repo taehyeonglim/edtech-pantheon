@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CitationList from '../../components/CitationList.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
+import { nationalityById } from '../../data/nationalities';
 
 const base = `${import.meta.env.BASE_URL}/`;
 const events = pioneers
@@ -17,6 +18,7 @@ const makeYearTicks = (start: number, end: number) => {
   return [...ticks].sort((a, b) => a - b);
 };
 const ticks = makeYearTicks(timelineStart, timelineEnd);
+const domains = [...new Set(pioneers.flatMap((pioneer) => pioneer.domains))].sort((a, b) => a.localeCompare(b, 'ko'));
 const eras = [
   {
     id: 'foundations', start: timelineStart, end: 1939, label: 'FOUNDATIONS',
@@ -54,6 +56,7 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
   index,
   events: events.filter((_, eventIndex) => eventIndex % 4 === index)
 }));
+const getEraId = (year: number) => eras.find((era) => year >= era.start && year <= era.end)?.id ?? eras[eras.length - 1].id;
 ---
 <BaseLayout title="통합 연표">
   <section class="page-hero">
@@ -87,6 +90,38 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
             <p>{era.description}</p>
           </article>
         ))}
+      </div>
+
+      <div class="timeline-filter-bar" data-timeline-filter>
+        <div class="timeline-filter-heading">
+          <span>FOCUS THE ARCHIVE</span>
+          <strong>{events.length}개 기록에서 필요한 흐름만 남기기</strong>
+        </div>
+        <label>
+          <span>인물</span>
+          <select data-timeline-person>
+            <option value="all">전체 {pioneers.length}명</option>
+            {[...pioneers]
+              .sort((a, b) => (a.birthYear ?? 9999) - (b.birthYear ?? 9999) || a.nameKo.localeCompare(b.nameKo, 'ko'))
+              .map((pioneer) => <option value={pioneer.id}>{pioneer.nameKo} · {pioneer.life}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>연구 분야</span>
+          <select data-timeline-domain>
+            <option value="all">전체 분야</option>
+            {domains.map((domain) => <option value={domain}>{domain}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>시대</span>
+          <select data-timeline-era>
+            <option value="all">전체 시대</option>
+            {eras.map((era) => <option value={era.id}>{era.start}—{era.end} · {era.title}</option>)}
+          </select>
+        </label>
+        <button type="button" data-timeline-reset disabled>필터 초기화</button>
+        <p data-timeline-result aria-live="polite">{events.length} / {events.length} EVENTS</p>
       </div>
 
       <p class="timeline-scroll-hint">네 레인은 하나의 세로 연도 눈금에 고정됩니다. 작은 화면에서는 가로로 밀어 전체 레인을 확인하세요.</p>
@@ -139,6 +174,7 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
                 <ol class="timeline-lane" data-timeline-lane>
                   {lane.events.map((event) => {
                     const portrait = portraitById[event.pioneer.id];
+                    const nationality = nationalityById[event.pioneer.id];
                     const portraitStyle = portrait ? [
                       portrait.objectPosition && `object-position:${portrait.objectPosition}`,
                       portrait.objectScale && `transform:scale(${portrait.objectScale})`,
@@ -151,6 +187,9 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
                         class="timeline-lane-event"
                         data-timeline-event
                         data-event-year={event.year}
+                        data-pioneer-id={event.pioneer.id}
+                        data-event-domains={event.pioneer.domains.join('|')}
+                        data-era-id={getEraId(event.year)}
                         style={`--year-position:${yearPosition}%;--anchor-offset:0px;--connector-height:0px`}
                       >
                         <article class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
@@ -161,16 +200,21 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
                           <h3>{event.label}</h3>
                           <p>{event.description}</p>
                           <div class="event-person">
-                            <a
-                              class:list={["event-person-portrait", { 'has-photo': portrait }]}
-                              href={`${base}pioneers/${event.pioneer.slug}/`}
-                              aria-label={`${event.pioneer.nameKo} 상세 기록`}
-                              title={event.pioneer.nameKo}
-                            >
-                              {portrait
-                                ? <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={portraitStyle} />
-                                : <span aria-hidden="true">{event.pioneer.initials}</span>}
-                            </a>
+                            <span class="event-person-portrait-wrap">
+                              <a
+                                class:list={["event-person-portrait", { 'has-photo': portrait }]}
+                                href={`${base}pioneers/${event.pioneer.slug}/`}
+                                aria-label={`${event.pioneer.nameKo} 상세 기록`}
+                                title={event.pioneer.nameKo}
+                              >
+                                {portrait
+                                  ? <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={portraitStyle} />
+                                  : <span aria-hidden="true">{event.pioneer.initials}</span>}
+                              </a>
+                              <span class="nationality-badge is-compact event-person-nationality" title={nationality.note} aria-label={`국적: ${nationality.label}`}>
+                                <b aria-hidden="true">{nationality.flag}</b>
+                              </span>
+                            </span>
                             <div class="event-person-name">
                               <a href={`${base}pioneers/${event.pioneer.slug}/`}>{event.pioneer.nameKo}</a>
                               <small>{event.pioneer.nameEn}</small>
@@ -199,7 +243,14 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
         let maximumBottom = axisHeight;
 
         canvas.querySelectorAll<HTMLElement>('[data-timeline-lane]').forEach((lane) => {
-          const laneEvents = Array.from(lane.querySelectorAll<HTMLElement>('[data-timeline-event]'));
+          const allLaneEvents = Array.from(lane.querySelectorAll<HTMLElement>('[data-timeline-event]'));
+          allLaneEvents.forEach((event) => {
+            if (!event.hidden) return;
+            event.style.removeProperty('top');
+            event.style.setProperty('--anchor-offset', '0px');
+            event.style.setProperty('--connector-height', '0px');
+          });
+          const laneEvents = allLaneEvents.filter((event) => !event.hidden);
           let occupiedUntil = 0;
 
           laneEvents.forEach((event) => {
@@ -234,5 +285,45 @@ const lanes = Array.from({ length: 4 }, (_, index) => ({
     window.addEventListener('load', scheduleTimelineLayout, { once: true });
     window.addEventListener('resize', scheduleTimelineLayout, { passive: true });
     document.fonts?.ready.then(scheduleTimelineLayout);
+
+    const timelineFilter = document.querySelector<HTMLElement>('[data-timeline-filter]');
+    const personFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-person]');
+    const domainFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-domain]');
+    const eraFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-era]');
+    const resetFilter = timelineFilter?.querySelector<HTMLButtonElement>('[data-timeline-reset]');
+    const filterResult = timelineFilter?.querySelector<HTMLElement>('[data-timeline-result]');
+    const timelineEvents = Array.from(document.querySelectorAll<HTMLElement>('[data-timeline-event]'));
+
+    const applyTimelineFilters = () => {
+      const person = personFilter?.value ?? 'all';
+      const domain = domainFilter?.value ?? 'all';
+      const era = eraFilter?.value ?? 'all';
+      let visibleCount = 0;
+
+      timelineEvents.forEach((event) => {
+        const domains = event.dataset.eventDomains?.split('|') ?? [];
+        const matches =
+          (person === 'all' || event.dataset.pioneerId === person) &&
+          (domain === 'all' || domains.includes(domain)) &&
+          (era === 'all' || event.dataset.eraId === era);
+        event.hidden = !matches;
+        if (matches) visibleCount += 1;
+      });
+
+      const isFiltered = person !== 'all' || domain !== 'all' || era !== 'all';
+      if (resetFilter) resetFilter.disabled = !isFiltered;
+      if (filterResult) filterResult.textContent = `${visibleCount} / ${timelineEvents.length} EVENTS`;
+      scheduleTimelineLayout();
+    };
+
+    [personFilter, domainFilter, eraFilter].forEach((control) =>
+      control?.addEventListener('change', applyTimelineFilters),
+    );
+    resetFilter?.addEventListener('click', () => {
+      if (personFilter) personFilter.value = 'all';
+      if (domainFilter) domainFilter.value = 'all';
+      if (eraFilter) eraFilter.value = 'all';
+      applyTimelineFilters();
+    });
   </script>
 </BaseLayout>

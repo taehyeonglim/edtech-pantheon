@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Pioneer, Relationship } from "../data/types";
 
 type GraphPortrait = {
@@ -46,6 +46,7 @@ export default function RelationshipGraph({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Relationship["layer"] | "all">("all");
+  const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const pioneerById = useMemo(
     () => Object.fromEntries(pioneers.map((pioneer) => [pioneer.id, pioneer])),
@@ -144,6 +145,18 @@ export default function RelationshipGraph({
     setSelectedNodeId(shouldClear ? null : pioneerId);
   };
 
+  const focusNode = (pioneerId: string) => {
+    setActiveId(null);
+    setSelectedNodeId(pioneerId);
+    requestAnimationFrame(() => {
+      nodeRefs.current[pioneerId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    });
+  };
+
   const selectRelationship = (relationshipId: string, keepNode = false) => {
     setActiveId(relationshipId);
     if (!keepNode) setSelectedNodeId(null);
@@ -174,6 +187,29 @@ export default function RelationshipGraph({
             </button>
           ))}
         </div>
+        <label className="graph-person-finder">
+          <span>인물 바로가기</span>
+          <select
+            value={selectedNodeId ?? ""}
+            onChange={(event) => {
+              if (event.target.value) focusNode(event.target.value);
+              else clearSelection();
+            }}
+          >
+            <option value="">{pioneers.length}명 중 선택</option>
+            {[...pioneers]
+              .sort(
+                (a, b) =>
+                  getAnchorYear(a) - getAnchorYear(b) ||
+                  a.nameKo.localeCompare(b.nameKo, "ko"),
+              )
+              .map((pioneer) => (
+                <option key={pioneer.id} value={pioneer.id}>
+                  {pioneer.nameKo} · {pioneer.life}
+                </option>
+              ))}
+          </select>
+        </label>
         <span className="graph-legend">
           <i className="lineage" />
           계보 <i className="comparison" />
@@ -277,6 +313,9 @@ export default function RelationshipGraph({
             return (
               <button
                 key={pioneer.id}
+                ref={(node) => {
+                  nodeRefs.current[pioneer.id] = node;
+                }}
                 type="button"
                 className={`graph-node ${isSelected ? "selected" : ""} ${isConnected ? "connected" : ""} ${isDimmed ? "dimmed" : ""} ${pos.estimatedAnchor ? "estimated-anchor" : ""}`}
                 style={

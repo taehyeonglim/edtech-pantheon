@@ -1740,6 +1740,28 @@ p {
   background: var(--gold);
   border-color: var(--gold);
 }
+.graph-person-finder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.graph-person-finder span {
+  color: var(--dim);
+  font: 8px var(--mono);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.graph-person-finder select {
+  max-width: 230px;
+  min-height: 31px;
+  padding: 5px 30px 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #111d1f;
+  color: var(--paper);
+  font: 10px var(--mono);
+}
 .graph-legend {
   display: flex;
   align-items: center;
@@ -1759,7 +1781,7 @@ p {
   opacity: 0.8;
 }
 .graph-count {
-  margin-left: auto;
+  margin-left: 0;
   color: var(--dim);
   font: 10px var(--mono);
 }
@@ -2410,6 +2432,59 @@ p {
   font-size: 10px;
   line-height: 1.65;
 }
+.timeline-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.2fr) repeat(3, minmax(150px, 0.9fr)) auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.018);
+}
+.timeline-filter-heading {
+  align-self: center;
+}
+.timeline-filter-heading span,
+.timeline-filter-bar label > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--gold);
+  font: 8px var(--mono);
+  letter-spacing: 0.08em;
+}
+.timeline-filter-heading strong {
+  color: var(--paper);
+  font: 500 16px/1.2 var(--serif);
+}
+.timeline-filter-bar select,
+.timeline-filter-bar button {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #111d1f;
+  color: var(--paper);
+  font: 9px var(--mono);
+}
+.timeline-filter-bar button {
+  width: auto;
+  color: var(--gold-light);
+  cursor: pointer;
+}
+.timeline-filter-bar button:disabled {
+  color: var(--dim);
+  cursor: default;
+  opacity: 0.5;
+}
+.timeline-filter-bar p {
+  grid-column: 2 / -1;
+  margin: 0;
+  color: var(--dim);
+  font: 8px var(--mono);
+  text-align: right;
+}
 .timeline-scroll-hint {
   margin: 30px 0 10px;
   color: var(--dim);
@@ -2603,6 +2678,9 @@ p {
   right: 11px;
   left: 11px;
 }
+.timeline-lane-event[hidden] {
+  display: none;
+}
 .timeline-lane-event::before {
   content: "";
   position: absolute;
@@ -2704,6 +2782,12 @@ p {
   color: var(--dim);
   font: 9px var(--mono);
 }
+.event-person-portrait-wrap {
+  position: relative;
+  display: block;
+  width: 34px;
+  min-height: 41px;
+}
 .event-person-portrait {
   position: relative;
   width: 34px;
@@ -2720,6 +2804,13 @@ p {
     transform 0.22s ease,
     border-color 0.22s ease,
     box-shadow 0.22s ease;
+}
+.event-person-nationality {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .event-person-portrait::after {
   content: "";
@@ -2816,6 +2907,71 @@ p {
   font: 10px var(--mono);
   text-align: right;
 }
+.compare-presets {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.compare-presets > span {
+  margin-right: 4px;
+  color: var(--gold);
+  font: 8px var(--mono);
+  letter-spacing: 0.08em;
+}
+.compare-presets button {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font: 9px var(--mono);
+}
+.compare-presets button:hover,
+.compare-presets button:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+.compare-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.4fr) minmax(160px, 0.8fr) auto auto;
+  gap: 9px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.016);
+}
+.compare-filter-bar label > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--dim);
+  font: 8px var(--mono);
+  letter-spacing: 0.06em;
+}
+.compare-filter-bar input,
+.compare-filter-bar select,
+.compare-filter-bar button {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #111d1f;
+  color: var(--paper);
+  font: 10px var(--mono);
+}
+.compare-filter-bar button {
+  width: auto;
+  color: var(--gold-light);
+}
+.compare-filter-bar p {
+  align-self: center;
+  margin: 0;
+  color: var(--dim);
+  font: 8px var(--mono);
+  white-space: nowrap;
+}
 .compare-roster-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2837,6 +2993,9 @@ p {
   text-align: left;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.2s, opacity 0.2s;
+}
+.compare-select-card[hidden] {
+  display: none;
 }
 .compare-select-card:hover {
   z-index: 1;
@@ -3023,6 +3182,10 @@ p {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.65;
+}
+.compare-table td small {
+  color: var(--dim);
+  font: 8px/1.5 var(--mono);
 }
 .compare-person .compare-portrait-wrap {
   position: relative;
@@ -3310,6 +3473,19 @@ p {
   .timeline-era-legend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .timeline-filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .timeline-filter-heading,
+  .timeline-filter-bar p {
+    grid-column: 1 / -1;
+  }
+  .compare-filter-bar {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .compare-filter-bar p {
+    text-align: right;
+  }
   .compare-roster-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3544,6 +3720,12 @@ p {
     display: block;
     margin-top: 10px;
   }
+  .graph-person-finder {
+    margin: 12px 0;
+  }
+  .graph-person-finder select {
+    max-width: min(100%, 260px);
+  }
   .graph-canvas {
     height: 1880px;
   }
@@ -3613,6 +3795,22 @@ p {
   }
   .timeline-era-legend article {
     min-height: 0;
+  }
+  .timeline-filter-bar,
+  .compare-filter-bar {
+    grid-template-columns: 1fr;
+  }
+  .timeline-filter-heading,
+  .timeline-filter-bar p {
+    grid-column: auto;
+  }
+  .timeline-filter-bar button,
+  .compare-filter-bar button {
+    width: 100%;
+  }
+  .timeline-filter-bar p,
+  .compare-filter-bar p {
+    text-align: left;
   }
   .timeline-scroll-hint {
     text-align: left;
