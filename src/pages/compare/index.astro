@@ -1,11 +1,20 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { pioneers } from '../../data/pioneers';
+import { portraitById } from '../../data/portraits';
+const base = `${import.meta.env.BASE_URL}/`;
+const comparePioneers = pioneers.map((pioneer) => {
+  const portrait = portraitById[pioneer.id];
+  return {
+    ...pioneer,
+    portrait: portrait ? { src: `${base}${portrait.src}`, alt: portrait.alt } : null
+  };
+});
 ---
 <BaseLayout title="비교실">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE COMPARISON ROOM</div><h1>같은 질문,<br />다른 대답.</h1><p>최대 세 명의 선구자를 선택해 학습관, 교수자의 역할, 설계 원리와 남은 논쟁을 같은 표에서 비교합니다.</p></div></section>
   <section class="section compare-page"><div class="shell"><div class="compare-controls" data-compare-controls><label>COMPARE / 최대 3명</label>{pioneers.map((pioneer) => <button data-id={pioneer.id} aria-pressed="false">{pioneer.nameKo}</button>)}<span class="compare-help">이름을 눌러 비교 패널에 추가하세요.</span></div><div class="compare-board" data-compare-board><div class="graph-detail-empty"><span>02</span><p>두 명 이상을 선택하면 비교표가 열립니다.</p></div></div></div></section>
-  <script is:inline define:vars={{ pioneers }}>
+  <script is:inline define:vars={{ pioneers: comparePioneers }}>
     const controls = document.querySelector('[data-compare-controls]');
     const board = document.querySelector('[data-compare-board]');
     const selected = [];
@@ -20,7 +29,7 @@ import { pioneers } from '../../data/pioneers';
         ['대표 저작', ...people.map((p) => p.works.map((w) => `${w.title} (${w.year})`).join('<br>'))],
         ['시대·학파', ...people.map((p) => `${p.era}<br>${p.school}`)],
       ];
-      board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-initials" style="--person-accent:${p.accent}">${p.initials}</span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-portrait${p.portrait ? '' : ' is-fallback'}" style="--person-accent:${p.accent}">${p.portrait ? `<img src="${p.portrait.src}" alt="${p.portrait.alt}" draggable="false">` : p.initials}</span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
     };
     controls?.addEventListener('click', (event) => { const button = event.target; if (!(button instanceof HTMLButtonElement) || !button.dataset.id) return; const id = button.dataset.id; const index = selected.indexOf(id); if (index >= 0) selected.splice(index, 1); else if (selected.length < 3) selected.push(id); else return; button.classList.toggle('selected', selected.includes(id)); button.setAttribute('aria-pressed', String(selected.includes(id))); render(); });
   </script>
