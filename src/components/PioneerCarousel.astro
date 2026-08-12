@@ -7,319 +7,378 @@ const { pioneers } = Astro.props as { pioneers: Pioneer[] };
 const base = `${import.meta.env.BASE_URL}/`;
 ---
 
-<div class="hall-carousel" data-hall-carousel>
-  <div class="hall-carousel-chrome">
-    <div class="hall-carousel-progress" aria-hidden="true">
-      <span data-hall-progress></span>
+<div class="hall-orbit" data-hall-orbit data-auto-playing="true">
+  <div class="hall-orbit-chrome">
+    <div class="hall-orbit-title">
+      <span class="hall-orbit-live" aria-hidden="true"></span>
+      <span>CONTINUOUS PORTRAIT ORBIT</span>
     </div>
-    <p class="hall-carousel-status" aria-live="off" data-hall-status>
-      01–03 / {String(pioneers.length).padStart(2, '0')}
+    <div class="hall-orbit-progress" aria-hidden="true">
+      <span data-orbit-progress></span>
+    </div>
+    <p class="hall-orbit-status" aria-live="off" data-orbit-status>
+      01 / {String(pioneers.length).padStart(2, '0')}
     </p>
-    <div class="hall-carousel-controls">
+    <div class="hall-orbit-controls">
       <button
-        class="hall-auto-toggle"
+        class="hall-orbit-toggle"
         type="button"
-        data-hall-toggle
-        aria-label="자동 재생 일시정지"
-        aria-controls="hall-pioneer-reel"
-        title="자동 재생 일시정지"
-      >
-        <span data-hall-toggle-icon aria-hidden="true">Ⅱ</span>
-      </button>
-      <button type="button" data-hall-prev aria-label="이전 인물" aria-controls="hall-pioneer-reel">
-        <span aria-hidden="true">←</span>
-      </button>
-      <button type="button" data-hall-next aria-label="다음 인물" aria-controls="hall-pioneer-reel">
-        <span aria-hidden="true">→</span>
-      </button>
+        data-orbit-toggle
+        aria-label="자동 회전 일시정지"
+        title="자동 회전 일시정지"
+      ><span data-orbit-toggle-icon aria-hidden="true">Ⅱ</span></button>
+      <button type="button" data-orbit-prev aria-label="이전 인물"><span aria-hidden="true">←</span></button>
+      <button type="button" data-orbit-next aria-label="다음 인물"><span aria-hidden="true">→</span></button>
     </div>
   </div>
 
   <div
-    class="hall-carousel-track"
-    id="hall-pioneer-reel"
-    data-hall-track
+    class="hall-orbit-stage"
+    data-orbit-stage
     tabindex="0"
     role="region"
-    aria-roledescription="캐러셀"
-    aria-label="교육공학 선구자 명예의전당"
+    aria-roledescription="3차원 회전목마"
+    aria-label="교육공학 선구자 회전형 명예의전당"
   >
+    <span class="hall-orbit-arc" aria-hidden="true"></span>
+    <span class="hall-orbit-axis" aria-hidden="true">EP / 24</span>
+
     {pioneers.map((pioneer, index) => {
       const portrait = portraitById[pioneer.id];
       const number = String(index + 1).padStart(2, '0');
 
       return (
         <a
-          class="hall-slide"
+          class="orbit-card"
           href={`${base}pioneers/${pioneer.slug}/`}
-          data-hall-slide
-          aria-roledescription="슬라이드"
-          aria-label={`${index + 1} / ${pioneers.length}: ${pioneer.nameKo}`}
+          data-orbit-card
+          data-orbit-index={index}
+          tabindex={index === 0 ? 0 : -1}
+          aria-label={`${pioneer.nameKo}, ${pioneer.life}, ${pioneer.role}. 상세 기록 읽기`}
           style={`--accent:${pioneer.accent}`}
         >
-          <div class:list={["hall-slide-portrait", { 'has-photo': portrait }]}>
+          <div class="orbit-card-photo">
             {portrait ? (
               <>
+                <img class="orbit-card-backdrop" src={`${base}${portrait.src}`} alt="" aria-hidden="true" loading="lazy" />
                 <img
-                  class="hall-slide-backdrop"
-                  src={`${base}${portrait.src}`}
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                />
-                <img
-                  class="hall-slide-image"
+                  class="orbit-card-image"
                   src={`${base}${portrait.src}`}
                   alt={portrait.alt}
-                  loading={index < 3 ? 'eager' : 'lazy'}
+                  loading={index < 5 ? 'eager' : 'lazy'}
                 />
               </>
             ) : (
-              <span class="hall-slide-initials" aria-hidden="true">{pioneer.initials}</span>
+              <span class="orbit-card-initials" aria-hidden="true">{pioneer.initials}</span>
             )}
-            <span class="hall-slide-number">{number}</span>
-            <NationalityBadge pioneerId={pioneer.id} className="hall-slide-nationality" />
           </div>
-          <div class="hall-slide-body">
-            <div class="hall-slide-meta">
-              <span>{pioneer.era}</span>
-              <span>{pioneer.life}</span>
-            </div>
+          <span class="orbit-card-number">{number}</span>
+          <NationalityBadge pioneerId={pioneer.id} className="orbit-card-nationality" compact={true} />
+          <div class="orbit-card-caption">
+            <span class="orbit-card-era">{pioneer.era}</span>
             <h3>{pioneer.nameKo}</h3>
-            <p class="hall-slide-name">{pioneer.nameEn}</p>
-            <p class="hall-slide-thesis">{pioneer.thesis}</p>
-            <span class="hall-slide-link">기록 읽기 <b aria-hidden="true">↗</b></span>
+            <p class="orbit-card-name">{pioneer.nameEn}</p>
+            <div class="orbit-card-reveal">
+              <span>{pioneer.life}</span>
+              <p>{pioneer.role}</p>
+              <b>상세 기록 읽기 ↗</b>
+            </div>
           </div>
         </a>
       );
     })}
   </div>
 
-  <p class="hall-carousel-hint">자동으로 순환합니다 · 마우스를 올리거나 포커스하면 잠시 멈춥니다.</p>
+  <div class="hall-orbit-inspector" data-orbit-inspector aria-live="off">
+    {pioneers.map((pioneer, index) => (
+      <article class="hall-orbit-info" data-orbit-info={index} hidden={index !== 0}>
+        <div class="hall-orbit-identity">
+          <span>FOCUS / {String(index + 1).padStart(2, '0')}</span>
+          <h3>{pioneer.nameKo}</h3>
+          <p>{pioneer.nameEn}</p>
+        </div>
+        <div class="hall-orbit-statement">
+          <span>{pioneer.life} · {pioneer.role}</span>
+          <p>{pioneer.thesis}</p>
+        </div>
+        <div class="hall-orbit-topics">
+          <div>{pioneer.domains.map((domain) => <span>{domain}</span>)}</div>
+          <a href={`${base}pioneers/${pioneer.slug}/`}>전체 기록 읽기 <b aria-hidden="true">↗</b></a>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div class="hall-orbit-guide" aria-hidden="true">
+    <span>HOVER TO INSPECT</span>
+    <i></i>
+    <span>DRAG · ARROW KEYS · AUTO ORBIT</span>
+  </div>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-hall-carousel]').forEach((carousel) => {
-    if (carousel.dataset.hallReady) return;
-    carousel.dataset.hallReady = 'true';
+  document.querySelectorAll<HTMLElement>('[data-hall-orbit]').forEach((orbit) => {
+    if (orbit.dataset.orbitReady) return;
+    orbit.dataset.orbitReady = 'true';
 
-    const track = carousel.querySelector<HTMLElement>('[data-hall-track]');
-    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-hall-slide]'));
-    const previous = carousel.querySelector<HTMLButtonElement>('[data-hall-prev]');
-    const next = carousel.querySelector<HTMLButtonElement>('[data-hall-next]');
-    const toggle = carousel.querySelector<HTMLButtonElement>('[data-hall-toggle]');
-    const toggleIcon = carousel.querySelector<HTMLElement>('[data-hall-toggle-icon]');
-    const status = carousel.querySelector<HTMLElement>('[data-hall-status]');
-    const progress = carousel.querySelector<HTMLElement>('[data-hall-progress]');
+    const stage = orbit.querySelector<HTMLElement>('[data-orbit-stage]');
+    const cards = Array.from(orbit.querySelectorAll<HTMLAnchorElement>('[data-orbit-card]'));
+    const infos = Array.from(orbit.querySelectorAll<HTMLElement>('[data-orbit-info]'));
+    const inspector = orbit.querySelector<HTMLElement>('[data-orbit-inspector]');
+    const previous = orbit.querySelector<HTMLButtonElement>('[data-orbit-prev]');
+    const next = orbit.querySelector<HTMLButtonElement>('[data-orbit-next]');
+    const toggle = orbit.querySelector<HTMLButtonElement>('[data-orbit-toggle]');
+    const toggleIcon = orbit.querySelector<HTMLElement>('[data-orbit-toggle-icon]');
+    const status = orbit.querySelector<HTMLElement>('[data-orbit-status]');
+    const progress = orbit.querySelector<HTMLElement>('[data-orbit-progress]');
 
-    if (!track || !slides.length || !previous || !next || !toggle || !toggleIcon || !status || !progress) return;
+    if (!stage || !cards.length || !inspector || !previous || !next || !toggle || !toggleIcon || !status || !progress) return;
 
-    const total = slides.length;
-    const cloneCount = Math.min(3, total);
+    const total = cards.length;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const autoDelay = 3800;
-    const normalizeDelay = 650;
-
-    slides.forEach((slide, index) => {
-      slide.dataset.hallIndex = String(index);
-    });
-
-    const makeClone = (slide: HTMLElement) => {
-      const clone = slide.cloneNode(true) as HTMLElement;
-      clone.dataset.hallClone = '';
-      clone.setAttribute('aria-hidden', 'true');
-      clone.tabIndex = -1;
-      return clone;
-    };
-
-    slides.slice(0, cloneCount).forEach((slide) => track.append(makeClone(slide)));
-    slides.slice(-cloneCount).reverse().forEach((slide) => track.prepend(makeClone(slide)));
-
-    const reel = Array.from(track.querySelectorAll<HTMLElement>('[data-hall-slide]'));
-    let activePhysicalIndex = cloneCount;
-    let activeIndex = 0;
-    let frame = 0;
-    let normalizeTimer = 0;
-    let autoTimer = 0;
+    const inspection = new Float32Array(total);
+    let phase = 0;
+    let lastTime = performance.now();
+    let shownIndex = -1;
+    let hoveredIndex: number | null = null;
+    let focusedIndex: number | null = null;
+    let pinnedIndex: number | null = null;
+    let panelHovered = false;
+    let dragging = false;
+    let dragged = false;
+    let dragStartX = 0;
+    let dragStartPhase = 0;
+    let manualTarget: number | null = null;
+    let interactionHoldUntil = 0;
+    let hoverReleaseTimer = 0;
     let userPaused = reducedMotion.matches;
-    let hoverPaused = false;
-    let focusPaused = false;
     let inViewport = true;
+    let renderedPlaying: boolean | null = null;
+    let renderedUserPaused: boolean | null = null;
 
-    const visibleCount = () => {
-      const first = reel[0];
-      const second = reel[1];
-      if (!first) return 1;
-      const step = second ? second.offsetLeft - first.offsetLeft : first.offsetWidth;
-      return Math.max(1, Math.round(track.clientWidth / Math.max(step, 1)));
+    const wrapIndex = (value: number) => ((value % total) + total) % total;
+    const circularDelta = (index: number) => {
+      let delta = index - wrapIndex(phase);
+      if (delta > total / 2) delta -= total;
+      if (delta < -total / 2) delta += total;
+      return delta;
     };
 
-    const slideLeft = (slide: HTMLElement) => (
-      slide.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft
+    const focusedPerson = () => hoveredIndex ?? focusedIndex ?? pinnedIndex ?? wrapIndex(Math.round(phase));
+
+    const showInfo = (index: number) => {
+      const normalized = wrapIndex(index);
+      if (shownIndex === normalized) return;
+      shownIndex = normalized;
+      infos.forEach((info, infoIndex) => {
+        info.hidden = infoIndex !== normalized;
+      });
+      const format = (value: number) => String(value).padStart(2, '0');
+      status.textContent = `${format(normalized + 1)} / ${format(total)}`;
+    };
+
+    const canRotate = (now: number) => (
+      !userPaused &&
+      hoveredIndex === null &&
+      focusedIndex === null &&
+      !panelHovered &&
+      !dragging &&
+      manualTarget === null &&
+      now >= interactionHoldUntil &&
+      inViewport &&
+      !document.hidden
     );
 
-    const nearestPhysicalIndex = () => {
-      const trackLeft = track.getBoundingClientRect().left;
-      return reel.reduce((nearest, slide, index) => {
-        const currentDistance = Math.abs(reel[nearest].getBoundingClientRect().left - trackLeft);
-        const nextDistance = Math.abs(slide.getBoundingClientRect().left - trackLeft);
-        return nextDistance < currentDistance ? index : nearest;
-      }, 0);
+    const syncControl = (now = performance.now()) => {
+      const playing = canRotate(now);
+      if (renderedPlaying !== playing) {
+        renderedPlaying = playing;
+        orbit.dataset.autoPlaying = String(playing);
+      }
+      if (renderedUserPaused !== userPaused) {
+        renderedUserPaused = userPaused;
+        toggleIcon.textContent = userPaused ? '▶' : 'Ⅱ';
+        toggle.setAttribute('aria-label', userPaused ? '자동 회전 시작' : '자동 회전 일시정지');
+        toggle.title = userPaused ? '자동 회전 시작' : '자동 회전 일시정지';
+        inspector.setAttribute('aria-live', userPaused ? 'polite' : 'off');
+        status.setAttribute('aria-live', userPaused ? 'polite' : 'off');
+      }
     };
 
-    const jumpTo = (physicalIndex: number) => {
-      const target = reel[physicalIndex];
-      if (!target) return;
-      track.classList.add('is-jumping');
-      track.scrollLeft = slideLeft(target);
-      activePhysicalIndex = physicalIndex;
-      requestAnimationFrame(() => track.classList.remove('is-jumping'));
+    const render = (deltaTime: number, now: number) => {
+      const width = stage.clientWidth;
+      const compact = width < 600;
+      const tablet = width < 900;
+      const maxX = Math.min(width * (compact ? 0.46 : 0.47), compact ? 178 : 530);
+      const depthStep = compact ? 96 : tablet ? 118 : 142;
+      const visibleRadius = compact ? 3.25 : tablet ? 4.35 : 5.25;
+      const inspectionIndex = focusedPerson();
+
+      cards.forEach((card, index) => {
+        const delta = circularDelta(index);
+        const distance = Math.abs(delta);
+        const targetInspection = index === inspectionIndex && (hoveredIndex !== null || focusedIndex !== null) ? 1 : 0;
+        inspection[index] += (targetInspection - inspection[index]) * Math.min(1, deltaTime * 9);
+        const lift = inspection[index];
+        const curve = Math.tanh(delta * (compact ? 0.63 : 0.54));
+        const x = curve * maxX;
+        const y = distance * (compact ? 7 : 10) - lift * 12;
+        const depth = -distance * depthStep + lift * (compact ? 95 : 165);
+        const baseRotation = Math.max(-66, Math.min(66, delta * -21));
+        const rotation = baseRotation * (1 - lift * 0.92);
+        const scale = Math.max(compact ? 0.69 : 0.62, 1 - distance * (compact ? 0.075 : 0.068)) + lift * 0.075;
+        const opacity = distance > visibleRadius ? 0 : Math.max(0.2, 1 - distance * 0.135);
+        const blur = Math.max(0, distance - 2.2) * 0.45;
+        const isCenter = distance < 0.48;
+        const isInspected = lift > 0.15;
+
+        card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${depth}px) rotateY(${rotation}deg) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.filter = `brightness(${Math.max(0.58, 1 - distance * 0.075) + lift * 0.12}) blur(${blur}px)`;
+        card.style.zIndex = String(Math.round(100 - distance * 10 + lift * 80));
+        card.style.pointerEvents = distance <= visibleRadius ? 'auto' : 'none';
+        card.classList.toggle('is-center', isCenter);
+        card.classList.toggle('is-inspected', isInspected);
+        card.tabIndex = isCenter || index === focusedIndex ? 0 : -1;
+        card.setAttribute('aria-hidden', distance > visibleRadius ? 'true' : 'false');
+      });
+
+      const progressValue = (wrapIndex(phase) + 1) / total;
+      progress.style.transform = `scaleX(${progressValue})`;
+      showInfo(inspectionIndex);
+      syncControl(now);
     };
 
-    const update = () => {
-      activePhysicalIndex = nearestPhysicalIndex();
-      activeIndex = Number(reel[activePhysicalIndex]?.dataset.hallIndex ?? 0);
-      const start = activeIndex + 1;
-      const end = activeIndex + visibleCount();
-      const format = (value: number) => String(value).padStart(2, '0');
-      const range = (first: number, last: number) => (
-        first === last ? format(first) : `${format(first)}–${format(last)}`
-      );
+    const animate = (now: number) => {
+      const deltaTime = Math.min(0.05, Math.max(0, (now - lastTime) / 1000));
+      lastTime = now;
 
-      if (visibleCount() === 1) {
-        status.textContent = `${format(start)} / ${format(total)}`;
-      } else if (end <= total) {
-        status.textContent = `${range(start, end)} / ${format(total)}`;
+      if (manualTarget !== null) {
+        const difference = manualTarget - phase;
+        phase += difference * Math.min(1, deltaTime * 8);
+        if (Math.abs(difference) < 0.002) {
+          phase = manualTarget;
+          manualTarget = null;
+          interactionHoldUntil = now + 1300;
+        }
+      } else if (canRotate(now)) {
+        phase += deltaTime * 0.175;
+      }
+
+      render(deltaTime, now);
+      requestAnimationFrame(animate);
+    };
+
+    const nudge = (direction: number) => {
+      const target = Math.round(phase) + direction;
+      if (reducedMotion.matches) {
+        phase = target;
+        manualTarget = null;
       } else {
-        status.textContent = `${range(start, total)} · ${range(1, end - total)} / ${format(total)}`;
+        manualTarget = target;
       }
-
-      progress.style.transform = `scaleX(${start / total})`;
-      reel.forEach((slide, index) => slide.classList.toggle('is-active', index === activePhysicalIndex));
+      interactionHoldUntil = performance.now() + 1800;
+      render(0.016, performance.now());
     };
 
-    const normalizeLoop = () => {
-      const physicalIndex = nearestPhysicalIndex();
-      if (physicalIndex >= cloneCount + total) {
-        jumpTo(physicalIndex - total);
-      } else if (physicalIndex < cloneCount) {
-        jumpTo(physicalIndex + total);
-      }
-      update();
-    };
+    cards.forEach((card, index) => {
+      card.addEventListener('mouseenter', () => {
+        window.clearTimeout(hoverReleaseTimer);
+        hoveredIndex = index;
+        pinnedIndex = index;
+        render(0.016, performance.now());
+      });
+      card.addEventListener('mouseleave', () => {
+        hoveredIndex = null;
+        interactionHoldUntil = performance.now() + 650;
+        hoverReleaseTimer = window.setTimeout(() => {
+          if (!panelHovered) pinnedIndex = null;
+        }, 650);
+      });
+      card.addEventListener('focus', () => {
+        focusedIndex = index;
+        pinnedIndex = index;
+      });
+      card.addEventListener('blur', () => {
+        focusedIndex = null;
+        pinnedIndex = null;
+        interactionHoldUntil = performance.now() + 650;
+      });
+      card.addEventListener('click', (event) => {
+        if (dragged) event.preventDefault();
+      });
+    });
 
-    const scheduleNormalize = () => {
-      window.clearTimeout(normalizeTimer);
-      normalizeTimer = window.setTimeout(normalizeLoop, normalizeDelay);
-    };
+    inspector.addEventListener('mouseenter', () => {
+      window.clearTimeout(hoverReleaseTimer);
+      panelHovered = true;
+    });
+    inspector.addEventListener('mouseleave', () => {
+      panelHovered = false;
+      pinnedIndex = null;
+      interactionHoldUntil = performance.now() + 500;
+    });
 
-    const goBy = (amount: number) => {
-      activePhysicalIndex = nearestPhysicalIndex();
-      const targetIndex = Math.min(Math.max(activePhysicalIndex + amount, 0), reel.length - 1);
-      const target = reel[targetIndex];
-      if (!target) return;
-      track.scrollTo({ left: slideLeft(target), behavior: 'smooth' });
-      scheduleNormalize();
-    };
-
-    const stopAuto = () => {
-      window.clearTimeout(autoTimer);
-      autoTimer = 0;
-      carousel.dataset.autoPlaying = 'false';
-    };
-
-    const canAutoPlay = () => !userPaused && !hoverPaused && !focusPaused && inViewport && !document.hidden;
-
-    const scheduleAuto = (delay = autoDelay) => {
-      window.clearTimeout(autoTimer);
-      if (!canAutoPlay()) {
-        stopAuto();
-        return;
-      }
-      carousel.dataset.autoPlaying = 'true';
-      autoTimer = window.setTimeout(() => {
-        goBy(1);
-        scheduleAuto();
-      }, delay);
-    };
-
-    const syncToggle = () => {
-      const playing = canAutoPlay();
-      toggleIcon.textContent = userPaused ? '▶' : 'Ⅱ';
-      toggle.setAttribute('aria-label', userPaused ? '자동 재생 시작' : '자동 재생 일시정지');
-      toggle.title = userPaused ? '자동 재생 시작' : '자동 재생 일시정지';
-      status.setAttribute('aria-live', userPaused ? 'polite' : 'off');
-      if (playing) scheduleAuto();
-      else stopAuto();
-    };
-
-    const manualMove = (amount: number) => {
-      stopAuto();
-      goBy(amount);
-      scheduleAuto(autoDelay * 1.35);
-    };
-
-    previous.addEventListener('click', () => manualMove(-1));
-    next.addEventListener('click', () => manualMove(1));
+    previous.addEventListener('click', () => nudge(-1));
+    next.addEventListener('click', () => nudge(1));
     toggle.addEventListener('click', () => {
       userPaused = !userPaused;
-      syncToggle();
+      interactionHoldUntil = 0;
+      syncControl();
     });
-    track.addEventListener('keydown', (event) => {
+
+    stage.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        manualMove(-1);
+        nudge(-1);
       }
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        manualMove(1);
+        nudge(1);
       }
     });
-    track.addEventListener('scroll', () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
-      scheduleNormalize();
-    }, { passive: true });
+    stage.addEventListener('pointerdown', (event) => {
+      dragging = true;
+      dragged = false;
+      dragStartX = event.clientX;
+      dragStartPhase = phase;
+      stage.setPointerCapture(event.pointerId);
+      stage.classList.add('is-dragging');
+    });
+    stage.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const movement = event.clientX - dragStartX;
+      if (Math.abs(movement) > 5) dragged = true;
+      phase = dragStartPhase - movement / (stage.clientWidth < 600 ? 118 : 185);
+      manualTarget = null;
+    });
+    const finishDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      stage.classList.remove('is-dragging');
+      if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+      interactionHoldUntil = performance.now() + 1400;
+      if (!dragged && hoveredIndex === null) manualTarget = Math.round(phase);
+      window.setTimeout(() => { dragged = false; }, 0);
+    };
+    stage.addEventListener('pointerup', finishDrag);
+    stage.addEventListener('pointercancel', finishDrag);
 
-    carousel.addEventListener('mouseenter', () => {
-      hoverPaused = true;
-      stopAuto();
-    });
-    carousel.addEventListener('mouseleave', () => {
-      hoverPaused = false;
-      scheduleAuto();
-    });
-    carousel.addEventListener('focusin', () => {
-      focusPaused = true;
-      stopAuto();
-    });
-    carousel.addEventListener('focusout', () => {
-      window.setTimeout(() => {
-        focusPaused = carousel.contains(document.activeElement);
-        scheduleAuto();
-      }, 0);
-    });
-    track.addEventListener('pointerdown', stopAuto, { passive: true });
-    track.addEventListener('pointerup', () => scheduleAuto(autoDelay * 1.35), { passive: true });
-    document.addEventListener('visibilitychange', syncToggle);
+    document.addEventListener('visibilitychange', () => syncControl());
     reducedMotion.addEventListener('change', (event) => {
-      if (event.matches) userPaused = true;
-      syncToggle();
+      userPaused = event.matches;
+      syncControl();
     });
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(([entry]) => {
-        inViewport = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.15);
-        syncToggle();
-      }, { threshold: [0, 0.15] });
-      observer.observe(carousel);
+        inViewport = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.12);
+        syncControl();
+      }, { threshold: [0, 0.12] });
+      observer.observe(orbit);
     }
-    window.addEventListener('resize', () => {
-      update();
-      scheduleNormalize();
-    }, { passive: true });
 
-    jumpTo(cloneCount);
-    update();
-    syncToggle();
+    orbit.dataset.ready = 'true';
+    render(0.016, performance.now());
+    requestAnimationFrame(animate);
   });
 </script>
