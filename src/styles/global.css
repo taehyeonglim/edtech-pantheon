@@ -1788,13 +1788,12 @@ p {
   font: 10px var(--mono);
 }
 .graph-scroll {
-  overflow-x: auto;
+  overflow-x: hidden;
   padding-bottom: 6px;
-  scrollbar-color: var(--gold) var(--navy-2);
 }
 .graph-canvas {
   width: 100%;
-  min-width: 1500px;
+  min-width: 0;
   height: 1880px;
   position: relative;
   border: 1px solid var(--line);
@@ -2540,17 +2539,15 @@ p {
 }
 .timeline-shared-scroll {
   max-width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   border-top: 1px solid var(--gold);
-  scrollbar-color: rgba(213, 161, 91, 0.5) rgba(255, 255, 255, 0.04);
-  scrollbar-width: thin;
 }
 .timeline-shared-scroll:focus-visible {
   outline-offset: 6px;
 }
 .timeline-shared-frame {
-  width: max(100%, var(--timeline-frame-width, 1412px));
+  width: 100%;
 }
 .timeline-lane-head {
   display: grid;
@@ -3565,6 +3562,66 @@ p {
   .graph-canvas {
     height: 1880px;
   }
+  .timeline-shared-scroll {
+    overflow: visible;
+  }
+  .timeline-lane-head,
+  .timeline-shared-axis,
+  .timeline-era-bands {
+    display: none;
+  }
+  .timeline-shared-canvas {
+    height: auto !important;
+    min-height: 0;
+  }
+  .timeline-lanes {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    height: auto !important;
+  }
+  .timeline-lane {
+    position: relative;
+    height: auto !important;
+    min-height: 0;
+    padding: 58px 14px 14px;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--track-accent);
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--track-accent) 7%, var(--navy)),
+      var(--navy) 44%
+    );
+  }
+  .timeline-lane[hidden] {
+    display: none;
+  }
+  .timeline-lane::before {
+    content: attr(data-track-label);
+    position: absolute;
+    top: 19px;
+    right: 14px;
+    left: 14px;
+    color: var(--track-accent);
+    font: 9px var(--mono);
+    letter-spacing: 0.07em;
+  }
+  .timeline-lane-event {
+    position: relative;
+    inset: auto;
+    top: auto !important;
+    margin: 0 0 12px;
+  }
+  .timeline-lane-event:last-child {
+    margin-bottom: 0;
+  }
+  .timeline-lane-event::before,
+  .timeline-lane-event::after,
+  .timeline-lane-event .global-event::before {
+    display: none;
+  }
   .timeline-era-legend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3825,7 +3882,7 @@ p {
     max-width: min(100%, 260px);
   }
   .graph-canvas {
-    height: 1880px;
+    height: 2400px;
   }
   .graph-node {
     transform: translate(-50%, -24px);
@@ -3863,6 +3920,40 @@ p {
   }
   .graph-detail h3 {
     font-size: 22px;
+  }
+  .graph-table-wrap {
+    overflow: visible;
+  }
+  .graph-table,
+  .graph-table tbody,
+  .graph-table tr,
+  .graph-table td {
+    display: block;
+    width: 100%;
+  }
+  .graph-table {
+    min-width: 0;
+  }
+  .graph-table thead {
+    display: none;
+  }
+  .graph-table tr {
+    margin-bottom: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+  }
+  .graph-table td {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 10px;
+    padding: 7px 0;
+    border: 0;
+  }
+  .graph-table td::before {
+    content: attr(data-label);
+    color: var(--dim);
+    font: 8px var(--mono);
+    letter-spacing: 0.06em;
   }
   .graph-person-detail {
     grid-template-columns: 1fr;

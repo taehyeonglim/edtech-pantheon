@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Pioneer, Relationship } from "../data/types";
 
 type GraphPortrait = {
@@ -46,7 +46,16 @@ export default function RelationshipGraph({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Relationship["layer"] | "all">("all");
+  const [isCompact, setIsCompact] = useState(false);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 640px)");
+    const syncCompactLayout = () => setIsCompact(media.matches);
+    syncCompactLayout();
+    media.addEventListener("change", syncCompactLayout);
+    return () => media.removeEventListener("change", syncCompactLayout);
+  }, []);
 
   const pioneerById = useMemo(
     () => Object.fromEntries(pioneers.map((pioneer) => [pioneer.id, pioneer])),
@@ -76,8 +85,14 @@ export default function RelationshipGraph({
     ((year - axis.start) / (axis.end - axis.start)) *
       (100 - axisPadding.top - axisPadding.bottom);
 
+  const activeLaneCount = isCompact ? 4 : laneCount;
+
   const positions = useMemo(() => {
-    const laneLastYear = Array.from({ length: laneCount }, () => -Infinity);
+    const laneLastYear = Array.from(
+      { length: activeLaneCount },
+      () => -Infinity,
+    );
+    const activeLaneBounds = isCompact ? { start: 23, end: 89 } : laneBounds;
     const ordered = [...pioneers].sort(
       (a, b) =>
         getAnchorYear(a) - getAnchorYear(b) || a.nameEn.localeCompare(b.nameEn),
@@ -92,8 +107,9 @@ export default function RelationshipGraph({
           pioneer.id,
           {
             x:
-              laneBounds.start +
-              (lane * (laneBounds.end - laneBounds.start)) / (laneCount - 1),
+              activeLaneBounds.start +
+              (lane * (activeLaneBounds.end - activeLaneBounds.start)) /
+                (activeLaneCount - 1),
             y: yearToY(anchorYear),
             anchorYear,
             estimatedAnchor: pioneer.birthYear === null,
@@ -104,7 +120,7 @@ export default function RelationshipGraph({
       string,
       { x: number; y: number; anchorYear: number; estimatedAnchor: boolean }
     >;
-  }, [pioneers, axis.start, axis.end]);
+  }, [pioneers, axis.start, axis.end, activeLaneCount, isCompact]);
 
   const visible = useMemo(
     () =>
@@ -378,7 +394,9 @@ export default function RelationshipGraph({
           })}
           {!active && !selectedPioneer && (
             <div className="graph-hint">
-              마우스 오버: 세로 생애선 · 클릭: 직접 연결
+              {isCompact
+                ? "초상 탭: 직접 연결 확인"
+                : "마우스 오버: 세로 생애선 · 클릭: 직접 연결"}
             </div>
           )}
         </div>
@@ -555,7 +573,7 @@ export default function RelationshipGraph({
                 key={relationship.id}
                 className={active?.id === relationship.id ? "selected" : ""}
               >
-                <td>
+                <td data-label="연결">
                   <button
                     type="button"
                     aria-pressed={active?.id === relationship.id}
@@ -566,13 +584,13 @@ export default function RelationshipGraph({
                     {pioneerById[relationship.target].nameKo}
                   </button>
                 </td>
-                <td>
+                <td data-label="레이어·유형">
                   <span className="relation-pill">
                     {layerLabel[relationship.layer]} · {relationship.type}
                   </span>
                 </td>
-                <td>{relationship.label}</td>
-                <td>{relationship.sourceIds.length} sources</td>
+                <td data-label="핵심 문장">{relationship.label}</td>
+                <td data-label="근거">{relationship.sourceIds.length} sources</td>
               </tr>
             ))}
           </tbody>
