@@ -18,6 +18,22 @@ const institutionMarkers = mappedInstitutions.map((institution) => {
 const atlasMapData = institutionMarkers.map(({ institution, records }) => ({
   ...institution,
   recordCount: records.length,
+  scholars: records.map((record) => {
+    const pioneer = pioneers.find((item) => item.id === record.pioneerId)!;
+    const portrait = portraitById[pioneer.id];
+    return {
+      id: pioneer.id,
+      nameKo: pioneer.nameKo,
+      nameEn: pioneer.nameEn,
+      role: record.role,
+      href: `${base}pioneers/${pioneer.slug}/`,
+      portraitSrc: portrait ? `${base}${portrait.src}` : undefined,
+      portraitAlt: portrait?.alt,
+      objectPosition: portrait?.objectPosition,
+      objectScale: portrait?.objectScale,
+      transformOrigin: portrait?.transformOrigin,
+    };
+  }),
 }));
 const mappedAffiliations = affiliations;
 ---
@@ -40,12 +56,12 @@ const mappedAffiliations = affiliations;
       </div>
       <div class="atlas-map-wrap">
         <div class="atlas-map" data-atlas-map data-points={JSON.stringify(atlasMapData)} role="region" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 실제 지도"></div>
-        <p class="atlas-map-note"><span>MAP KEY</span> 공식 마크가 확인된 기관은 엠블럼, 역사기관은 검증된 건물 사진, 표장이 남아 있지 않은 기관은 중립 문자 마커로 표시합니다. 우측 아래 숫자는 대표 활동 기록 수입니다. 지도 위에서 마우스 휠로 확대·축소할 수 있습니다.</p>
+        <p class="atlas-map-note"><span>MAP KEY</span> 기관 마커를 클릭하면 소속 학자들의 얼굴과 연결선이 펼쳐집니다. 얼굴을 누르면 인물 페이지로 이동합니다. 우측 아래 숫자는 대표 활동 기록 수이며, 지도 위에서 마우스 휠로 확대·축소할 수 있습니다.</p>
       </div>
       <aside class="atlas-detail" data-atlas-detail>
         <span>SELECT A POINT</span>
         <h2>세계의 활동 거점</h2>
-        <p>지도 위의 원 또는 학자 선택 메뉴를 사용하세요. 선택하면 해당 기관과 연결된 활동 기록을 확인할 수 있습니다.</p>
+        <p>지도 위의 기관 마커를 선택하세요. 소속 학자들의 얼굴이 연결선과 함께 펼쳐지며, 선택한 기관의 활동 기록도 확인할 수 있습니다.</p>
       </aside>
       {institutionMarkers.map(({ institution, records }) => (
         <template data-atlas-detail-template={institution.id}>
@@ -115,6 +131,18 @@ const mappedAffiliations = affiliations;
       markerImageFit?: 'contain' | 'cover';
       markerLabel?: string;
       recordCount: number;
+      scholars: {
+        id: string;
+        nameKo: string;
+        nameEn: string;
+        role: string;
+        href: string;
+        portraitSrc?: string;
+        portraitAlt?: string;
+        objectPosition?: string;
+        objectScale?: number;
+        transformOrigin?: string;
+      }[];
     };
 
     const select = document.querySelector('[data-atlas-pioneer]') as HTMLSelectElement | null;
@@ -146,6 +174,86 @@ const mappedAffiliations = affiliations;
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }).addTo(map);
     }
+
+    const constellationLayer = map ? L.layerGroup().addTo(map) : null;
+
+    const showScholarConstellation = (id: string) => {
+      constellationLayer?.clearLayers();
+      if (!map || !constellationLayer || !id) return;
+      const point = points.find((item) => item.id === id);
+      if (!point || point.scholars.length === 0) return;
+
+      const width = 300;
+      const height = 250;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = point.scholars.length === 1 ? 86 : 96;
+      const container = document.createElement('div');
+      container.className = 'atlas-scholar-constellation';
+      container.setAttribute('aria-label', `${point.nameKo} 소속 학자 ${point.scholars.length}명`);
+
+      const lines = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      lines.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      lines.setAttribute('aria-hidden', 'true');
+      lines.classList.add('atlas-scholar-lines');
+      container.append(lines);
+
+      point.scholars.forEach((scholar, index) => {
+        const angle = point.scholars.length === 1
+          ? -Math.PI / 3
+          : -Math.PI / 2 + (Math.PI * 2 * index) / point.scholars.length;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', String(centerX));
+        line.setAttribute('y1', String(centerY));
+        line.setAttribute('x2', String(x));
+        line.setAttribute('y2', String(y));
+        lines.append(line);
+
+        const link = document.createElement('a');
+        link.className = 'atlas-scholar-node';
+        link.href = scholar.href;
+        link.style.left = `${x}px`;
+        link.style.top = `${y}px`;
+        link.style.setProperty('--scholar-index', String(index));
+        link.setAttribute('aria-label', `${scholar.nameKo} 인물 페이지 · ${scholar.role}`);
+        link.title = `${scholar.nameKo} · ${scholar.role}`;
+
+        const portrait = document.createElement('span');
+        portrait.className = 'atlas-scholar-portrait';
+        if (scholar.portraitSrc) {
+          const image = document.createElement('img');
+          image.src = scholar.portraitSrc;
+          image.alt = scholar.portraitAlt || scholar.nameKo;
+          if (scholar.objectPosition) image.style.objectPosition = scholar.objectPosition;
+          if (scholar.objectScale) image.style.transform = `scale(${scholar.objectScale})`;
+          if (scholar.transformOrigin) image.style.transformOrigin = scholar.transformOrigin;
+          portrait.append(image);
+        } else {
+          portrait.textContent = scholar.nameEn.split(' ').map((word) => word[0]).join('').slice(0, 2);
+        }
+        const label = document.createElement('strong');
+        label.textContent = scholar.nameKo;
+        link.append(portrait, label);
+        container.append(link);
+      });
+
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+      L.marker([point.latitude, point.longitude], {
+        icon: L.divIcon({
+          className: 'atlas-constellation-icon',
+          html: container,
+          iconSize: [width, height],
+          iconAnchor: [centerX, centerY],
+        }),
+        keyboard: false,
+        bubblingMouseEvents: false,
+        zIndexOffset: 850,
+      }).addTo(constellationLayer);
+    };
 
     const markerEntries = points.map((point) => {
       const precisionLabel = point.coordinatePrecision === 'city' ? '도시 중심' : point.coordinatePrecision === 'building' ? '건물' : '캠퍼스';
@@ -239,16 +347,18 @@ const mappedAffiliations = affiliations;
     const selectInstitution = (id: string) => {
       institution = institution === id ? '' : id;
       showInstitutionDetail(institution);
+      showScholarConstellation(institution);
       update(false);
       if (institution) fitMapTo(new Set([institution]), 7);
     };
-    kindButtons.forEach((button) => button.addEventListener('click', () => { kind = button.dataset.atlasKind || 'all'; institution = ''; showInstitutionDetail(''); update(true); }));
-    select?.addEventListener('change', () => { institution = ''; showInstitutionDetail(''); update(true); });
+    kindButtons.forEach((button) => button.addEventListener('click', () => { kind = button.dataset.atlasKind || 'all'; institution = ''; showInstitutionDetail(''); showScholarConstellation(''); update(true); }));
+    select?.addEventListener('change', () => { institution = ''; showInstitutionDetail(''); showScholarConstellation(''); update(true); });
     const params = new URLSearchParams(window.location.search);
     if (select && [...select.options].some((option) => option.value === params.get('pioneer'))) select.value = params.get('pioneer') || '';
     if (kindButtons.some((button) => button.dataset.atlasKind === params.get('kind'))) kind = params.get('kind') || 'all';
     if (points.some((point) => point.id === params.get('institution'))) institution = params.get('institution') || '';
     showInstitutionDetail(institution);
+    showScholarConstellation(institution);
     update(false);
     fitMapTo(institution ? new Set([institution]) : new Set(points.map((point) => point.id)), institution ? 7 : 3);
     if (mapElement && map) new ResizeObserver(() => map.invalidateSize()).observe(mapElement);

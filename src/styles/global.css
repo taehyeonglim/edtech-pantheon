@@ -1658,6 +1658,22 @@ p {
 .atlas-leaflet-marker.is-selected .atlas-marker-pin:not(.has-emblem) { border-color: var(--paper); background: #8f5b31; transform: rotate(-45deg) scale(1.15); }
 .atlas-leaflet-marker.is-selected .atlas-marker-pin.has-emblem { border-color: var(--paper); box-shadow: 0 0 0 3px rgba(143,91,49,.72), 0 6px 18px rgba(0,0,0,.48); transform: scale(1.12); }
 .atlas-leaflet-marker.is-muted { pointer-events: none; }
+.atlas-constellation-icon { overflow: visible !important; border: 0; background: transparent; }
+.atlas-scholar-constellation { position: relative; width: 300px; height: 250px; pointer-events: none; }
+.atlas-scholar-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
+.atlas-scholar-lines line { stroke: var(--gold-light); stroke-width: 1.6; stroke-linecap: round; opacity: .88; animation: atlas-line-in .35s ease-out both; }
+.atlas-scholar-node { position: absolute; z-index: 2; display: grid; justify-items: center; width: 82px; color: var(--paper); text-decoration: none; pointer-events: auto; transform: translate(-50%, -50%); animation: atlas-scholar-in .32s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--scholar-index) * 70ms); }
+.atlas-scholar-portrait { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 2px solid var(--gold-light); border-radius: 50%; background: var(--navy-2); color: var(--gold-light); box-shadow: 0 5px 18px rgba(0,0,0,.55); font: 700 13px/1 var(--mono); transition: transform .2s, border-color .2s, box-shadow .2s; }
+.atlas-map .leaflet-marker-pane .atlas-scholar-portrait img { display: block; width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: cover; object-position: 50% 24%; }
+.atlas-scholar-node strong { max-width: 82px; margin-top: 5px; padding: 3px 6px; border: 1px solid rgba(213,161,91,.45); background: rgba(13,23,25,.94); color: var(--paper); font: 600 11px/1.2 var(--sans); text-align: center; white-space: nowrap; box-shadow: 0 3px 10px rgba(0,0,0,.36); }
+.atlas-scholar-node:hover .atlas-scholar-portrait,
+.atlas-scholar-node:focus-visible .atlas-scholar-portrait { border-color: var(--paper); box-shadow: 0 0 0 3px rgba(143,91,49,.7), 0 7px 20px rgba(0,0,0,.62); transform: scale(1.1); }
+.atlas-scholar-node:focus-visible { outline: 0; }
+@keyframes atlas-scholar-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.45); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes atlas-line-in { from { opacity: 0; stroke-dasharray: 0 200; } to { opacity: .88; stroke-dasharray: 200 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .atlas-scholar-node, .atlas-scholar-lines line { animation: none; }
+}
 .atlas-map .leaflet-tooltip { padding: 7px 9px; border: 1px solid var(--gold); border-radius: 0; background: rgba(13,23,25,.95); color: var(--paper); box-shadow: 0 5px 16px rgba(0,0,0,.32); }
 .atlas-map .leaflet-tooltip strong,
 .atlas-map .leaflet-tooltip span { display: block; }
