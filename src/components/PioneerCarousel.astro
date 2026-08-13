@@ -338,17 +338,21 @@ const base = `${import.meta.env.BASE_URL}/`;
       }
     });
     stage.addEventListener('pointerdown', (event) => {
+      if (!event.isPrimary || event.button !== 0) return;
       dragging = true;
       dragged = false;
       dragStartX = event.clientX;
       dragStartPhase = phase;
-      stage.setPointerCapture(event.pointerId);
-      stage.classList.add('is-dragging');
     });
     stage.addEventListener('pointermove', (event) => {
       if (!dragging) return;
       const movement = event.clientX - dragStartX;
-      if (Math.abs(movement) > 5) dragged = true;
+      if (!dragged && Math.abs(movement) <= 5) return;
+      if (!dragged) {
+        dragged = true;
+        stage.setPointerCapture(event.pointerId);
+        stage.classList.add('is-dragging');
+      }
       phase = dragStartPhase - movement / (stage.clientWidth < 600 ? 118 : 185);
       manualTarget = null;
     });
