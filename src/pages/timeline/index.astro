@@ -4,6 +4,7 @@ import CitationList from '../../components/CitationList.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
 import { nationalityById } from '../../data/nationalities';
+import { getFlagIcons } from '../../data/flag-icons';
 import {
   getTimelineTrackId,
   pioneerTimelineTrack,
@@ -211,6 +212,7 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
                   {track.events.map((event) => {
                     const portrait = portraitById[event.pioneer.id];
                     const nationality = nationalityById[event.pioneer.id];
+                    const flagIcons = getFlagIcons(nationality.flag);
                     const portraitStyle = portrait ? [
                       portrait.objectPosition && `object-position:${portrait.objectPosition}`,
                       portrait.objectScale && `transform:scale(${portrait.objectScale})`,
@@ -249,7 +251,12 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
                                   : <span aria-hidden="true">{event.pioneer.initials}</span>}
                               </a>
                               <span class="nationality-badge is-compact event-person-nationality" title={nationality.note} aria-label={`국적: ${nationality.label}`}>
-                                <b aria-hidden="true">{nationality.flag}</b>
+                                {flagIcons.map((flag) => (
+                                  <span class="country-flag">
+                                    <small>{flag.code}</small>
+                                    <img src={`${base}flags/${flag.file}`} alt={flag.alt} width="20" height="14" loading="lazy" />
+                                  </span>
+                                ))}
                               </span>
                             </span>
                             <div class="event-person-name">

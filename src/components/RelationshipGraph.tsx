@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Pioneer, Relationship } from "../data/types";
+import type { FlagIcon } from "../data/flag-icons";
 
 type GraphPortrait = {
   src: string;
   objectPosition?: string;
   objectScale?: number;
   transformOrigin?: string;
-  nationality: { flag: string; label: string; note: string };
+  nationality: { flag: string; label: string; note: string; flagIcons: FlagIcon[] };
 };
 
 type Props = {
@@ -396,7 +397,12 @@ export default function RelationshipGraph({
                     title={portrait.nationality.note}
                     aria-label={`국적: ${portrait.nationality.label}`}
                   >
-                    <b aria-hidden="true">{portrait.nationality.flag}</b>
+                    {portrait.nationality.flagIcons.map((flag) => (
+                      <span className="country-flag" key={flag.code}>
+                        <small>{flag.code}</small>
+                        <img src={`${baseUrl}flags/${flag.file}`} alt={flag.alt} width="20" height="14" />
+                      </span>
+                    ))}
                   </span>
                 )}
                 <span className="graph-node-label">{pioneer.nameKo}</span>
@@ -509,9 +515,12 @@ export default function RelationshipGraph({
                     title={portraits[selectedPioneer.id]!.nationality.note}
                     aria-label={`국적: ${portraits[selectedPioneer.id]!.nationality.label}`}
                   >
-                    <b aria-hidden="true">
-                      {portraits[selectedPioneer.id]!.nationality.flag}
-                    </b>
+                    {portraits[selectedPioneer.id]!.nationality.flagIcons.map((flag) => (
+                      <span className="country-flag" key={flag.code}>
+                        <small>{flag.code}</small>
+                        <img src={`${baseUrl}flags/${flag.file}`} alt={flag.alt} width="20" height="14" />
+                      </span>
+                    ))}
                     <small>
                       {portraits[selectedPioneer.id]!.nationality.label}
                     </small>

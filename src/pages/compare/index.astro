@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
 import { nationalityById } from '../../data/nationalities';
+import { getFlagIcons } from '../../data/flag-icons';
 import { relationships } from '../../data/relationships';
 const base = `${import.meta.env.BASE_URL}/`;
 const comparePioneers = pioneers.map((pioneer) => {
@@ -10,7 +11,7 @@ const comparePioneers = pioneers.map((pioneer) => {
   return {
     ...pioneer,
     portrait: portrait ? { src: `${base}${portrait.src}`, alt: portrait.alt, objectPosition: portrait.objectPosition, objectScale: portrait.objectScale, transformOrigin: portrait.transformOrigin } : null,
-    nationality: nationalityById[pioneer.id]
+    nationality: { ...nationalityById[pioneer.id], flagIcons: getFlagIcons(nationalityById[pioneer.id].flag) }
   };
 });
 const domains = [...new Set(pioneers.flatMap((pioneer) => pioneer.domains))].sort((a, b) => a.localeCompare(b, 'ko'));
@@ -82,7 +83,12 @@ const comparisonPresets = [
                       : <span aria-hidden="true">{pioneer.initials}</span>}
                   </span>
                   <span class="nationality-badge is-compact compare-select-nationality" title={pioneer.nationality.note} aria-label={`국적: ${pioneer.nationality.label}`}>
-                    <b aria-hidden="true">{pioneer.nationality.flag}</b>
+                    {pioneer.nationality.flagIcons.map((flag) => (
+                      <span class="country-flag">
+                        <small>{flag.code}</small>
+                        <img src={`${base}flags/${flag.file}`} alt={flag.alt} width="20" height="14" loading="lazy" />
+                      </span>
+                    ))}
                   </span>
                 </span>
                 <span class="compare-select-identity">
@@ -99,7 +105,7 @@ const comparisonPresets = [
       <div class="compare-board" data-compare-board><div class="graph-detail-empty"><span>02</span><p>위의 인물 카드에서 두 명 이상을 선택하면 비교표가 열립니다.</p></div></div>
     </div>
   </section>
-  <script is:inline define:vars={{ pioneers: comparePioneers, relationshipData: compareRelationships }}>
+  <script is:inline define:vars={{ pioneers: comparePioneers, relationshipData: compareRelationships, base }}>
     const controls = document.querySelector('[data-compare-controls]');
     const board = document.querySelector('[data-compare-board]');
     const status = document.querySelector('[data-compare-status]');
@@ -109,6 +115,7 @@ const comparisonPresets = [
     const clearButton = filterRoot?.querySelector('[data-compare-clear]');
     const result = filterRoot?.querySelector('[data-compare-result]');
     const selected = [];
+    const renderFlags = (nationality, compact = false) => nationality.flagIcons.map((flag) => `<span class="country-flag"><small>${flag.code}</small><img src="${base}flags/${flag.file}" alt="${flag.alt}" width="20" height="14"></span>`).join(compact ? '' : ' ');
     const normalize = (value) => value.trim().toLocaleLowerCase('ko');
     const applyRosterFilters = () => {
       const query = normalize(searchInput?.value ?? '');
@@ -165,7 +172,7 @@ const comparisonPresets = [
         return direct.length ? direct.join('<br><br>') : '선택 인물 사이 직접 연결 없음';
       });
       const rows = [
-        ['생몰·국적', ...people.map((p) => `${p.life}<br>${p.nationality.flag} ${p.nationality.label}`)],
+        ['생몰·국적', ...people.map((p) => `${p.life}<br><span class="compare-table-nationality">${renderFlags(p.nationality)}<span>${p.nationality.label}</span></span>`)],
         ['선택 인물 간 관계', ...relationshipCells],
         ['핵심 명제', ...people.map((p) => p.thesis)],
         ['학습관', ...people.map((p) => p.summary)],
@@ -174,7 +181,7 @@ const comparisonPresets = [
         ['주요 연표', ...people.map((p) => p.timeline.map((event) => `${event.year} · ${event.label}`).join('<br>'))],
         ['시대·학파', ...people.map((p) => `${p.era}<br>${p.school}`)],
       ];
-      board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-portrait-wrap"><span class="compare-portrait${p.portrait ? '' : ' is-fallback'}" style="--person-accent:${p.accent}">${p.portrait ? `<img src="${p.portrait.src}" alt="${p.portrait.alt}" draggable="false"${p.portrait.objectPosition || p.portrait.objectScale ? ` style="${p.portrait.objectPosition ? `object-position:${p.portrait.objectPosition};` : ''}${p.portrait.objectScale ? `transform:scale(${p.portrait.objectScale});` : ''}${p.portrait.transformOrigin ? `transform-origin:${p.portrait.transformOrigin};` : ''}"` : ''}>` : p.initials}</span><span class="nationality-badge is-compact compare-nationality" title="${p.nationality.note}" aria-label="국적: ${p.nationality.label}"><b aria-hidden="true">${p.nationality.flag}</b></span></span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      board.innerHTML = `<table class="compare-table"><thead><tr><th>축</th>${people.map((p) => `<th><div class="compare-person"><span class="compare-portrait-wrap"><span class="compare-portrait${p.portrait ? '' : ' is-fallback'}" style="--person-accent:${p.accent}">${p.portrait ? `<img src="${p.portrait.src}" alt="${p.portrait.alt}" draggable="false"${p.portrait.objectPosition || p.portrait.objectScale ? ` style="${p.portrait.objectPosition ? `object-position:${p.portrait.objectPosition};` : ''}${p.portrait.objectScale ? `transform:scale(${p.portrait.objectScale});` : ''}${p.portrait.transformOrigin ? `transform-origin:${p.portrait.transformOrigin};` : ''}"` : ''}>` : p.initials}</span><span class="nationality-badge is-compact compare-nationality" title="${p.nationality.note}" aria-label="국적: ${p.nationality.label}">${renderFlags(p.nationality, true)}</span></span><span><strong>${p.nameKo}</strong><span>${p.nameEn}</span></span></div></th>`).join('')}</tr></thead><tbody>${rows.map(([label, ...cells]) => `<tr><th>${label}</th>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
     };
     controls?.addEventListener('click', (event) => {
       const target = event.target;

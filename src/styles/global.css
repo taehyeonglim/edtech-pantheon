@@ -984,13 +984,6 @@ p {
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-.nationality-badge b {
-  color: inherit;
-  font:
-    13px/1 system-ui,
-    sans-serif;
-  letter-spacing: 0.04em;
-}
 .nationality-badge small {
   overflow: hidden;
   color: #d4d9d3;
@@ -998,13 +991,33 @@ p {
   text-overflow: ellipsis;
 }
 .nationality-badge.is-compact {
-  min-width: 25px;
+  min-width: 43px;
   min-height: 20px;
   justify-content: center;
-  padding: 2px 5px;
+  padding: 2px 4px;
 }
-.nationality-badge.is-compact b {
-  font-size: 12px;
+.country-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  font: var(--type-min)/1 var(--mono);
+  color: var(--gold-light);
+}
+.country-flag img {
+  display: block;
+  width: 20px;
+  height: 14px;
+  border: 1px solid rgba(240, 235, 223, 0.22);
+  border-radius: 2px;
+  object-fit: cover;
+}
+.country-flag small,
+.nationality-badge.is-compact .country-flag small {
+  overflow: visible;
+  color: inherit;
+  font: inherit;
+  text-overflow: clip;
 }
 .card-nationality {
   position: absolute;
@@ -1650,6 +1663,9 @@ p {
 .atlas-record-role { margin: 15px 0 7px; color: var(--paper-soft); font-size: 13px; }
 .atlas-record-place { margin: 0; color: var(--gold-light); font-size: 13px; }
 .atlas-record-place span { color: var(--muted); }
+.atlas-country-flag { display: inline-flex; align-items: center; gap: 4px; margin-left: 3px; vertical-align: middle; }
+.atlas-country-flag small { color: var(--gold-light); font: var(--type-min)/1 var(--mono); }
+.atlas-country-flag img { display: block; width: 20px; height: 14px; border: 1px solid rgba(240,235,223,.22); border-radius: 2px; object-fit: cover; }
 .atlas-record-period { margin: 8px 0 13px; }
 .atlas-record a { color: var(--gold-light); font: var(--type-label) var(--mono); }
 .atlas-empty { margin: 24px 0; color: var(--muted); text-align: center; }
@@ -3528,6 +3544,7 @@ p {
     12px/1 system-ui,
     sans-serif;
 }
+.compare-table-nationality { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 4px; }
 
 .method-grid {
   display: grid;

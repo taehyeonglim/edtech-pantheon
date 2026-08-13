@@ -3,23 +3,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraits } from '../../data/portraits';
 import { nationalityById, nationalityCheckedOn } from '../../data/nationalities';
+import { getFlagIcons } from '../../data/flag-icons';
 
 const base = `${import.meta.env.BASE_URL}/`;
-const flagIconByEmoji: Record<string, { code: string; file: string; alt: string }> = {
-  '🇺🇸': { code: 'US', file: 'us.svg', alt: '미국 국기' },
-  '🇷🇺': { code: 'RU', file: 'ru.svg', alt: '러시아 국기' },
-  '🇨🇦': { code: 'CA', file: 'ca.svg', alt: '캐나다 국기' },
-  '🇿🇦': { code: 'ZA', file: 'za.svg', alt: '남아프리카공화국 국기' },
-  '🇨🇭': { code: 'CH', file: 'ch.svg', alt: '스위스 국기' },
-  '🇦🇺': { code: 'AU', file: 'au.svg', alt: '호주 국기' },
-  '🇬🇧': { code: 'GB', file: 'gb.svg', alt: '영국 국기' },
-  '🇳🇱': { code: 'NL', file: 'nl.svg', alt: '네덜란드 국기' },
-};
 const portraitAudit = pioneers.map((pioneer) => ({
   pioneer,
   portrait: portraits[pioneer.id],
   nationality: nationalityById[pioneer.id],
-  flagIcons: nationalityById[pioneer.id].flag.split(' ').map((flag) => flagIconByEmoji[flag]).filter(Boolean),
+  flagIcons: getFlagIcons(nationalityById[pioneer.id].flag),
 }));
 ---
 <BaseLayout title="방법론">

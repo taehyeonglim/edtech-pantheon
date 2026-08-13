@@ -5,6 +5,7 @@ import { pioneers } from '../../data/pioneers';
 import { relationships } from '../../data/relationships';
 import { portraitById } from '../../data/portraits';
 import { nationalityById } from '../../data/nationalities';
+import { getFlagIcons } from '../../data/flag-icons';
 const base = `${import.meta.env.BASE_URL}/`;
 const knownBirths = pioneers.map((pioneer) => pioneer.birthYear).filter((year): year is number => year !== null);
 const knownDeaths = pioneers.map((pioneer) => pioneer.deathYear).filter((year): year is number => year !== null);
@@ -13,7 +14,7 @@ const axisEnd = Math.ceil((Math.max(new Date().getFullYear(), ...knownDeaths) + 
 const graphPortraits = Object.fromEntries(pioneers.map((pioneer) => {
   const portrait = portraitById[pioneer.id];
   const nationality = nationalityById[pioneer.id];
-  return [pioneer.id, portrait ? { src: portrait.src, objectPosition: portrait.objectPosition, objectScale: portrait.objectScale, transformOrigin: portrait.transformOrigin, nationality } : null];
+  return [pioneer.id, portrait ? { src: portrait.src, objectPosition: portrait.objectPosition, objectScale: portrait.objectScale, transformOrigin: portrait.transformOrigin, nationality: { ...nationality, flagIcons: getFlagIcons(nationality.flag) } } : null];
 }));
 ---
 <BaseLayout title="관계도">
