@@ -3389,7 +3389,7 @@ p {
   font: var(--type-min) var(--mono);
   letter-spacing: 0.08em;
 }
-.source-search {
+.source-filter {
   display: grid;
   grid-template-columns: minmax(180px, 0.42fr) minmax(320px, 1fr) auto;
   gap: 20px;
@@ -3399,23 +3399,24 @@ p {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.018);
 }
-.source-search label span,
-.source-search label strong {
+.source-filter label span,
+.source-filter label strong {
   display: block;
 }
-.source-search label span {
+.source-filter label span {
   color: var(--gold);
   font: var(--type-min) var(--mono);
   letter-spacing: 0.08em;
 }
-.source-search label strong {
+.source-filter label strong {
   margin-top: 4px;
   color: var(--paper);
   font: 500 18px/1.2 var(--serif);
 }
-.source-search-field {
+.source-filter-field {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) 18px;
+  gap: 10px;
   align-items: center;
   min-height: 43px;
   padding: 0 11px;
@@ -3423,14 +3424,16 @@ p {
   background: #111d1f;
   transition: border-color 0.2s;
 }
-.source-search-field:focus-within {
+.source-filter-field:focus-within {
   border-color: var(--gold);
 }
-.source-search-field > span {
+.source-filter-field > span:first-child {
   color: var(--gold);
-  font: 18px/1 var(--sans);
+  font: var(--type-min) var(--mono);
+  letter-spacing: 0.05em;
 }
-.source-search-field input {
+.source-filter-field select {
+  appearance: none;
   width: 100%;
   min-width: 0;
   padding: 9px 8px;
@@ -3439,32 +3442,38 @@ p {
   background: transparent;
   color: var(--paper);
   font-size: 13px;
+  cursor: pointer;
 }
-.source-search-field input::placeholder {
-  color: var(--dim);
-}
-.source-search-field input::-webkit-search-cancel-button {
-  display: none;
-}
-.source-search-field button {
-  padding: 4px 0 4px 10px;
-  border: 0;
-  border-left: 1px solid var(--line);
-  background: transparent;
+.source-filter-chevron {
   color: var(--gold-light);
-  font: var(--type-min) var(--mono);
+  font: 18px/1 var(--sans);
+  pointer-events: none;
 }
-.source-search > p {
-  min-width: 120px;
+.source-filter > p {
+  min-width: 142px;
   margin: 0;
   color: var(--dim);
   font: var(--type-min) var(--mono);
   text-align: right;
+}
+.source-filter > p span,
+.source-filter > p b {
+  display: block;
+}
+.source-filter > p span {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
-.source-search > p b {
+.source-filter > p b {
+  margin-top: 4px;
   color: var(--gold-light);
   font-weight: 400;
+  white-space: nowrap;
+}
+.source-filter > p i {
+  font-style: normal;
 }
 .source-group + .source-group {
   margin-top: 72px;
@@ -4302,16 +4311,16 @@ p {
     display: block;
     margin: 0 0 5px;
   }
-  .source-search {
+  .source-filter {
     grid-template-columns: 1fr;
     gap: 13px;
     margin-bottom: 42px;
     padding: 15px;
   }
-  .source-search label strong {
+  .source-filter label strong {
     font-size: 17px;
   }
-  .source-search > p {
+  .source-filter > p {
     min-width: 0;
     text-align: left;
   }

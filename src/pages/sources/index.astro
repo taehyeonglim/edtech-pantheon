@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SourceEntry from '../../components/SourceEntry.astro';
+import { biographyById } from '../../data/biographies';
+import { pioneers } from '../../data/pioneers';
+import { relationships } from '../../data/relationships';
 import { sources } from '../../data/sources';
 
 const tierGroups = [
@@ -15,24 +18,61 @@ const groupedSources = tierGroups.map((group) => ({
     .filter((source) => source.tier === group.tier)
     .sort((a, b) => a.authors.localeCompare(b.authors, 'en') || a.title.localeCompare(b.title, 'en')),
 }));
+
+const sourceIdSet = new Set(sources.map((source) => source.id));
+const pioneerOptions = pioneers
+  .map((pioneer) => {
+    const relationshipSourceIds = relationships
+      .filter((relationship) => relationship.source === pioneer.id || relationship.target === pioneer.id)
+      .flatMap((relationship) => relationship.sourceIds);
+    const sourceIds = new Set([
+      ...pioneer.sourceIds,
+      ...(pioneer.quoteSourceId ? [pioneer.quoteSourceId] : []),
+      ...pioneer.works.flatMap((work) => work.sourceIds),
+      ...pioneer.sections.flatMap((section) => section.sourceIds),
+      ...pioneer.timeline.flatMap((event) => event.sourceIds),
+      ...(biographyById[pioneer.id] ?? []).flatMap((section) => section.sourceIds),
+      ...relationshipSourceIds,
+    ].filter((sourceId) => sourceIdSet.has(sourceId)));
+
+    return { pioneer, sourceIds: [...sourceIds] };
+  })
+  .sort((a, b) => a.pioneer.nameKo.localeCompare(b.pioneer.nameKo, 'ko'));
+
+const pioneerIdsBySource = new Map<string, string[]>();
+pioneerOptions.forEach(({ pioneer, sourceIds }) => {
+  sourceIds.forEach((sourceId) => {
+    pioneerIdsBySource.set(sourceId, [...(pioneerIdsBySource.get(sourceId) ?? []), pioneer.id]);
+  });
+});
 ---
 <BaseLayout title="통합 참고문헌">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE SOURCE ROOM / BIBLIOGRAPHY</div><h1>문장 뒤에<br />남는 것들.</h1><p>원저서, 연구서, 동료평가 논문과 기관 자료를 한 곳에 모았습니다. 등급 배지는 자료의 성격을 뜻하며, 자료의 질을 자동으로 보증하지는 않습니다.</p><div class="hero-meta"><span><b>{sources.length}</b> SOURCES</span><span><b>{sources.filter((s) => s.tier === 'A').length}</b> PRIMARY / EDITED</span><span><b>{sources.filter((s) => s.tier === 'B').length}</b> SCHOLARLY</span></div></div></section>
   <section class="section sources-page">
     <div class="shell source-index">
-      <p class="source-index-intro"><span>READING ORDER</span> 등급별로 묶고 저자명순으로 정리했습니다. 각 항목을 누르면 원문이 새 창에서 열립니다.</p>
-      <form class="source-search" role="search" data-source-search>
-        <label for="source-query">
-          <span>SEARCH THE BIBLIOGRAPHY</span>
-          <strong>참고문헌 검색</strong>
+      <p class="source-index-intro"><span>READING ORDER</span> 등급별로 묶고 저자명순으로 정리했습니다. 학자를 선택하면 상세 원고와 관계도에 실제로 연결된 자료만 볼 수 있습니다.</p>
+      <div class="source-filter" data-source-filter>
+        <label for="source-pioneer">
+          <span>FILTER BY PIONEER</span>
+          <strong>학자별 참고문헌</strong>
         </label>
-        <div class="source-search-field">
-          <span aria-hidden="true">⌕</span>
-          <input id="source-query" type="search" placeholder="제목, 저자, 발행처, 연도, DOI 검색" autocomplete="off" spellcheck="false" data-source-query />
-          <button type="button" data-source-clear hidden>초기화</button>
+        <div class="source-filter-field">
+          <span aria-hidden="true">PIONEER / {pioneerOptions.length}</span>
+          <select id="source-pioneer" data-source-pioneer>
+            <option value="">전체 학자 · 모든 참고문헌</option>
+            {pioneerOptions.map(({ pioneer, sourceIds }) => (
+              <option value={pioneer.id} data-pioneer-name={pioneer.nameKo}>
+                {pioneer.nameKo} · {pioneer.nameEn} ({sourceIds.length})
+              </option>
+            ))}
+          </select>
+          <span class="source-filter-chevron" aria-hidden="true">⌄</span>
         </div>
-        <p aria-live="polite"><b data-source-result>{sources.length}</b> / {sources.length} SOURCES</p>
-      </form>
+        <p aria-live="polite">
+          <span data-source-selection>전체 학자</span>
+          <b><i data-source-result>{sources.length}</i> / {sources.length} SOURCES</b>
+        </p>
+      </div>
       {groupedSources.map((group) => (
         <section class="source-group" aria-labelledby={`source-tier-${group.tier}`} data-source-group>
           <header class="source-group-head">
@@ -44,38 +84,27 @@ const groupedSources = tierGroups.map((group) => ({
             <strong data-source-group-count data-source-total={group.sources.length}>{String(group.sources.length).padStart(2, '0')} SOURCES</strong>
           </header>
           <ol class="source-list">
-            {group.sources.map((source, index) => <SourceEntry source={source} index={index} />)}
+            {group.sources.map((source, index) => (
+              <SourceEntry source={source} index={index} pioneerIds={pioneerIdsBySource.get(source.id) ?? []} />
+            ))}
           </ol>
         </section>
       ))}
       <div class="source-empty" data-source-empty hidden>
-        <span>NO MATCHING SOURCES</span>
-        <p>검색 결과가 없습니다. 제목이나 저자명처럼 더 짧은 검색어를 입력해 보세요.</p>
+        <span>NO LINKED SOURCES</span>
+        <p>선택한 학자에 연결된 참고문헌이 없습니다.</p>
       </div>
     </div>
   </section>
   <script>
-    const searchForm = document.querySelector('[data-source-search]') as HTMLFormElement | null;
-    const searchInput = document.querySelector('[data-source-query]') as HTMLInputElement | null;
-    const clearButton = document.querySelector('[data-source-clear]') as HTMLButtonElement | null;
+    const pioneerSelect = document.querySelector('[data-source-pioneer]') as HTMLSelectElement | null;
     const resultCount = document.querySelector('[data-source-result]') as HTMLElement | null;
+    const selectionLabel = document.querySelector('[data-source-selection]') as HTMLElement | null;
     const emptyState = document.querySelector('[data-source-empty]') as HTMLElement | null;
     const sourceGroups = [...document.querySelectorAll('[data-source-group]')] as HTMLElement[];
-    const sourceEntries = [...document.querySelectorAll('[data-source-entry]')] as HTMLElement[];
-
-    const normalize = (value: string) => value
-      .normalize('NFKD')
-      .replace(/\p{M}/gu, '')
-      .toLocaleLowerCase()
-      .trim();
-
-    sourceEntries.forEach((entry) => {
-      entry.dataset.searchIndex = normalize(entry.dataset.searchValue || '');
-    });
 
     const updateSources = () => {
-      const query = normalize(searchInput?.value || '');
-      const terms = query.split(/\s+/).filter(Boolean);
+      const pioneerId = pioneerSelect?.value || '';
       let visibleTotal = 0;
 
       sourceGroups.forEach((group) => {
@@ -84,8 +113,8 @@ const groupedSources = tierGroups.map((group) => ({
         let visibleInGroup = 0;
 
         entries.forEach((entry) => {
-          const searchIndex = entry.dataset.searchIndex || '';
-          const matches = terms.every((term) => searchIndex.includes(term));
+          const pioneerIds = (entry.dataset.pioneerIds || '').split(' ').filter(Boolean);
+          const matches = !pioneerId || pioneerIds.includes(pioneerId);
           entry.hidden = !matches;
           if (matches) visibleInGroup += 1;
         });
@@ -96,7 +125,7 @@ const groupedSources = tierGroups.map((group) => ({
         const groupCount = group.querySelector('[data-source-group-count]') as HTMLElement | null;
         const groupTotal = Number(groupCount?.dataset.sourceTotal || entries.length);
         if (groupCount) {
-          groupCount.textContent = query
+          groupCount.textContent = pioneerId
             ? `${String(visibleInGroup).padStart(2, '0')} / ${String(groupTotal).padStart(2, '0')} SOURCES`
             : `${String(groupTotal).padStart(2, '0')} SOURCES`;
         }
@@ -104,34 +133,26 @@ const groupedSources = tierGroups.map((group) => ({
 
       sourceGroups.find((group) => !group.hidden)?.classList.add('is-first-visible');
       if (resultCount) resultCount.textContent = String(visibleTotal);
-      if (clearButton) clearButton.hidden = !query;
+      if (selectionLabel) {
+        selectionLabel.textContent = pioneerId
+          ? pioneerSelect?.selectedOptions[0]?.dataset.pioneerName || '선택한 학자'
+          : '전체 학자';
+      }
       if (emptyState) emptyState.hidden = visibleTotal !== 0;
 
       const url = new URL(window.location.href);
-      if (query) url.searchParams.set('q', searchInput?.value.trim() || '');
-      else url.searchParams.delete('q');
+      url.searchParams.delete('q');
+      if (pioneerId) url.searchParams.set('pioneer', pioneerId);
+      else url.searchParams.delete('pioneer');
       window.history.replaceState({}, '', url);
     };
 
-    searchForm?.addEventListener('submit', (event) => event.preventDefault());
-    searchInput?.addEventListener('input', updateSources);
-    searchInput?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && searchInput.value) {
-        searchInput.value = '';
-        updateSources();
-      }
-    });
-    clearButton?.addEventListener('click', () => {
-      if (!searchInput) return;
-      searchInput.value = '';
-      updateSources();
-      searchInput.focus();
-    });
-
-    const initialQuery = new URLSearchParams(window.location.search).get('q');
-    if (initialQuery && searchInput) {
-      searchInput.value = initialQuery;
-      updateSources();
+    const initialPioneer = new URLSearchParams(window.location.search).get('pioneer');
+    if (initialPioneer && pioneerSelect) {
+      const isValidPioneer = [...pioneerSelect.options].some((option) => option.value === initialPioneer);
+      if (isValidPioneer) pioneerSelect.value = initialPioneer;
     }
+    pioneerSelect?.addEventListener('change', updateSources);
+    updateSources();
   </script>
 </BaseLayout>
