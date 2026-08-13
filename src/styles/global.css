@@ -3451,7 +3451,7 @@ p {
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 0.7fr;
+  grid-template-columns: 1.35fr 0.7fr 1.15fr;
   gap: 30px;
   padding-bottom: 47px;
 }
@@ -3480,19 +3480,65 @@ p {
 .footer-meta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   color: var(--dim);
   font: 10px var(--mono);
 }
-.footer-creator {
-  margin-bottom: 5px;
-  color: var(--muted);
+.footer-creator-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(213, 161, 91, 0.35);
+  background: linear-gradient(145deg, rgba(213, 161, 91, 0.08), rgba(255, 255, 255, 0.015));
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
-.footer-creator a {
+.footer-creator-card:hover {
+  border-color: var(--gold);
+  background: rgba(213, 161, 91, 0.1);
+  transform: translateY(-2px);
+}
+.footer-creator-card img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.32);
+}
+.footer-creator-copy {
+  min-width: 0;
+}
+.footer-creator-copy small,
+.footer-creator-copy strong,
+.footer-creator-copy > span {
+  display: block;
+}
+.footer-creator-copy small {
   color: var(--gold);
+  font: 8px var(--mono);
+  letter-spacing: 0.09em;
 }
-.footer-creator a:hover {
+.footer-creator-copy strong {
+  margin-top: 5px;
+  color: var(--paper);
+  font: 500 20px/1.1 var(--serif);
+}
+.footer-creator-copy > span {
+  margin-top: 7px;
+  color: var(--muted);
+  font: 10px/1.45 var(--sans);
+}
+.footer-creator-scope {
   color: var(--gold-light);
+  letter-spacing: 0.04em;
+}
+.footer-project-meta {
+  display: flex;
+  gap: 7px 13px;
+  flex-wrap: wrap;
 }
 .footer-bottom {
   border-top: 1px solid var(--line);
