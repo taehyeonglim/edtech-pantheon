@@ -1644,11 +1644,17 @@ p {
 .atlas-map .leaflet-control-attribution { background: rgba(13,23,25,.88); color: #b6bfba; font: var(--type-min)/1.4 var(--mono); }
 .atlas-map .leaflet-control-attribution a { color: var(--gold-light); }
 .atlas-leaflet-marker { border: 0; background: transparent; }
-.atlas-marker-pin { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid var(--gold-light); border-radius: 50% 50% 50% 8px; background: rgba(13,23,25,.94); color: var(--paper); box-shadow: 0 5px 16px rgba(0,0,0,.4); transform: rotate(-45deg); transition: transform .2s, border-color .2s, background .2s; }
+.atlas-marker-pin { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid var(--gold-light); border-radius: 50% 50% 50% 8px; background: rgba(13,23,25,.94); color: var(--paper); box-shadow: 0 5px 16px rgba(0,0,0,.4); transform: rotate(-45deg); transition: transform .2s, border-color .2s, background .2s; }
 .atlas-marker-pin b { font: 600 11px/1 var(--mono); transform: rotate(45deg); }
-.atlas-leaflet-marker:hover .atlas-marker-pin,
-.atlas-leaflet-marker:focus .atlas-marker-pin { border-color: var(--paper); transform: rotate(-45deg) scale(1.12); }
-.atlas-leaflet-marker.is-selected .atlas-marker-pin { border-color: var(--paper); background: #8f5b31; transform: rotate(-45deg) scale(1.15); }
+.atlas-marker-pin.has-emblem { width: 46px; height: 46px; padding: 5px; border-radius: 50%; background: #f5f2e9; transform: none; }
+.atlas-map .leaflet-marker-pane .atlas-marker-pin.has-emblem img { display: block; width: 32px !important; height: 32px !important; max-width: 32px !important; max-height: 32px !important; border-radius: 50%; object-fit: contain; }
+.atlas-marker-pin.has-emblem b { position: absolute; right: -5px; bottom: -4px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 4px; border: 1px solid var(--gold-light); border-radius: 999px; background: rgba(13,23,25,.97); color: var(--paper); font-size: var(--type-min); transform: none; }
+.atlas-leaflet-marker:hover .atlas-marker-pin:not(.has-emblem),
+.atlas-leaflet-marker:focus .atlas-marker-pin:not(.has-emblem) { border-color: var(--paper); transform: rotate(-45deg) scale(1.12); }
+.atlas-leaflet-marker:hover .atlas-marker-pin.has-emblem,
+.atlas-leaflet-marker:focus .atlas-marker-pin.has-emblem { border-color: var(--paper); transform: scale(1.1); }
+.atlas-leaflet-marker.is-selected .atlas-marker-pin:not(.has-emblem) { border-color: var(--paper); background: #8f5b31; transform: rotate(-45deg) scale(1.15); }
+.atlas-leaflet-marker.is-selected .atlas-marker-pin.has-emblem { border-color: var(--paper); box-shadow: 0 0 0 3px rgba(143,91,49,.72), 0 6px 18px rgba(0,0,0,.48); transform: scale(1.12); }
 .atlas-leaflet-marker.is-muted { pointer-events: none; }
 .atlas-map .leaflet-tooltip { padding: 7px 9px; border: 1px solid var(--gold); border-radius: 0; background: rgba(13,23,25,.95); color: var(--paper); box-shadow: 0 5px 16px rgba(0,0,0,.32); }
 .atlas-map .leaflet-tooltip strong,
