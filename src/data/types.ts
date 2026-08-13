@@ -69,6 +69,28 @@ export type Nationality = {
   sourceUrl: string;
 };
 
+export type Institution = {
+  id: string;
+  nameKo: string;
+  nameEn: string;
+  city: string;
+  country: string;
+  longitude: number;
+  latitude: number;
+  kind: "university" | "research" | "professional";
+};
+
+export type Affiliation = {
+  id: string;
+  pioneerId: string;
+  institutionId: string;
+  role: string;
+  startYear?: number;
+  endYear?: number;
+  sourceIds: string[];
+  featured?: boolean;
+};
+
 export type BiographySection = {
   title: string;
   body: string;
