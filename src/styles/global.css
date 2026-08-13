@@ -1635,8 +1635,20 @@ p {
 .atlas-kind-filter { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; }
 .atlas-kind-filter button { padding: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: var(--type-label) var(--mono); }
 .atlas-kind-filter button:hover, .atlas-kind-filter button.is-active { border-color: var(--gold); color: var(--gold-light); background: rgba(213,161,91,.07); }
-.atlas-map-wrap { min-width: 0; border: 1px solid var(--line); background: #0d1719; }
+.atlas-map-wrap { position: relative; min-width: 0; border: 1px solid var(--line); background: #0d1719; }
 .atlas-map { display: block; width: 100%; height: 520px; min-height: 370px; background: #111a1c; }
+.atlas-fullscreen-button { position: absolute; z-index: 1001; top: 12px; right: 12px; display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 7px 10px; border: 1px solid rgba(240,235,223,.42); background: rgba(13,23,25,.94); color: var(--paper); box-shadow: 0 4px 14px rgba(0,0,0,.32); cursor: pointer; }
+.atlas-fullscreen-button span { color: var(--gold-light); font-size: 18px; line-height: 1; }
+.atlas-fullscreen-button b { font: 600 11px/1 var(--mono); letter-spacing: .03em; }
+.atlas-fullscreen-button:hover,
+.atlas-fullscreen-button:focus-visible { border-color: var(--gold-light); background: var(--navy-2); outline: 0; }
+.atlas-map-wrap:fullscreen,
+.atlas-map-wrap.is-expanded { display: grid; grid-template-rows: minmax(0, 1fr) auto; width: 100vw; height: 100vh; border: 0; background: #0d1719; }
+.atlas-map-wrap:fullscreen::backdrop { background: #0d1719; }
+.atlas-map-wrap:fullscreen .atlas-map,
+.atlas-map-wrap.is-expanded .atlas-map { height: 100%; min-height: 0; }
+.atlas-map-wrap.is-expanded { position: fixed; z-index: 9999; inset: 0; }
+.atlas-fullscreen-open { overflow: hidden; }
 .atlas-map .leaflet-tile-pane { filter: saturate(.58) sepia(.12) brightness(.78) contrast(1.08); }
 .atlas-map .leaflet-control-zoom { border: 1px solid rgba(240,235,223,.3); border-radius: 0; box-shadow: 0 4px 14px rgba(0,0,0,.26); }
 .atlas-map .leaflet-control-zoom a { border-color: rgba(240,235,223,.18); border-radius: 0; background: rgba(13,23,25,.94); color: var(--gold-light); }

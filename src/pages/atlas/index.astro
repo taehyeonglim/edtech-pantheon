@@ -55,6 +55,7 @@ const mappedAffiliations = affiliations;
         </div>
       </div>
       <div class="atlas-map-wrap">
+        <button type="button" class="atlas-fullscreen-button" data-atlas-fullscreen aria-label="지도를 전체 화면으로 보기" aria-pressed="false"><span aria-hidden="true">⛶</span><b data-atlas-fullscreen-label>전체 화면</b></button>
         <div class="atlas-map" data-atlas-map data-points={JSON.stringify(atlasMapData)} role="region" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 실제 지도"></div>
         <p class="atlas-map-note"><span>MAP KEY</span> 기관 마커를 클릭하면 소속 학자들의 얼굴과 연결선이 펼쳐집니다. 얼굴을 누르면 인물 페이지로 이동합니다. 우측 아래 숫자는 대표 활동 기록 수이며, 지도 위에서 마우스 휠로 확대·축소할 수 있습니다.</p>
       </div>
@@ -151,7 +152,10 @@ const mappedAffiliations = affiliations;
     const detail = document.querySelector('[data-atlas-detail]') as HTMLElement | null;
     const count = document.querySelector('[data-atlas-count]') as HTMLElement | null;
     const empty = document.querySelector('[data-atlas-empty]') as HTMLElement | null;
+    const mapWrap = document.querySelector('.atlas-map-wrap') as HTMLElement | null;
     const mapElement = document.querySelector('[data-atlas-map]') as HTMLElement | null;
+    const fullscreenButton = document.querySelector('[data-atlas-fullscreen]') as HTMLButtonElement | null;
+    const fullscreenLabel = document.querySelector('[data-atlas-fullscreen-label]') as HTMLElement | null;
     const points = JSON.parse(mapElement?.dataset.points || '[]') as AtlasPoint[];
     const defaultDetailNodes = detail ? [...detail.childNodes].map((node) => node.cloneNode(true)) : [];
     let kind = 'all';
@@ -174,6 +178,40 @@ const mappedAffiliations = affiliations;
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }).addTo(map);
     }
+
+    let usesFullscreenFallback = false;
+    const updateFullscreenState = () => {
+      const isFullscreen = document.fullscreenElement === mapWrap || usesFullscreenFallback;
+      mapWrap?.classList.toggle('is-expanded', usesFullscreenFallback);
+      document.documentElement.classList.toggle('atlas-fullscreen-open', usesFullscreenFallback);
+      fullscreenButton?.setAttribute('aria-pressed', String(isFullscreen));
+      fullscreenButton?.setAttribute('aria-label', isFullscreen ? '지도 전체 화면 닫기' : '지도를 전체 화면으로 보기');
+      if (fullscreenLabel) fullscreenLabel.textContent = isFullscreen ? '전체 화면 닫기' : '전체 화면';
+      window.setTimeout(() => map?.invalidateSize(), 80);
+    };
+    const toggleFullscreen = async () => {
+      if (!mapWrap) return;
+      if (typeof mapWrap.requestFullscreen === 'function') {
+        try {
+          if (document.fullscreenElement === mapWrap) await document.exitFullscreen();
+          else await mapWrap.requestFullscreen();
+          return;
+        } catch {
+          usesFullscreenFallback = !usesFullscreenFallback;
+        }
+      } else {
+        usesFullscreenFallback = !usesFullscreenFallback;
+      }
+      updateFullscreenState();
+    };
+    fullscreenButton?.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenState);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && usesFullscreenFallback) {
+        usesFullscreenFallback = false;
+        updateFullscreenState();
+      }
+    });
 
     const constellationLayer = map ? L.layerGroup().addTo(map) : null;
 
