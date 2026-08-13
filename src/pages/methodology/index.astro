@@ -4,7 +4,7 @@ import { pioneers } from '../../data/pioneers';
 import { portraits } from '../../data/portraits';
 import { nationalityById, nationalityCheckedOn } from '../../data/nationalities';
 
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL}/`;
 const portraitAudit = pioneers.map((pioneer) => ({
   pioneer,
   portrait: portraits[pioneer.id],
