@@ -85,6 +85,10 @@ export type Institution = {
   imageSourceUrl?: string;
   imageLicense?: string;
   imageKind?: "emblem" | "campus";
+  imageNote?: string;
+  markerImageUrl?: string;
+  markerImageSourceUrl?: string;
+  markerImageLicense?: string;
 };
 
 export type Affiliation = {
