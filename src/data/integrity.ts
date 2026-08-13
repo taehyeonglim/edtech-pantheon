@@ -140,6 +140,9 @@ const validateArchive = () => {
     if (institution.imageUrl && (!institution.imageSourceUrl || !institution.imageLicense)) {
       errors.push(`${institution.id}: 기관 이미지 근거 또는 권리 정보 없음`);
     }
+    if (institution.kind === "university" && (!institution.imageUrl || institution.imageKind !== "emblem")) {
+      errors.push(`${institution.id}: 대학 엠블럼 이미지 없음`);
+    }
   }
 
   const relationshipDegree = new Map(
