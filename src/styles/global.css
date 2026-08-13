@@ -1441,10 +1441,10 @@ p {
 }
 .portrait-audit-item summary {
   display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) auto 18px;
-  gap: 11px;
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto 18px;
+  gap: 10px;
   align-items: center;
-  min-height: 82px;
+  min-height: 84px;
   padding: 13px 14px;
   cursor: pointer;
   list-style: none;
@@ -1462,6 +1462,23 @@ p {
 .portrait-audit-index {
   color: var(--dim);
   font: var(--type-label) var(--mono);
+}
+.portrait-audit-photo {
+  display: block;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border: 2px solid var(--portrait-accent);
+  border-radius: 50%;
+  background: var(--navy-2);
+}
+.portrait-audit-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 24%;
+  filter: grayscale(0.08) contrast(1.04);
 }
 .portrait-audit-identity {
   min-width: 0;
@@ -4138,6 +4155,35 @@ p {
   }
   .portrait-audit-item summary {
     min-height: 76px;
+    grid-template-columns: 20px 48px minmax(0, 1fr) 18px;
+    gap: 8px;
+    padding: 11px;
+  }
+  .portrait-audit-index {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .portrait-audit-photo {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 48px;
+    height: 48px;
+  }
+  .portrait-audit-identity {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .portrait-audit-identity small {
+    display: none;
+  }
+  .portrait-audit-nationality {
+    grid-column: 3;
+    grid-row: 2;
+    text-align: left;
+  }
+  .portrait-audit-toggle {
+    grid-column: 4;
+    grid-row: 1 / span 2;
   }
   .pioneer-card {
     min-height: 340px;
