@@ -3434,6 +3434,7 @@ p {
 }
 .source-filter-field select {
   appearance: none;
+  color-scheme: dark;
   width: 100%;
   min-width: 0;
   padding: 9px 8px;
@@ -3443,6 +3444,10 @@ p {
   color: var(--paper);
   font-size: 13px;
   cursor: pointer;
+}
+.source-filter-field select option {
+  background: var(--navy-2);
+  color: var(--paper);
 }
 .source-filter-chevron {
   color: var(--gold-light);
