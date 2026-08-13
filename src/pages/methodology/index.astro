@@ -75,7 +75,9 @@ const portraitAudit = pioneers.map((pioneer) => ({
                   <h3>{pioneer.nameKo}</h3>
                   <small>{pioneer.nameEn}</small>
                 </span>
-                <span class="portrait-audit-nationality"><b aria-hidden="true">{nationality.flag}</b> {nationality.label}</span>
+                <span class="portrait-audit-nationality" title={nationality.label} aria-label={`국적: ${nationality.label}`}>
+                  <b aria-hidden="true">{nationality.flag}</b>
+                </span>
                 <span class="portrait-audit-toggle" aria-hidden="true">＋</span>
               </summary>
               <div class="portrait-audit-body">
