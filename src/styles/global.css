@@ -1502,7 +1502,7 @@ p {
 .portrait-audit-nationality {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   justify-content: flex-end;
   min-width: 52px;
   color: var(--gold-light);
@@ -1510,12 +1510,21 @@ p {
   text-align: right;
   white-space: nowrap;
 }
-.portrait-audit-nationality b {
-  font: 18px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-  font-variant-emoji: emoji;
+.portrait-audit-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
-.portrait-audit-nationality small {
+.portrait-audit-flag small {
   font: inherit;
+}
+.portrait-audit-flag img {
+  display: block;
+  width: 22px;
+  height: 16px;
+  border: 1px solid rgba(240, 235, 223, 0.22);
+  border-radius: 2px;
+  object-fit: cover;
 }
 .portrait-audit-toggle {
   color: var(--gold);

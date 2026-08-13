@@ -5,10 +5,21 @@ import { portraits } from '../../data/portraits';
 import { nationalityById, nationalityCheckedOn } from '../../data/nationalities';
 
 const base = `${import.meta.env.BASE_URL}/`;
+const flagIconByEmoji: Record<string, { code: string; file: string; alt: string }> = {
+  '🇺🇸': { code: 'US', file: 'us.svg', alt: '미국 국기' },
+  '🇷🇺': { code: 'RU', file: 'ru.svg', alt: '러시아 국기' },
+  '🇨🇦': { code: 'CA', file: 'ca.svg', alt: '캐나다 국기' },
+  '🇿🇦': { code: 'ZA', file: 'za.svg', alt: '남아프리카공화국 국기' },
+  '🇨🇭': { code: 'CH', file: 'ch.svg', alt: '스위스 국기' },
+  '🇦🇺': { code: 'AU', file: 'au.svg', alt: '호주 국기' },
+  '🇬🇧': { code: 'GB', file: 'gb.svg', alt: '영국 국기' },
+  '🇳🇱': { code: 'NL', file: 'nl.svg', alt: '네덜란드 국기' },
+};
 const portraitAudit = pioneers.map((pioneer) => ({
   pioneer,
   portrait: portraits[pioneer.id],
-  nationality: nationalityById[pioneer.id]
+  nationality: nationalityById[pioneer.id],
+  flagIcons: nationalityById[pioneer.id].flag.split(' ').map((flag) => flagIconByEmoji[flag]).filter(Boolean),
 }));
 ---
 <BaseLayout title="방법론">
@@ -55,7 +66,7 @@ const portraitAudit = pioneers.map((pioneer) => ({
           <p>{pioneers.length}명 전원의 원본·권리 정보와 별도의 신원 대조 근거입니다. 국적 표기는 {nationalityCheckedOn}에 기관 약력과 전기 자료로 다시 확인했으며, 복수·역사적 국적은 단일 국가로 축약하지 않았습니다. 인물 카드를 열면 근거와 원문 링크를 확인할 수 있습니다.</p>
         </header>
         <div class="portrait-audit-list">
-          {portraitAudit.map(({ pioneer, portrait, nationality }, index) => portrait && (
+          {portraitAudit.map(({ pioneer, portrait, nationality, flagIcons }, index) => portrait && (
             <details class="portrait-audit-item">
               <summary>
                 <span class="portrait-audit-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
@@ -76,8 +87,12 @@ const portraitAudit = pioneers.map((pioneer) => ({
                   <small>{pioneer.nameEn}</small>
                 </span>
                 <span class="portrait-audit-nationality" title={nationality.label} aria-label={`국적: ${nationality.label}`}>
-                  <small>{nationality.label}</small>
-                  <b aria-hidden="true">{nationality.flag}</b>
+                  {flagIcons.map((flag) => (
+                    <span class="portrait-audit-flag">
+                      <small>{flag.code}</small>
+                      <img src={`${base}flags/${flag.file}`} alt={flag.alt} width="22" height="16" loading="lazy" />
+                    </span>
+                  ))}
                 </span>
                 <span class="portrait-audit-toggle" aria-hidden="true">＋</span>
               </summary>
