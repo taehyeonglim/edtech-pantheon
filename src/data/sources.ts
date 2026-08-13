@@ -30,6 +30,15 @@ export const sources: Source[] = [
     url: "https://en.wikipedia.org/wiki/Lev_Vygotsky",
   },
   {
+    id: "bio-vygotsky-msu",
+    tier: "A",
+    type: "대학 공식 인물사",
+    authors: "Faculty of Psychology, Lomonosov Moscow State University",
+    title: "Lev Semyonovich Vygotsky (November 5, 1896 – June 11, 1934)",
+    publisher: "Lomonosov Moscow State University",
+    url: "https://psy-msu.ru/en/about/history/scientist/8578/",
+  },
+  {
     id: "bio-wiki-skinner",
     tier: "C",
     type: "백과사전·탐색용",

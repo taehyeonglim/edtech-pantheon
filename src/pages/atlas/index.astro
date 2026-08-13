@@ -5,20 +5,20 @@ import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
 import { sources } from '../../data/sources';
 import { countryFlagByName } from '../../data/flag-icons';
+import 'leaflet/dist/leaflet.css';
 
 const base = `${import.meta.env.BASE_URL}/`;
 const sourceById = Object.fromEntries(sources.map((source) => [source.id, source]));
 const byName = [...pioneers].sort((a, b) => a.nameKo.localeCompare(b.nameKo, 'ko'));
-const mapPoint = (longitude: number, latitude: number) => ({
-  x: ((longitude + 180) / 360) * 1000,
-  y: ((90 - latitude) / 180) * 520,
-});
 const mappedInstitutions = institutions.filter((institution) => affiliations.some((affiliation) => affiliation.institutionId === institution.id));
 const institutionMarkers = mappedInstitutions.map((institution) => {
   const records = affiliations.filter((affiliation) => affiliation.institutionId === institution.id);
-  const point = mapPoint(institution.longitude, institution.latitude);
-  return { institution, records, ...point };
+  return { institution, records };
 });
+const atlasMapData = institutionMarkers.map(({ institution, records }) => ({
+  ...institution,
+  recordCount: records.length,
+}));
 const mappedAffiliations = affiliations;
 ---
 <BaseLayout title="지식의 좌표" description="교육공학 사상가들의 대표 교수·연구 활동 거점을 세계지도에서 읽습니다.">
@@ -39,35 +39,33 @@ const mappedAffiliations = affiliations;
         </div>
       </div>
       <div class="atlas-map-wrap">
-        <svg class="atlas-map" viewBox="0 0 1000 520" role="img" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 세계지도">
-          <defs><linearGradient id="atlas-grid" x1="0" x2="1"><stop stop-color="#d5a15b" stop-opacity=".12"/><stop offset="1" stop-color="#d5a15b" stop-opacity=".025"/></linearGradient></defs>
-          <rect width="1000" height="520" fill="url(#atlas-grid)" />
-          <g class="atlas-graticule" aria-hidden="true"><path d="M0 130H1000M0 260H1000M0 390H1000M125 0V520M250 0V520M375 0V520M500 0V520M625 0V520M750 0V520M875 0V520" /></g>
-          <g class="atlas-land" aria-hidden="true">
-            <path d="M54 109l47-40 65 6 38 34-15 28 27 26-28 39-43-4-23 29-41-17-10-47-28-26z" />
-            <path d="M204 201l32 18 12 39 29 39-17 69-30 67-25-20 7-58-22-42 6-50z" />
-            <path d="M435 111l42-21 59 11 36 32-13 30 45 16 27 38-24 39-49-8-36 22-47-24-26-47-37-20z" />
-            <path d="M485 248l42 10 27 49-12 74-35 59-31-36 5-75-21-41z" />
-            <path d="M604 127l54-18 69 29 66-4 69 30 47 10-16 58-60 11-50-14-41 26-55-3-49-44z" />
-            <path d="M759 276l56 13 39 43-31 44-64-16-20-45z" />
-            <path d="M870 395l40-8 34 21-19 29-54-6z" />
-          </g>
-          <g class="atlas-markers">
-            {institutionMarkers.map(({ institution, records, x, y }) => (
-              <g class="atlas-marker" style={`--x:${x}px;--y:${y}px`} data-atlas-marker data-institution={institution.id} data-kind={institution.kind} role="button" tabindex="0" aria-label={`${institution.nameKo}, ${institution.city}: ${records.length}명 활동 기록`}>
-                <circle r={Math.min(14, 6 + records.length * 1.3)} />
-                <circle class="atlas-marker-core" r="3" />
-              </g>
-            ))}
-          </g>
-        </svg>
-        <p class="atlas-map-note"><span>MAP KEY</span> 원의 크기는 이 아카이브의 대표 활동 기록 수입니다. 가까운 지점은 정확한 건물 위치가 아닌 기관 도시 중심을 표시합니다.</p>
+        <div class="atlas-map" data-atlas-map data-points={JSON.stringify(atlasMapData)} role="region" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 실제 지도"></div>
+        <p class="atlas-map-note"><span>MAP KEY</span> 대학·연구기관은 검증한 캠퍼스 또는 건물 좌표에 표시합니다. 점 안 숫자는 대표 활동 기록 수이며, 전문 활동 두 곳만 공개 주소가 없어 도시 중심 좌표를 사용합니다.</p>
       </div>
       <aside class="atlas-detail" data-atlas-detail>
         <span>SELECT A POINT</span>
         <h2>세계의 활동 거점</h2>
         <p>지도 위의 원 또는 학자 선택 메뉴를 사용하세요. 선택하면 해당 기관과 연결된 활동 기록을 확인할 수 있습니다.</p>
       </aside>
+      {institutionMarkers.map(({ institution, records }) => (
+        <template data-atlas-detail-template={institution.id}>
+          <div class="atlas-detail-card">
+            {institution.imageUrl ? (
+              <a class:list={['atlas-institution-visual', { 'is-emblem': institution.imageKind === 'emblem' }]} href={institution.imageSourceUrl} target="_blank" rel="noreferrer" aria-label={`${institution.nameKo} 이미지 출처`}>
+                <img src={institution.imageUrl} alt={`${institution.nameKo} ${institution.imageKind === 'emblem' ? '엠블럼' : '캠퍼스'}`} loading="lazy" />
+              </a>
+            ) : <div class="atlas-institution-monogram" aria-hidden="true">{institution.nameEn.split(' ').map((word) => word[0]).join('').slice(0, 3)}</div>}
+            <span>INSTITUTION SELECTED</span>
+            <h2>{institution.nameKo}</h2>
+            <p>{institution.nameEn}<br />{institution.city} · {institution.country} · {records.length}개 대표 활동 기록</p>
+            <div class="atlas-detail-links">
+              {institution.websiteUrl && <a href={institution.websiteUrl} target="_blank" rel="noreferrer">공식 홈페이지 ↗</a>}
+              <a href={institution.coordinateSourceUrl} target="_blank" rel="noreferrer">좌표 근거 · OpenStreetMap ↗</a>
+              {institution.imageSourceUrl && <a href={institution.imageSourceUrl} target="_blank" rel="noreferrer">이미지 근거 · {institution.imageLicense} ↗</a>}
+            </div>
+          </div>
+        </template>
+      ))}
     </div>
     <div class="shell atlas-records" data-atlas-records>
       <header><span>VERIFIED ACTIVITY RECORDS</span><strong data-atlas-count>{mappedAffiliations.length} RECORDS</strong></header>
@@ -86,7 +84,10 @@ const mappedAffiliations = affiliations;
             <p class="atlas-record-role">{affiliation.role}</p>
             <p class="atlas-record-place">{institution.nameKo} <span>{institution.city} · {countryFlag && <span class="atlas-country-flag"><small>{countryFlag.code}</small><img src={`${base}flags/${countryFlag.file}`} alt={countryFlag.alt} width="20" height="14" loading="lazy" /></span>} {institution.country}</span></p>
             <p class="atlas-record-period">{affiliation.startYear ? `${affiliation.startYear}—${affiliation.endYear ?? '현재'}` : '기간 공개 전거 미확인'}</p>
-            {source && <a href={source.url} target="_blank" rel="noreferrer">근거 · {source.publisher ?? source.authors} ↗</a>}
+            <div class="atlas-record-links">
+              {source && <a href={source.url} target="_blank" rel="noreferrer">활동 근거 · {source.publisher ?? source.authors} ↗</a>}
+              <a href={institution.coordinateSourceUrl} target="_blank" rel="noreferrer">좌표 ↗</a>
+            </div>
           </article>;
         })}
       </div>
@@ -94,17 +95,92 @@ const mappedAffiliations = affiliations;
     </div>
   </section>
   <script>
+    import L from 'leaflet';
+
+    type AtlasPoint = {
+      id: string;
+      nameKo: string;
+      nameEn: string;
+      city: string;
+      country: string;
+      latitude: number;
+      longitude: number;
+      kind: 'university' | 'research' | 'professional';
+      coordinatePrecision: 'building' | 'campus' | 'city';
+      recordCount: number;
+    };
+
     const select = document.querySelector('[data-atlas-pioneer]') as HTMLSelectElement | null;
-    const markers = [...document.querySelectorAll('[data-atlas-marker]')] as HTMLElement[];
     const records = [...document.querySelectorAll('[data-atlas-record]')] as HTMLElement[];
     const kindButtons = [...document.querySelectorAll('[data-atlas-kind]')] as HTMLButtonElement[];
     const detail = document.querySelector('[data-atlas-detail]') as HTMLElement | null;
     const count = document.querySelector('[data-atlas-count]') as HTMLElement | null;
     const empty = document.querySelector('[data-atlas-empty]') as HTMLElement | null;
+    const mapElement = document.querySelector('[data-atlas-map]') as HTMLElement | null;
+    const points = JSON.parse(mapElement?.dataset.points || '[]') as AtlasPoint[];
+    const defaultDetailNodes = detail ? [...detail.childNodes].map((node) => node.cloneNode(true)) : [];
     let kind = 'all';
     let institution = '';
+    let visibleInstitutionIds = new Set(points.map((point) => point.id));
 
-    const update = () => {
+    const map = mapElement ? L.map(mapElement, {
+      center: [28, 5],
+      zoom: 2,
+      minZoom: 2,
+      maxZoom: 18,
+      scrollWheelZoom: false,
+      worldCopyJump: true,
+      zoomControl: true,
+    }) : null;
+
+    if (map) {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+      }).addTo(map);
+    }
+
+    const markerEntries = points.map((point) => {
+      const precisionLabel = point.coordinatePrecision === 'city' ? '도시 중심' : point.coordinatePrecision === 'building' ? '건물' : '캠퍼스';
+      const marker = L.marker([point.latitude, point.longitude], {
+        icon: L.divIcon({
+          className: 'atlas-leaflet-marker',
+          html: `<span class="atlas-marker-pin"><b>${point.recordCount}</b></span>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+        }),
+        keyboard: true,
+        title: `${point.nameKo} · ${point.city} · ${precisionLabel} 좌표`,
+        alt: `${point.nameKo}, ${point.city}, ${point.recordCount}개 대표 활동 기록`,
+      });
+      marker.bindTooltip(`<strong>${point.nameKo}</strong><span>${point.city} · ${point.recordCount} RECORDS</span>`, { direction: 'top', offset: [0, -15] });
+      marker.on('click', () => {
+        if (visibleInstitutionIds.has(point.id)) selectInstitution(point.id);
+      });
+      marker.addTo(map!);
+      return { point, marker };
+    });
+
+    const fitMapTo = (ids: Set<string>, maximumZoom = 3) => {
+      if (!map) return;
+      const coordinates = markerEntries
+        .filter(({ point }) => ids.has(point.id))
+        .map(({ point }) => [point.latitude, point.longitude] as [number, number]);
+      if (coordinates.length === 1) map.flyTo(coordinates[0], Math.max(map.getZoom(), 6), { duration: 0.7 });
+      else if (coordinates.length > 1) map.fitBounds(coordinates, { padding: [38, 38], maxZoom: maximumZoom });
+    };
+
+    const showInstitutionDetail = (id: string) => {
+      if (!detail) return;
+      if (!id) {
+        detail.replaceChildren(...defaultDetailNodes.map((node) => node.cloneNode(true)));
+        return;
+      }
+      const template = document.querySelector(`[data-atlas-detail-template="${CSS.escape(id)}"]`) as HTMLTemplateElement | null;
+      if (template) detail.replaceChildren(template.content.cloneNode(true));
+    };
+
+    const update = (fitVisible = false) => {
       const pioneer = select?.value || '';
       let visible = 0;
       records.forEach((record) => {
@@ -114,11 +190,14 @@ const mappedAffiliations = affiliations;
         record.hidden = !(matchesPioneer && matchesKind && matchesInstitution);
         if (!record.hidden) visible += 1;
       });
-      markers.forEach((marker) => {
-        const id = marker.dataset.institution || '';
-        const matchingRecords = records.filter((record) => record.dataset.institution === id && !record.hidden);
-        marker.classList.toggle('is-muted', matchingRecords.length === 0);
-        marker.classList.toggle('is-selected', id === institution);
+      visibleInstitutionIds = new Set(records.filter((record) => !record.hidden).map((record) => record.dataset.institution || ''));
+      markerEntries.forEach(({ point, marker }) => {
+        const isVisible = visibleInstitutionIds.has(point.id);
+        marker.setOpacity(isVisible ? 1 : 0.17);
+        marker.setZIndexOffset(isVisible ? 1000 : 0);
+        const markerElement = marker.getElement();
+        markerElement?.classList.toggle('is-muted', !isVisible);
+        markerElement?.classList.toggle('is-selected', point.id === institution);
       });
       kindButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.atlasKind === kind));
       if (count) count.textContent = `${String(visible).padStart(2, '0')} RECORDS`;
@@ -128,29 +207,24 @@ const mappedAffiliations = affiliations;
       if (kind !== 'all') url.searchParams.set('kind', kind); else url.searchParams.delete('kind');
       if (institution) url.searchParams.set('institution', institution); else url.searchParams.delete('institution');
       window.history.replaceState({}, '', url);
+      if (fitVisible) fitMapTo(visibleInstitutionIds, pioneer ? 7 : 4);
     };
 
-    const selectInstitution = (marker: HTMLElement) => {
-      institution = institution === marker.dataset.institution ? '' : marker.dataset.institution || '';
-      const matching = records.filter((record) => record.dataset.institution === institution);
-      const first = matching[0];
-      if (detail && first) {
-        const place = first.querySelector('.atlas-record-place')?.textContent || '';
-        const role = first.querySelector('.atlas-record-role')?.textContent || '';
-        detail.innerHTML = `<span>INSTITUTION SELECTED</span><h2>${place}</h2><p>${matching.length}명의 대표 활동 기록이 있습니다. 첫 기록: ${role}</p>`;
-      }
-      update();
+    const selectInstitution = (id: string) => {
+      institution = institution === id ? '' : id;
+      showInstitutionDetail(institution);
+      update(false);
+      if (institution) fitMapTo(new Set([institution]), 7);
     };
-    markers.forEach((marker) => {
-      marker.addEventListener('click', () => selectInstitution(marker));
-      marker.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectInstitution(marker); } });
-    });
-    kindButtons.forEach((button) => button.addEventListener('click', () => { kind = button.dataset.atlasKind || 'all'; institution = ''; update(); }));
-    select?.addEventListener('change', () => { institution = ''; update(); });
+    kindButtons.forEach((button) => button.addEventListener('click', () => { kind = button.dataset.atlasKind || 'all'; institution = ''; showInstitutionDetail(''); update(true); }));
+    select?.addEventListener('change', () => { institution = ''; showInstitutionDetail(''); update(true); });
     const params = new URLSearchParams(window.location.search);
     if (select && [...select.options].some((option) => option.value === params.get('pioneer'))) select.value = params.get('pioneer') || '';
     if (kindButtons.some((button) => button.dataset.atlasKind === params.get('kind'))) kind = params.get('kind') || 'all';
-    if (markers.some((marker) => marker.dataset.institution === params.get('institution'))) institution = params.get('institution') || '';
-    update();
+    if (points.some((point) => point.id === params.get('institution'))) institution = params.get('institution') || '';
+    showInstitutionDetail(institution);
+    update(false);
+    fitMapTo(institution ? new Set([institution]) : new Set(points.map((point) => point.id)), institution ? 7 : 3);
+    if (mapElement && map) new ResizeObserver(() => map.invalidateSize()).observe(mapElement);
   </script>
 </BaseLayout>

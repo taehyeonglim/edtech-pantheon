@@ -78,6 +78,13 @@ export type Institution = {
   longitude: number;
   latitude: number;
   kind: "university" | "research" | "professional";
+  coordinatePrecision: "building" | "campus" | "city";
+  coordinateSourceUrl: string;
+  websiteUrl?: string;
+  imageUrl?: string;
+  imageSourceUrl?: string;
+  imageLicense?: string;
+  imageKind?: "emblem" | "campus";
 };
 
 export type Affiliation = {

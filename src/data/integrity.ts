@@ -128,6 +128,18 @@ const validateArchive = () => {
     if (!countryFlagByName[institution.country]) {
       errors.push(`${institution.id}: 기관 국가 국기 이미지 매핑 없음`);
     }
+    if (!Number.isFinite(institution.latitude) || institution.latitude < -90 || institution.latitude > 90) {
+      errors.push(`${institution.id}: 유효하지 않은 위도`);
+    }
+    if (!Number.isFinite(institution.longitude) || institution.longitude < -180 || institution.longitude > 180) {
+      errors.push(`${institution.id}: 유효하지 않은 경도`);
+    }
+    if (!institution.coordinateSourceUrl) {
+      errors.push(`${institution.id}: 좌표 근거 없음`);
+    }
+    if (institution.imageUrl && (!institution.imageSourceUrl || !institution.imageLicense)) {
+      errors.push(`${institution.id}: 기관 이미지 근거 또는 권리 정보 없음`);
+    }
   }
 
   const relationshipDegree = new Map(
