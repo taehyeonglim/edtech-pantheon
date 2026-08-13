@@ -4,6 +4,11 @@ import { pioneers } from "./pioneers";
 import { portraits } from "./portraits";
 import { relationships } from "./relationships";
 import { sources } from "./sources";
+import {
+  getTimelineTrackId,
+  pioneerTimelineTrack,
+  timelineTracks,
+} from "./timeline-tracks";
 
 const duplicateValues = (values: string[]) =>
   values.filter((value, index) => values.indexOf(value) !== index);
@@ -12,6 +17,7 @@ const validateArchive = () => {
   const errors: string[] = [];
   const sourceIds = new Set(sources.map((source) => source.id));
   const pioneerIds = new Set(pioneers.map((pioneer) => pioneer.id));
+  const timelineTrackIds = new Set(timelineTracks.map((track) => track.id));
 
   for (const duplicate of duplicateValues(sources.map((source) => source.id))) {
     errors.push(`중복 출처 ID: ${duplicate}`);
@@ -40,6 +46,9 @@ const validateArchive = () => {
   };
 
   for (const pioneer of pioneers) {
+    if (!pioneerTimelineTrack[pioneer.id]) {
+      errors.push(`${pioneer.id}: 연표 연구 계보 트랙 없음`);
+    }
     if (!portraits[pioneer.id]) errors.push(`${pioneer.id}: 초상 없음`);
     if (!nationalities[pioneer.id])
       errors.push(`${pioneer.id}: 국적 정보 없음`);
@@ -67,12 +76,22 @@ const validateArchive = () => {
     pioneer.sections.forEach((section, index) =>
       checkSources(`${pioneer.id}.sections[${index}]`, section.sourceIds),
     );
-    pioneer.timeline.forEach((event, index) =>
-      checkSources(`${pioneer.id}.timeline[${index}]`, event.sourceIds),
-    );
+    pioneer.timeline.forEach((event, index) => {
+      checkSources(`${pioneer.id}.timeline[${index}]`, event.sourceIds);
+      const trackId = getTimelineTrackId(pioneer.id, event.year);
+      if (!timelineTrackIds.has(trackId)) {
+        errors.push(`${pioneer.id}.timeline[${index}]: 유효하지 않은 트랙 ${trackId}`);
+      }
+    });
     biographies[pioneer.id]?.forEach((section, index) =>
       checkSources(`${pioneer.id}.biography[${index}]`, section.sourceIds),
     );
+  }
+
+  for (const pioneerId of Object.keys(pioneerTimelineTrack)) {
+    if (!pioneerIds.has(pioneerId)) {
+      errors.push(`연표 트랙이 존재하지 않는 인물 ${pioneerId}를 참조함`);
+    }
   }
 
   for (const relationship of relationships) {

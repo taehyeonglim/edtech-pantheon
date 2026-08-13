@@ -4,10 +4,23 @@ import CitationList from '../../components/CitationList.astro';
 import { pioneers } from '../../data/pioneers';
 import { portraitById } from '../../data/portraits';
 import { nationalityById } from '../../data/nationalities';
+import {
+  getTimelineTrackId,
+  pioneerTimelineTrack,
+  timelineTracks
+} from '../../data/timeline-tracks';
 
 const base = `${import.meta.env.BASE_URL}/`;
 const events = pioneers
-  .flatMap((pioneer) => pioneer.timeline.map((event) => ({ ...event, pioneer })))
+  .flatMap((pioneer) => pioneer.timeline.map((event) => {
+    const trackId = getTimelineTrackId(pioneer.id, event.year);
+    return {
+      ...event,
+      pioneer,
+      trackId,
+      isCrossover: trackId !== pioneerTimelineTrack[pioneer.id]
+    };
+  }))
   .sort((a, b) => a.year - b.year);
 const timelineStart = events[0]?.year ?? 1898;
 const timelineEnd = events[events.length - 1]?.year ?? new Date().getFullYear();
@@ -52,9 +65,11 @@ const eraBands = eras.map((era, index) => {
     eventCount: events.filter((event) => event.year >= era.start && event.year <= era.end).length
   };
 });
-const lanes = Array.from({ length: 4 }, (_, index) => ({
+const tracks = timelineTracks.map((track, index) => ({
+  ...track,
   index,
-  events: events.filter((_, eventIndex) => eventIndex % 4 === index)
+  events: events.filter((event) => event.trackId === track.id),
+  pioneerCount: new Set(events.filter((event) => event.trackId === track.id).map((event) => event.pioneer.id)).size
 }));
 const getEraId = (year: number) => eras.find((era) => year >= era.start && year <= era.end)?.id ?? eras[eras.length - 1].id;
 ---
@@ -67,7 +82,7 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
       <div class="hero-meta">
         <span><b>{events.length}</b> DOCUMENTED EVENTS</span>
         <span><b>{eras.length}</b> EDITORIAL ERAS</span>
-        <span><b>{lanes.length}</b> PARALLEL LANES</span>
+        <span><b>{tracks.length}</b> RESEARCH TRACKS</span>
       </div>
     </div>
   </section>
@@ -75,7 +90,7 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
     <div class="shell">
       <div class="timeline-intro">
         <p>연표는 “누가 먼저였는가”를 가리는 순위표가 아닙니다. 같은 시대에 서로 다른 질문이 어떻게 등장했고, 후대의 연구자가 어떤 언어를 이어받았는지 보기 위한 탐색 장치입니다.</p>
-        <div class="method-note"><strong>네 열은 모두 {timelineStart}—{timelineEnd}의 동일한 연도축을 공유합니다.</strong> 같은 연도의 기준점은 어느 열에서도 정확히 같은 높이입니다. 인접 기록이 겹치면 카드만 아래로 이동하며, 금색 점과 점선은 본래 연도 좌표를 유지합니다.</div>
+        <div class="method-note"><strong>다섯 연구 계보는 모두 {timelineStart}—{timelineEnd}의 동일한 연도축을 공유합니다.</strong> 열은 배치용 번호가 아니라 학습·평가·설계·매체·사회학습의 지적 흐름을 뜻합니다. 같은 연도의 기준점은 모든 트랙에서 같은 높이를 유지하고, 분야를 건너간 사건은 CROSSOVER로 표시합니다.</div>
       </div>
 
       <div class="timeline-era-legend" aria-label="연표 시대 구분">
@@ -92,6 +107,19 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
         ))}
       </div>
 
+      <div class="timeline-track-legend" aria-label="연표 연구 계보 구분">
+        {tracks.map((track) => (
+          <article style={`--track-accent:${track.accent}`}>
+            <div>
+              <span>TRACK {String(track.index + 1).padStart(2, '0')}</span>
+              <b>{track.events.length} EVENTS · {track.pioneerCount} PIONEERS</b>
+            </div>
+            <h2>{track.title}</h2>
+            <p>{track.description}</p>
+          </article>
+        ))}
+      </div>
+
       <div class="timeline-filter-bar" data-timeline-filter>
         <div class="timeline-filter-heading">
           <span>FOCUS THE ARCHIVE</span>
@@ -104,6 +132,13 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
             {[...pioneers]
               .sort((a, b) => (a.birthYear ?? 9999) - (b.birthYear ?? 9999) || a.nameKo.localeCompare(b.nameKo, 'ko'))
               .map((pioneer) => <option value={pioneer.id}>{pioneer.nameKo} · {pioneer.life}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>연구 계보</span>
+          <select data-timeline-track>
+            <option value="all">전체 5개 계보</option>
+            {tracks.map((track) => <option value={track.id}>{track.shortTitle}</option>)}
           </select>
         </label>
         <label>
@@ -124,15 +159,16 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
         <p data-timeline-result aria-live="polite">{events.length} / {events.length} EVENTS</p>
       </div>
 
-      <p class="timeline-scroll-hint">네 레인은 하나의 세로 연도 눈금에 고정됩니다. 작은 화면에서는 가로로 밀어 전체 레인을 확인하세요.</p>
-      <div class="timeline-shared-scroll" tabindex="0" aria-label="네 개의 병렬 레인으로 구성된 통합 연표">
-        <div class="timeline-shared-frame">
-          <header class="timeline-lane-head" aria-hidden="true">
+      <p class="timeline-scroll-hint">다섯 계보 트랙은 하나의 세로 연도 눈금에 고정됩니다. 작은 화면에서는 가로로 밀어 전체 흐름을 확인하세요.</p>
+      <div class="timeline-shared-scroll" tabindex="0" aria-label="다섯 연구 계보 트랙으로 구성된 통합 연표">
+        <div class="timeline-shared-frame" data-timeline-frame style={`--visible-track-count:${tracks.length};--timeline-frame-width:${62 + tracks.length * 270}px`}>
+          <header class="timeline-lane-head">
             <div class="timeline-axis-heading"><span>YEAR</span><b>{timelineStart}—{timelineEnd}</b></div>
-            {lanes.map((lane) => (
-              <div class="timeline-lane-heading">
-                <span>PARALLEL LANE {String(lane.index + 1).padStart(2, '0')}</span>
-                <b>{lane.events.length} EVENTS</b>
+            {tracks.map((track) => (
+              <div class="timeline-lane-heading" data-timeline-track-heading data-track-id={track.id} style={`--track-accent:${track.accent}`}>
+                <span>{track.label}</span>
+                <strong>{track.shortTitle}</strong>
+                <b><i data-track-visible-count>{track.events.length}</i> EVENTS</b>
               </div>
             ))}
           </header>
@@ -170,9 +206,9 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
             </div>
 
             <div class="timeline-lanes" data-timeline-lanes>
-              {lanes.map((lane) => (
-                <ol class="timeline-lane" data-timeline-lane>
-                  {lane.events.map((event) => {
+              {tracks.map((track) => (
+                <ol class="timeline-lane" data-timeline-lane data-track-id={track.id} style={`--track-accent:${track.accent}`} aria-label={track.title}>
+                  {track.events.map((event) => {
                     const portrait = portraitById[event.pioneer.id];
                     const nationality = nationalityById[event.pioneer.id];
                     const portraitStyle = portrait ? [
@@ -190,12 +226,13 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
                         data-pioneer-id={event.pioneer.id}
                         data-event-domains={event.pioneer.domains.join('|')}
                         data-era-id={getEraId(event.year)}
+                        data-track-id={event.trackId}
                         style={`--year-position:${yearPosition}%;--anchor-offset:0px;--connector-height:0px`}
                       >
                         <article class="global-event" style={`--event-accent:${event.pioneer.accent}`}>
                           <div class="global-event-top">
                             <time class="global-event-year" datetime={String(event.year)}>{event.year}</time>
-                            <span>{event.pioneer.school}</span>
+                            <span>{event.isCrossover && <b class="event-crossover">↗ CROSSOVER</b>}{event.pioneer.school}</span>
                           </div>
                           <h3>{event.label}</h3>
                           <p>{event.description}</p>
@@ -227,6 +264,10 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
                   })}
                 </ol>
               ))}
+            </div>
+            <div class="timeline-empty-state" data-timeline-empty hidden>
+              <span>NO EVENTS IN THIS VIEW</span>
+              <p>조건을 넓히거나 필터를 초기화해 다른 연구 흐름을 확인하세요.</p>
             </div>
           </div>
         </div>
@@ -288,14 +329,19 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
 
     const timelineFilter = document.querySelector<HTMLElement>('[data-timeline-filter]');
     const personFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-person]');
+    const trackFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-track]');
     const domainFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-domain]');
     const eraFilter = timelineFilter?.querySelector<HTMLSelectElement>('[data-timeline-era]');
     const resetFilter = timelineFilter?.querySelector<HTMLButtonElement>('[data-timeline-reset]');
     const filterResult = timelineFilter?.querySelector<HTMLElement>('[data-timeline-result]');
     const timelineEvents = Array.from(document.querySelectorAll<HTMLElement>('[data-timeline-event]'));
+    const timelineFrame = document.querySelector<HTMLElement>('[data-timeline-frame]');
+    const timelineEmpty = document.querySelector<HTMLElement>('[data-timeline-empty]');
+    const trackLanes = Array.from(document.querySelectorAll<HTMLOListElement>('[data-timeline-lane]'));
 
     const applyTimelineFilters = () => {
       const person = personFilter?.value ?? 'all';
+      const track = trackFilter?.value ?? 'all';
       const domain = domainFilter?.value ?? 'all';
       const era = eraFilter?.value ?? 'all';
       let visibleCount = 0;
@@ -304,26 +350,48 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
         const domains = event.dataset.eventDomains?.split('|') ?? [];
         const matches =
           (person === 'all' || event.dataset.pioneerId === person) &&
+          (track === 'all' || event.dataset.trackId === track) &&
           (domain === 'all' || domains.includes(domain)) &&
           (era === 'all' || event.dataset.eraId === era);
         event.hidden = !matches;
         if (matches) visibleCount += 1;
       });
 
-      const isFiltered = person !== 'all' || domain !== 'all' || era !== 'all';
+      let visibleTrackCount = 0;
+      trackLanes.forEach((lane) => {
+        const visibleEvents = Array.from(lane.querySelectorAll<HTMLElement>('[data-timeline-event]')).filter((event) => !event.hidden);
+        const trackId = lane.dataset.trackId;
+        const heading = document.querySelector<HTMLElement>(`[data-timeline-track-heading][data-track-id="${trackId}"]`);
+        const hasEvents = visibleEvents.length > 0;
+        lane.hidden = !hasEvents;
+        if (heading) {
+          heading.hidden = !hasEvents;
+          const count = heading.querySelector<HTMLElement>('[data-track-visible-count]');
+          if (count) count.textContent = String(visibleEvents.length);
+        }
+        if (hasEvents) visibleTrackCount += 1;
+      });
+
+      timelineFrame?.style.setProperty('--visible-track-count', String(Math.max(1, visibleTrackCount)));
+      timelineFrame?.style.setProperty('--timeline-frame-width', `${62 + Math.max(1, visibleTrackCount) * 270}px`);
+      if (timelineEmpty) timelineEmpty.hidden = visibleCount > 0;
+
+      const isFiltered = person !== 'all' || track !== 'all' || domain !== 'all' || era !== 'all';
       if (resetFilter) resetFilter.disabled = !isFiltered;
       if (filterResult) filterResult.textContent = `${visibleCount} / ${timelineEvents.length} EVENTS`;
       scheduleTimelineLayout();
     };
 
-    [personFilter, domainFilter, eraFilter].forEach((control) =>
+    [personFilter, trackFilter, domainFilter, eraFilter].forEach((control) =>
       control?.addEventListener('change', applyTimelineFilters),
     );
     resetFilter?.addEventListener('click', () => {
       if (personFilter) personFilter.value = 'all';
+      if (trackFilter) trackFilter.value = 'all';
       if (domainFilter) domainFilter.value = 'all';
       if (eraFilter) eraFilter.value = 'all';
       applyTimelineFilters();
     });
+    applyTimelineFilters();
   </script>
 </BaseLayout>
