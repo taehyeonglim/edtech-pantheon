@@ -19,54 +19,69 @@ const portraitAudit = pioneers.map((pioneer) => ({
     </div>
   </section>
   <section class="section">
-    <div class="shell method-grid">
-      <div>
-        <p class="method-lead">이곳의 모든 관계와 요약은 검증 가능한 출처로 되돌아갈 수 있어야 합니다.</p>
-        <div class="method-note">자료가 부족한 부분은 비워두거나 해석의 수준을 낮춥니다. “널리 알려졌다”는 말만으로 영향 관계를 만들지 않습니다.</div>
+    <div class="shell">
+      <div class="method-grid">
+        <div>
+          <p class="method-lead">이곳의 모든 관계와 요약은 검증 가능한 출처로 되돌아갈 수 있어야 합니다.</p>
+          <div class="method-note">자료가 부족한 부분은 비워두거나 해석의 수준을 낮춥니다. “널리 알려졌다”는 말만으로 영향 관계를 만들지 않습니다.</div>
+        </div>
+        <div class="method-copy">
+          <h2>출처 등급</h2>
+          <p>핵심 이론과 역사적 사실은 원저작과 동료평가 연구를 우선합니다. 기관 자료는 맥락·소장 정보·라이선스 확인에 사용하며, 단독으로 논쟁적인 해석을 뒷받침하지 않습니다.</p>
+          <table class="evidence-table">
+            <thead><tr><th>등급</th><th>우선 자료</th><th>사용 원칙</th></tr></thead>
+            <tbody>
+              <tr><th><span class="tier tier-A">A</span></th><td>원저작·당사자 기록</td><td>핵심 정의, 직접 진술, 저작 연도</td></tr>
+              <tr><th><span class="tier tier-B">B</span></th><td>동료평가 연구·학술 자료·기관 기록</td><td>영향 관계, 논쟁, 생애·경력 교차확인</td></tr>
+              <tr><th><span class="tier tier-C">C</span></th><td>백과사전·탐색 자료</td><td>후보 사실 탐색에만 사용하고 상위 출처와 대조</td></tr>
+            </tbody>
+          </table>
+          <h2>원고 검증</h2>
+          <p>주장 단위로 출처 ID를 연결하고, 원문 페이지·DOI·접근일을 기록합니다. 여러 학술 해석이 충돌할 때는 단정하지 않고 견해의 차이를 드러냅니다.</p>
+          <h2>생애 자료의 사용</h2>
+          <p>생애 연표는 위키백과를 탐색용 색인으로 삼되, 핵심 사실은 원저작·대학·박물관·학술 자료와 대조합니다. 각 인물의 상세 페이지에 해당 자료를 함께 표시해 독자가 원문으로 이동할 수 있게 했습니다.</p>
+          <h2>시각자료</h2>
+          <p>초상은 공개 라이선스 자료를 우선하며, 없을 때는 대학·학술 인터뷰·본인 연구자 프로필처럼 인물 식별 근거가 분명한 기록으로 범위를 한정합니다. 상세 페이지에는 원본 출처·저작자·권리 상태를 그대로 표시하며, 권리가 명시되지 않은 사진을 공개 라이선스로 오인하지 않도록 구분합니다.</p>
+          <p>신원 감사에서는 ① 출처가 붙인 인물명, ② 촬영 시점과 생몰연도의 양립 가능성, ③ 당시 소속·행사 맥락, ④ 별도의 대학·기념재단·전문 아카이브 사진과 얼굴 일치를 차례로 확인합니다. 한 항목이라도 충돌하면 사진을 사용하지 않습니다.</p>
+        </div>
       </div>
-      <div class="method-copy">
-        <h2>출처 등급</h2>
-        <p>핵심 이론과 역사적 사실은 원저작과 동료평가 연구를 우선합니다. 기관 자료는 맥락·소장 정보·라이선스 확인에 사용하며, 단독으로 논쟁적인 해석을 뒷받침하지 않습니다.</p>
-        <table class="evidence-table">
-          <thead><tr><th>등급</th><th>우선 자료</th><th>사용 원칙</th></tr></thead>
-          <tbody>
-            <tr><th><span class="tier tier-A">A</span></th><td>원저작·당사자 기록</td><td>핵심 정의, 직접 진술, 저작 연도</td></tr>
-            <tr><th><span class="tier tier-B">B</span></th><td>동료평가 연구·학술 자료·기관 기록</td><td>영향 관계, 논쟁, 생애·경력 교차확인</td></tr>
-            <tr><th><span class="tier tier-C">C</span></th><td>백과사전·탐색 자료</td><td>후보 사실 탐색에만 사용하고 상위 출처와 대조</td></tr>
-          </tbody>
-        </table>
-        <h2>원고 검증</h2>
-        <p>주장 단위로 출처 ID를 연결하고, 원문 페이지·DOI·접근일을 기록합니다. 여러 학술 해석이 충돌할 때는 단정하지 않고 견해의 차이를 드러냅니다.</p>
-        <h2>생애 자료의 사용</h2>
-        <p>생애 연표는 위키백과를 탐색용 색인으로 삼되, 핵심 사실은 원저작·대학·박물관·학술 자료와 대조합니다. 각 인물의 상세 페이지에 해당 자료를 함께 표시해 독자가 원문으로 이동할 수 있게 했습니다.</p>
-        <h2>시각자료</h2>
-        <p>초상은 공개 라이선스 자료를 우선하며, 없을 때는 대학·학술 인터뷰·본인 연구자 프로필처럼 인물 식별 근거가 분명한 기록으로 범위를 한정합니다. 상세 페이지에는 원본 출처·저작자·권리 상태를 그대로 표시하며, 권리가 명시되지 않은 사진을 공개 라이선스로 오인하지 않도록 구분합니다.</p>
-        <p>신원 감사에서는 ① 출처가 붙인 인물명, ② 촬영 시점과 생몰연도의 양립 가능성, ③ 당시 소속·행사 맥락, ④ 별도의 대학·기념재단·전문 아카이브 사진과 얼굴 일치를 차례로 확인합니다. 한 항목이라도 충돌하면 사진을 사용하지 않습니다.</p>
-        <h2>초상 신원 감사</h2>
-        <p class="portrait-audit-intro">{pioneers.length}명 전원의 원본·권리 정보와 별도의 신원 대조 근거입니다. 국적 표기는 {nationalityCheckedOn}에 기관 약력과 전기 자료로 다시 확인했으며, 복수·역사적 국적은 단일 국가로 축약하지 않았습니다.</p>
+      <section class="portrait-audit-section" aria-labelledby="portrait-audit-title">
+        <header class="portrait-audit-title">
+          <div>
+            <span>IDENTITY AUDIT / {pioneers.length} RECORDS</span>
+            <h2 id="portrait-audit-title">초상 신원 감사</h2>
+          </div>
+          <p>{pioneers.length}명 전원의 원본·권리 정보와 별도의 신원 대조 근거입니다. 국적 표기는 {nationalityCheckedOn}에 기관 약력과 전기 자료로 다시 확인했으며, 복수·역사적 국적은 단일 국가로 축약하지 않았습니다. 인물 카드를 열면 근거와 원문 링크를 확인할 수 있습니다.</p>
+        </header>
         <div class="portrait-audit-list">
-          {portraitAudit.map(({ pioneer, portrait, nationality }) => portrait && (
-            <article class="portrait-audit-item">
-              <div class="portrait-audit-head">
-                <div>
-                  <span>{portrait.verification.checkedOn} CHECKED</span>
+          {portraitAudit.map(({ pioneer, portrait, nationality }, index) => portrait && (
+            <details class="portrait-audit-item">
+              <summary>
+                <span class="portrait-audit-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span class="portrait-audit-identity">
                   <h3>{pioneer.nameKo}</h3>
                   <small>{pioneer.nameEn}</small>
+                </span>
+                <span class="portrait-audit-nationality"><b aria-hidden="true">{nationality.flag}</b> {nationality.label}</span>
+                <span class="portrait-audit-toggle" aria-hidden="true">＋</span>
+              </summary>
+              <div class="portrait-audit-body">
+                <span>{portrait.verification.checkedOn} CHECKED · ID VERIFIED</span>
+                <p>{portrait.verification.basis}</p>
+                <div class="portrait-audit-links">
+                  <a href={portrait.sourceUrl} target="_blank" rel="noreferrer">원본·권리 · {portrait.license} ↗</a>
+                  <a href={portrait.verification.url} target="_blank" rel="noreferrer">신원 대조 · {portrait.verification.authority} ↗</a>
+                  <a href={nationality.sourceUrl} target="_blank" rel="noreferrer" title={nationality.note}>국적 근거 · {nationality.label} ↗</a>
                 </div>
-                <strong>{nationality.flag} {nationality.label} · ID VERIFIED</strong>
               </div>
-              <p>{portrait.verification.basis}</p>
-              <div class="portrait-audit-links">
-                <a href={portrait.sourceUrl} target="_blank" rel="noreferrer">원본·권리 · {portrait.license} ↗</a>
-                <a href={portrait.verification.url} target="_blank" rel="noreferrer">신원 대조 · {portrait.verification.authority} ↗</a>
-                <a href={nationality.sourceUrl} target="_blank" rel="noreferrer" title={nationality.note}>국적 근거 · {nationality.label} ↗</a>
-              </div>
-            </article>
+            </details>
           ))}
         </div>
+      </section>
+      <section class="method-correction">
         <h2>수정 제안</h2>
         <p>오탈자, 잘못된 인용, 빠진 반대 근거, 라이선스 문제는 <a class="section-link" href="https://github.com/taehyeonglim/edtech-pantheon/issues" rel="noreferrer">GitHub Issue ↗</a>로 알려주세요. 수정에는 제안자의 출처와 위치 정보가 필요합니다.</p>
-      </div>
+      </section>
     </div>
   </section>
 </BaseLayout>
