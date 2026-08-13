@@ -234,6 +234,12 @@ export default function RelationshipGraph({
         <span className="graph-count">{visible.length} connections</span>
       </div>
 
+      <p className="graph-instruction">
+        <strong>CLICK A PORTRAIT</strong>
+        학자의 사진을 클릭하면 해당 학자의 사상계보와 개념비교 관계를
+        명확하게 확인할 수 있습니다.
+      </p>
+
       <div className="graph-scroll">
         <div className="graph-canvas" aria-label="교육공학 선구자 관계도">
           <div className="graph-time-axis" aria-hidden="true">
