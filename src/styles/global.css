@@ -16,6 +16,8 @@
   --serif: "Fraunces", Georgia, serif;
   --sans: "IBM Plex Sans KR", system-ui, sans-serif;
   --mono: "DM Mono", monospace;
+  --type-caption: 9px;
+  --type-label: 10px;
   --shell: min(1240px, calc(100% - 64px));
 }
 
@@ -380,7 +382,7 @@ p {
   align-items: center;
   gap: 9px;
   color: #9eaaa5;
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.1em;
 }
 .hall-orbit-live {
@@ -417,7 +419,7 @@ p {
 .hall-orbit-status {
   margin: 0;
   color: #84928c;
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.1em;
 }
 .hall-orbit-controls {
@@ -695,7 +697,7 @@ p {
   overflow: hidden;
   margin-bottom: 5px;
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.06em;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -710,7 +712,7 @@ p {
   overflow: hidden;
   margin: 4px 0 0;
   color: #9faea8;
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.06em;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -723,7 +725,7 @@ p {
 }
 .orbit-card-reveal span {
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .orbit-card-reveal p {
   display: -webkit-box;
@@ -737,7 +739,7 @@ p {
 }
 .orbit-card-reveal b {
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.05em;
 }
 .hall-orbit-inspector {
@@ -770,7 +772,7 @@ p {
   display: block;
   margin-bottom: 8px;
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -782,7 +784,7 @@ p {
 .hall-orbit-identity p {
   margin: 6px 0 0;
   color: #87948f;
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -808,12 +810,12 @@ p {
   border: 1px solid rgba(240, 235, 223, 0.15);
   color: #9ba7a2;
   padding: 2px 6px;
-  font-size: 9px;
+  font-size: var(--type-label);
 }
 .hall-orbit-topics a {
   width: fit-content;
   color: var(--gold-light);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -834,7 +836,7 @@ p {
   gap: 17px;
   padding: 0 20px;
   color: #75827d;
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.08em;
 }
 .hall-orbit-guide i {
@@ -991,7 +993,7 @@ p {
 .nationality-badge small {
   overflow: hidden;
   color: #d4d9d3;
-  font: 8px/1 var(--mono);
+  font: var(--type-caption)/1 var(--mono);
   text-overflow: ellipsis;
 }
 .nationality-badge.is-compact {
@@ -1017,7 +1019,7 @@ p {
 .card-kicker {
   display: flex;
   justify-content: space-between;
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   color: var(--dim);
   letter-spacing: 0.05em;
   margin-bottom: 18px;
@@ -1367,7 +1369,7 @@ p {
   border: 1px solid rgba(213, 161, 91, 0.52);
   background: rgba(10, 18, 20, 0.76);
   color: var(--gold-light);
-  font: 8px/1.25 var(--mono);
+  font: var(--type-caption)/1.25 var(--mono);
   text-align: right;
 }
 .profile-photo-verification:hover {
@@ -1381,7 +1383,7 @@ p {
   z-index: 3;
   max-width: 85%;
   color: rgba(240, 235, 223, 0.76);
-  font: 8px/1.25 var(--mono);
+  font: var(--type-caption)/1.25 var(--mono);
   text-align: right;
 }
 .profile-photo-credit:hover {
@@ -1415,7 +1417,7 @@ p {
 .portrait-audit-head small {
   display: block;
   color: var(--dim);
-  font: 8px/1.35 var(--mono);
+  font: var(--type-caption)/1.35 var(--mono);
   letter-spacing: 0.06em;
 }
 .portrait-audit-head h3 {
@@ -1426,7 +1428,7 @@ p {
 .portrait-audit-head strong {
   flex: 0 0 auto;
   color: var(--gold-light);
-  font: 8px/1.2 var(--mono);
+  font: var(--type-label)/1.2 var(--mono);
   letter-spacing: 0.08em;
 }
 .portrait-audit-item > p {
@@ -1442,7 +1444,7 @@ p {
 }
 .portrait-audit-links a {
   color: var(--gold-light);
-  font: 8px/1.3 var(--mono);
+  font: var(--type-label)/1.3 var(--mono);
 }
 .portrait-audit-links a:hover {
   color: var(--paper);
@@ -1562,7 +1564,7 @@ p {
   align-items: baseline;
 }
 .citation-label {
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   color: var(--gold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1750,7 +1752,7 @@ p {
 }
 .graph-person-finder span {
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.06em;
   white-space: nowrap;
 }
@@ -1769,7 +1771,7 @@ p {
   align-items: center;
   gap: 6px;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.04em;
 }
 .graph-legend i {
@@ -1803,7 +1805,7 @@ p {
 .graph-instruction strong {
   margin-right: 11px;
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.09em;
   white-space: nowrap;
 }
@@ -1859,7 +1861,7 @@ p {
   padding: 5px 7px;
   background: rgba(13, 21, 23, 0.82);
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.1em;
 }
 .graph-time-tick {
@@ -1886,7 +1888,7 @@ p {
   width: 39px;
   text-align: right;
   color: #879188;
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   font-weight: 400;
 }
 .graph-lines {
@@ -1997,7 +1999,7 @@ p {
   white-space: nowrap;
   color: #788980;
   background: rgba(13, 21, 23, 0.88);
-  font: 7px var(--mono);
+  font: var(--type-caption) var(--mono);
 }
 .graph-node.estimated-anchor .graph-node-ring {
   border-style: dashed;
@@ -2023,7 +2025,7 @@ p {
 }
 .graph-lifespan b {
   color: var(--gold-light);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   font-weight: 400;
 }
 .graph-lifespan i {
@@ -2143,7 +2145,7 @@ p {
   padding: 3px 5px;
   color: var(--gold-light);
   background: rgba(8, 15, 17, 0.94);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   white-space: nowrap;
 }
 .graph-life-range span:first-child {
@@ -2166,7 +2168,7 @@ p {
   padding: 5px 7px;
   color: var(--dim);
   background: rgba(13, 21, 23, 0.86);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   white-space: nowrap;
 }
 .graph-detail {
@@ -2255,7 +2257,7 @@ p {
   border: 0;
   background: transparent;
   color: var(--dim);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .graph-detail-actions button:hover,
 .graph-clear-selection:hover {
@@ -2330,7 +2332,7 @@ p {
   grid-row: 1 / span 2;
   align-self: center;
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .graph-node-relations button strong {
   color: var(--paper);
@@ -2338,7 +2340,7 @@ p {
 }
 .graph-node-relations button small {
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .graph-node-relations > p {
   margin: 0;
@@ -2426,7 +2428,7 @@ p {
   justify-content: space-between;
   gap: 12px;
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.08em;
 }
 .timeline-era-legend-top b {
@@ -2481,7 +2483,7 @@ p {
   justify-content: space-between;
   gap: 8px;
   color: var(--track-accent);
-  font: 7px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.06em;
 }
 .timeline-track-legend article > div b {
@@ -2519,7 +2521,7 @@ p {
   display: block;
   margin-bottom: 6px;
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.08em;
 }
 .timeline-filter-heading strong {
@@ -2535,7 +2537,7 @@ p {
   border-radius: 0;
   background: #111d1f;
   color: var(--paper);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .timeline-filter-bar button {
   width: auto;
@@ -2551,13 +2553,13 @@ p {
   grid-column: 2 / -1;
   margin: 0;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   text-align: right;
 }
 .timeline-scroll-hint {
   margin: 30px 0 10px;
   color: var(--dim);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.04em;
   text-align: right;
 }
@@ -2593,14 +2595,14 @@ p {
 .timeline-axis-heading span,
 .timeline-lane-heading span {
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   letter-spacing: 0.09em;
 }
 .timeline-axis-heading b,
 .timeline-lane-heading b {
   margin-top: 5px;
   color: var(--dim);
-  font: 7px var(--mono);
+  font: var(--type-caption) var(--mono);
   font-weight: 400;
 }
 .timeline-lane-heading {
@@ -2670,7 +2672,7 @@ p {
   top: -7px;
   width: 38px;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   font-weight: 400;
   letter-spacing: 0.02em;
   text-align: right;
@@ -2726,7 +2728,7 @@ p {
   padding-left: 10px;
   background: color-mix(in srgb, var(--navy) 86%, transparent);
   color: rgba(213, 161, 91, 0.58);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   font-weight: 400;
   letter-spacing: 0.08em;
 }
@@ -2859,14 +2861,14 @@ p {
 }
 .global-event-top > span {
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
   text-align: right;
 }
 .event-crossover {
   display: block;
   margin-bottom: 4px;
   color: var(--track-accent);
-  font: 7px var(--mono);
+  font: var(--type-caption) var(--mono);
   font-weight: 400;
   letter-spacing: 0.08em;
 }
@@ -2896,7 +2898,7 @@ p {
   gap: 9px;
   margin-top: auto;
   color: var(--dim);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .event-person-portrait-wrap {
   position: relative;
@@ -2986,10 +2988,10 @@ p {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .global-event .citation-label {
-  font-size: 8px;
+  font-size: var(--type-label);
 }
 .global-event .citation-links a {
-  font-size: 8px;
+  font-size: var(--type-label);
 }
 .compare-page {
   padding-bottom: 100px;
@@ -3033,7 +3035,7 @@ p {
 .compare-presets > span {
   margin-right: 4px;
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.08em;
 }
 .compare-presets button {
@@ -3041,7 +3043,7 @@ p {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--muted);
-  font: 9px var(--mono);
+  font: var(--type-label) var(--mono);
 }
 .compare-presets button:hover,
 .compare-presets button:focus-visible {
@@ -3062,7 +3064,7 @@ p {
   display: block;
   margin-bottom: 6px;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.06em;
 }
 .compare-filter-bar input,
@@ -3085,7 +3087,7 @@ p {
   align-self: center;
   margin: 0;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   white-space: nowrap;
 }
 .compare-roster-grid {
@@ -3193,12 +3195,12 @@ p {
 .compare-select-identity span {
   margin-top: 4px;
   color: var(--gold-light);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
 }
 .compare-select-identity small {
   margin-top: 9px;
   color: var(--dim);
-  font: 8px var(--mono);
+  font: var(--type-caption) var(--mono);
 }
 .compare-select-rank {
   position: absolute;
@@ -3301,7 +3303,7 @@ p {
 }
 .compare-table td small {
   color: var(--dim);
-  font: 8px/1.5 var(--mono);
+  font: var(--type-label)/1.5 var(--mono);
 }
 .compare-person .compare-portrait-wrap {
   position: relative;
@@ -3542,7 +3544,7 @@ p {
 }
 .footer-creator-copy small {
   color: var(--gold);
-  font: 8px var(--mono);
+  font: var(--type-label) var(--mono);
   letter-spacing: 0.09em;
 }
 .footer-creator-copy strong {
@@ -3876,7 +3878,7 @@ p {
     padding: 12px;
   }
   .card-kicker {
-    font-size: 8px;
+    font-size: var(--type-caption);
     margin-bottom: 12px;
   }
   .card-body h3 {
@@ -3889,7 +3891,7 @@ p {
     font-size: 10px;
   }
   .tag-row span {
-    font-size: 8px;
+    font-size: var(--type-caption);
   }
   .feature-panels {
     grid-template-columns: 1fr;
@@ -3993,7 +3995,7 @@ p {
   .graph-hint {
     top: 9px;
     right: 9px;
-    font-size: 8px;
+    font-size: var(--type-label);
   }
   .graph-detail {
     padding: 17px;
@@ -4032,7 +4034,7 @@ p {
   .graph-table td::before {
     content: attr(data-label);
     color: var(--dim);
-    font: 8px var(--mono);
+    font: var(--type-label) var(--mono);
     letter-spacing: 0.06em;
   }
   .graph-person-detail {
@@ -4125,7 +4127,7 @@ p {
     right: 7px;
     width: 17px;
     height: 17px;
-    font-size: 7px;
+    font-size: var(--type-caption);
   }
   .source-grid {
     grid-template-columns: 1fr;
