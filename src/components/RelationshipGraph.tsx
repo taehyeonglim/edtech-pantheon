@@ -36,6 +36,20 @@ const layerLabel: Record<Relationship["layer"] | "all", string> = {
 const getAnchorYear = (pioneer: Pioneer) =>
   pioneer.birthYear ?? Math.min(...pioneer.timeline.map((event) => event.year));
 
+const getCenterOutLaneOrder = (count: number) => {
+  const order: number[] = [];
+  const leftCenter = Math.floor((count - 1) / 2);
+
+  for (let offset = 0; order.length < count; offset += 1) {
+    const left = leftCenter - offset;
+    const right = leftCenter + 1 + offset;
+    if (left >= 0) order.push(left);
+    if (right < count) order.push(right);
+  }
+
+  return order;
+};
+
 export default function RelationshipGraph({
   pioneers,
   relationships,
@@ -92,6 +106,7 @@ export default function RelationshipGraph({
       { length: activeLaneCount },
       () => -Infinity,
     );
+    const lanePriority = getCenterOutLaneOrder(activeLaneCount);
     const activeLaneBounds = isCompact ? { start: 23, end: 89 } : laneBounds;
     const ordered = [...pioneers].sort(
       (a, b) =>
@@ -101,7 +116,9 @@ export default function RelationshipGraph({
     return Object.fromEntries(
       ordered.map((pioneer) => {
         const anchorYear = getAnchorYear(pioneer);
-        const lane = laneLastYear.indexOf(Math.min(...laneLastYear));
+        const lane = lanePriority.reduce((best, candidate) =>
+          laneLastYear[candidate] < laneLastYear[best] ? candidate : best,
+        );
         laneLastYear[lane] = anchorYear;
         return [
           pioneer.id,
