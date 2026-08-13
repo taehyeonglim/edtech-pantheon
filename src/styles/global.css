@@ -1787,6 +1787,26 @@ p {
   color: var(--dim);
   font: 10px var(--mono);
 }
+.graph-instruction {
+  margin: 0 0 14px;
+  padding: 11px 14px;
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(
+    90deg,
+    rgba(213, 161, 91, 0.1),
+    rgba(213, 161, 91, 0.025)
+  );
+  color: #c5cec7;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.graph-instruction strong {
+  margin-right: 11px;
+  color: var(--gold-light);
+  font: 8px var(--mono);
+  letter-spacing: 0.09em;
+  white-space: nowrap;
+}
 .graph-scroll {
   overflow-x: hidden;
   padding-bottom: 6px;
