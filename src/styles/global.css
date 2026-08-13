@@ -1501,16 +1501,20 @@ p {
 }
 .portrait-audit-nationality {
   display: inline-flex;
+  align-items: center;
+  gap: 6px;
   justify-content: flex-end;
-  min-width: 24px;
+  min-width: 52px;
   color: var(--gold-light);
-  font: 18px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-  font-variant-emoji: emoji;
-  letter-spacing: 0.04em;
+  font: var(--type-label)/1.3 var(--mono);
   text-align: right;
   white-space: nowrap;
 }
 .portrait-audit-nationality b {
+  font: 18px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-variant-emoji: emoji;
+}
+.portrait-audit-nationality small {
   font: inherit;
 }
 .portrait-audit-toggle {
