@@ -2080,41 +2080,45 @@ p {
 }
 .graph-life-range {
   position: absolute;
-  z-index: 1;
-  width: 3px;
+  z-index: 0;
+  width: 18px;
   min-height: 24px;
-  transform: translateX(-1px);
+  transform: translateX(-50%);
   pointer-events: none;
-  filter: drop-shadow(
-    0 0 4px color-mix(in srgb, var(--life-color) 65%, transparent)
-  );
   animation: graph-life-in 0.18s ease-out;
 }
 .graph-life-range i {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--life-color) 76%, var(--gold-light));
+  border: 1px solid color-mix(in srgb, var(--life-color) 40%, transparent);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--life-color) 12%, transparent),
+    color-mix(in srgb, var(--life-color) 34%, transparent) 50%,
+    color-mix(in srgb, var(--life-color) 12%, transparent)
+  );
+  box-shadow: inset 0 0 8px color-mix(in srgb, var(--life-color) 18%, transparent);
 }
 .graph-life-range i::before,
 .graph-life-range i::after {
   content: "";
   position: absolute;
   left: -4px;
-  width: 11px;
-  height: 11px;
-  border: 2px solid var(--gold-light);
-  border-radius: 50%;
-  background: var(--navy);
+  width: 24px;
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--life-color) 62%, var(--gold-light));
 }
 .graph-life-range i::before {
-  top: 0;
+  top: -1px;
 }
 .graph-life-range i::after {
-  bottom: 0;
+  bottom: -1px;
 }
 .graph-life-range span {
   position: absolute;
-  left: 12px;
+  left: calc(100% + 7px);
   z-index: 2;
   padding: 3px 5px;
   color: var(--gold-light);
@@ -2131,7 +2135,7 @@ p {
 @keyframes graph-life-in {
   from {
     opacity: 0;
-    transform: translateX(4px);
+    transform: translateX(-50%) scaleX(0.55);
   }
 }
 .graph-hint {
