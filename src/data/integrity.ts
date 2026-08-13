@@ -143,6 +143,9 @@ const validateArchive = () => {
     if (institution.markerImageUrl && (!institution.markerImageSourceUrl || !institution.markerImageLicense)) {
       errors.push(`${institution.id}: 지도 마크 근거 또는 권리 정보 없음`);
     }
+    if (institution.kind !== "university" && !institution.markerImageUrl && !institution.markerLabel) {
+      errors.push(`${institution.id}: 비대학 기관 지도 마크 없음`);
+    }
     if (institution.kind === "university" && (!institution.imageUrl || institution.imageKind !== "emblem")) {
       errors.push(`${institution.id}: 대학 엠블럼 이미지 없음`);
     }

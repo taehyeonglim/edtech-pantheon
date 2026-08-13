@@ -13,6 +13,7 @@ export const flagIconByEmoji: Record<string, FlagIcon> = {
   "🇦🇺": { code: "AU", file: "au.svg", alt: "호주 국기" },
   "🇬🇧": { code: "GB", file: "gb.svg", alt: "영국 국기" },
   "🇳🇱": { code: "NL", file: "nl.svg", alt: "네덜란드 국기" },
+  "🇵🇹": { code: "PT", file: "pt.svg", alt: "포르투갈 국기" },
 };
 
 export const getFlagIcons = (flag: string) =>
@@ -27,4 +28,5 @@ export const countryFlagByName: Record<string, FlagIcon> = {
   호주: flagIconByEmoji["🇦🇺"],
   영국: flagIconByEmoji["🇬🇧"],
   네덜란드: flagIconByEmoji["🇳🇱"],
+  포르투갈: flagIconByEmoji["🇵🇹"],
 };

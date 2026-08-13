@@ -1648,6 +1648,8 @@ p {
 .atlas-marker-pin b { font: 600 11px/1 var(--mono); transform: rotate(45deg); }
 .atlas-marker-pin.has-emblem { width: 46px; height: 46px; padding: 5px; border-radius: 50%; background: #f5f2e9; transform: none; }
 .atlas-map .leaflet-marker-pane .atlas-marker-pin.has-emblem img { display: block; width: 32px !important; height: 32px !important; max-width: 32px !important; max-height: 32px !important; border-radius: 50%; object-fit: contain; }
+.atlas-map .leaflet-marker-pane .atlas-marker-pin.has-photo img { width: 36px !important; height: 36px !important; max-width: 36px !important; max-height: 36px !important; object-fit: cover; }
+.atlas-marker-monogram { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: var(--gold-light); font: 700 10px/1 var(--mono); letter-spacing: .04em; }
 .atlas-marker-pin.has-emblem b { position: absolute; right: -5px; bottom: -4px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 4px; border: 1px solid var(--gold-light); border-radius: 999px; background: rgba(13,23,25,.97); color: var(--paper); font-size: var(--type-min); transform: none; }
 .atlas-leaflet-marker:hover .atlas-marker-pin:not(.has-emblem),
 .atlas-leaflet-marker:focus .atlas-marker-pin:not(.has-emblem) { border-color: var(--paper); transform: rotate(-45deg) scale(1.12); }

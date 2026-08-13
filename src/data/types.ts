@@ -89,6 +89,8 @@ export type Institution = {
   markerImageUrl?: string;
   markerImageSourceUrl?: string;
   markerImageLicense?: string;
+  markerImageFit?: "contain" | "cover";
+  markerLabel?: string;
 };
 
 export type Affiliation = {
