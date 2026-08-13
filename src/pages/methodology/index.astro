@@ -4,6 +4,7 @@ import { pioneers } from '../../data/pioneers';
 import { portraits } from '../../data/portraits';
 import { nationalityById, nationalityCheckedOn } from '../../data/nationalities';
 
+const base = import.meta.env.BASE_URL;
 const portraitAudit = pioneers.map((pioneer) => ({
   pioneer,
   portrait: portraits[pioneer.id],
@@ -58,6 +59,18 @@ const portraitAudit = pioneers.map((pioneer) => ({
             <details class="portrait-audit-item">
               <summary>
                 <span class="portrait-audit-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span class="portrait-audit-photo" style={`--portrait-accent:${pioneer.accent}`}>
+                  <img
+                    src={`${base}${portrait.src}`}
+                    alt={portrait.alt}
+                    loading="lazy"
+                    style={[
+                      portrait.objectPosition && `object-position:${portrait.objectPosition}`,
+                      portrait.objectScale && `transform:scale(${portrait.objectScale})`,
+                      portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`,
+                    ].filter(Boolean).join(';')}
+                  />
+                </span>
                 <span class="portrait-audit-identity">
                   <h3>{pioneer.nameKo}</h3>
                   <small>{pioneer.nameEn}</small>
