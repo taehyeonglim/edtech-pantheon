@@ -110,6 +110,24 @@ button {
   font-size: var(--type-min);
   margin-top: 3px;
 }
+.visitor-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  min-width: 86px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+  color: var(--dim);
+  font: 500 var(--type-min)/1 var(--mono);
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.visitor-counter.is-ready { visibility: visible; opacity: 1; }
+.visitor-counter svg { width: 14px; height: 14px; fill: none; stroke: var(--gold); stroke-width: 1.5; }
+.visitor-counter strong { color: var(--paper-soft); font-weight: 600; }
 .main-nav {
   display: flex;
   align-items: center;
@@ -4217,6 +4235,9 @@ p {
   .brand-copy {
     display: none;
   }
+  .header-inner { gap: 12px; }
+  .visitor-counter { min-width: 75px; padding-left: 10px; }
+  .visitor-counter > span { display: none; }
   .main-nav {
     gap: 14px;
     min-width: 0;

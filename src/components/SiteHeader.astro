@@ -11,6 +11,11 @@ const current = Astro.url.pathname;
       </span>
       <span class="brand-copy"><strong>EDTECH</strong><span>PANTHEON</span></span>
     </a>
+    <span class="visitor-counter" data-visitor-counter aria-live="polite" aria-label="누적 방문자 수" title="익명화된 사이트 전체 누적 방문자 수">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.2 12s3.4-6 9.8-6 9.8 6 9.8 6-3.4 6-9.8 6-9.8-6-9.8-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+      <span>방문자</span>
+      <strong data-visitor-count>—</strong>
+    </span>
     <nav class="main-nav" aria-label="주요 메뉴">
       <a class:list={{ active: current === `${base}` || current === base.slice(0, -1) }} href={base}>명예의전당</a>
       <a class:list={{ active: current.includes('/connections') }} href={`${base}connections/`}>관계도</a>
@@ -22,3 +27,31 @@ const current = Astro.url.pathname;
     <a class="header-note" href={`${base}about/`}>RESEARCH ARCHIVE <span aria-hidden="true">↗</span></a>
   </div>
 </header>
+
+<script>
+  const visitorCounter = document.querySelector('[data-visitor-counter]') as HTMLElement | null;
+  const visitorCount = document.querySelector('[data-visitor-count]') as HTMLElement | null;
+  const isPublicSite = window.location.hostname === 'taehyeonglim.github.io';
+
+  if (visitorCounter && visitorCount && isPublicSite) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 5000);
+    fetch('https://counterapi.com/api/taehyeonglim.github.io/view/edtech-pantheon?unique=true&noFormatting=true', {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('Visitor counter unavailable');
+        return response.json() as Promise<{ value?: number }>;
+      })
+      .then(({ value }) => {
+        if (!Number.isFinite(value)) throw new Error('Invalid visitor count');
+        const formatted = new Intl.NumberFormat('ko-KR').format(value!);
+        visitorCount.textContent = `${formatted}명`;
+        visitorCounter.setAttribute('aria-label', `누적 방문자 ${formatted}명`);
+        visitorCounter.classList.add('is-ready');
+      })
+      .catch(() => {})
+      .finally(() => window.clearTimeout(timeout));
+  }
+</script>
