@@ -21,21 +21,117 @@ const groupedSources = tierGroups.map((group) => ({
   <section class="section sources-page">
     <div class="shell source-index">
       <p class="source-index-intro"><span>READING ORDER</span> 등급별로 묶고 저자명순으로 정리했습니다. 각 항목을 누르면 원문이 새 창에서 열립니다.</p>
+      <form class="source-search" role="search" data-source-search>
+        <label for="source-query">
+          <span>SEARCH THE BIBLIOGRAPHY</span>
+          <strong>참고문헌 검색</strong>
+        </label>
+        <div class="source-search-field">
+          <span aria-hidden="true">⌕</span>
+          <input id="source-query" type="search" placeholder="제목, 저자, 발행처, 연도, DOI 검색" autocomplete="off" spellcheck="false" data-source-query />
+          <button type="button" data-source-clear hidden>초기화</button>
+        </div>
+        <p aria-live="polite"><b data-source-result>{sources.length}</b> / {sources.length} SOURCES</p>
+      </form>
       {groupedSources.map((group) => (
-        <section class="source-group" aria-labelledby={`source-tier-${group.tier}`}>
+        <section class="source-group" aria-labelledby={`source-tier-${group.tier}`} data-source-group>
           <header class="source-group-head">
             <span class={`tier tier-${group.tier}`}>{group.tier}등급</span>
             <div>
               <h2 id={`source-tier-${group.tier}`}>{group.label}</h2>
               <p>{group.note}</p>
             </div>
-            <strong>{String(group.sources.length).padStart(2, '0')} SOURCES</strong>
+            <strong data-source-group-count data-source-total={group.sources.length}>{String(group.sources.length).padStart(2, '0')} SOURCES</strong>
           </header>
           <ol class="source-list">
             {group.sources.map((source, index) => <SourceEntry source={source} index={index} />)}
           </ol>
         </section>
       ))}
+      <div class="source-empty" data-source-empty hidden>
+        <span>NO MATCHING SOURCES</span>
+        <p>검색 결과가 없습니다. 제목이나 저자명처럼 더 짧은 검색어를 입력해 보세요.</p>
+      </div>
     </div>
   </section>
+  <script>
+    const searchForm = document.querySelector('[data-source-search]') as HTMLFormElement | null;
+    const searchInput = document.querySelector('[data-source-query]') as HTMLInputElement | null;
+    const clearButton = document.querySelector('[data-source-clear]') as HTMLButtonElement | null;
+    const resultCount = document.querySelector('[data-source-result]') as HTMLElement | null;
+    const emptyState = document.querySelector('[data-source-empty]') as HTMLElement | null;
+    const sourceGroups = [...document.querySelectorAll('[data-source-group]')] as HTMLElement[];
+    const sourceEntries = [...document.querySelectorAll('[data-source-entry]')] as HTMLElement[];
+
+    const normalize = (value: string) => value
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .toLocaleLowerCase()
+      .trim();
+
+    sourceEntries.forEach((entry) => {
+      entry.dataset.searchIndex = normalize(entry.dataset.searchValue || '');
+    });
+
+    const updateSources = () => {
+      const query = normalize(searchInput?.value || '');
+      const terms = query.split(/\s+/).filter(Boolean);
+      let visibleTotal = 0;
+
+      sourceGroups.forEach((group) => {
+        group.classList.remove('is-first-visible');
+        const entries = [...group.querySelectorAll('[data-source-entry]')] as HTMLElement[];
+        let visibleInGroup = 0;
+
+        entries.forEach((entry) => {
+          const searchIndex = entry.dataset.searchIndex || '';
+          const matches = terms.every((term) => searchIndex.includes(term));
+          entry.hidden = !matches;
+          if (matches) visibleInGroup += 1;
+        });
+
+        group.hidden = visibleInGroup === 0;
+        visibleTotal += visibleInGroup;
+
+        const groupCount = group.querySelector('[data-source-group-count]') as HTMLElement | null;
+        const groupTotal = Number(groupCount?.dataset.sourceTotal || entries.length);
+        if (groupCount) {
+          groupCount.textContent = query
+            ? `${String(visibleInGroup).padStart(2, '0')} / ${String(groupTotal).padStart(2, '0')} SOURCES`
+            : `${String(groupTotal).padStart(2, '0')} SOURCES`;
+        }
+      });
+
+      sourceGroups.find((group) => !group.hidden)?.classList.add('is-first-visible');
+      if (resultCount) resultCount.textContent = String(visibleTotal);
+      if (clearButton) clearButton.hidden = !query;
+      if (emptyState) emptyState.hidden = visibleTotal !== 0;
+
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', searchInput?.value.trim() || '');
+      else url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+    };
+
+    searchForm?.addEventListener('submit', (event) => event.preventDefault());
+    searchInput?.addEventListener('input', updateSources);
+    searchInput?.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && searchInput.value) {
+        searchInput.value = '';
+        updateSources();
+      }
+    });
+    clearButton?.addEventListener('click', () => {
+      if (!searchInput) return;
+      searchInput.value = '';
+      updateSources();
+      searchInput.focus();
+    });
+
+    const initialQuery = new URLSearchParams(window.location.search).get('q');
+    if (initialQuery && searchInput) {
+      searchInput.value = initialQuery;
+      updateSources();
+    }
+  </script>
 </BaseLayout>
