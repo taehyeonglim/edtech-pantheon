@@ -396,7 +396,7 @@ export default function RelationshipGraph({
             <div className="graph-hint">
               {isCompact
                 ? "초상 탭: 직접 연결 확인"
-                : "마우스 오버: 세로 생애선 · 클릭: 직접 연결"}
+                : "마우스 오버: 반투명 생애 막대 · 클릭: 직접 연결"}
             </div>
           )}
         </div>
