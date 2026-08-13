@@ -1,0 +1,28 @@
+---
+import type { Source } from '../data/types';
+
+const { source, index } = Astro.props as { source: Source; index: number };
+const number = String(index + 1).padStart(2, '0');
+---
+
+<li class="source-entry">
+  <a class="source-entry-link" href={source.url} target="_blank" rel="noreferrer">
+    <span class="source-entry-index" aria-hidden="true">{number}</span>
+    <span class="source-entry-citation">
+      <strong>{source.title}</strong>
+      <span>{source.authors}</span>
+      <small>
+        <span>{source.year ?? '연도 미상'}</span>
+        <span aria-hidden="true">·</span>
+        <span>{source.publisher ?? '온라인 원문'}</span>
+        {source.details && <><span aria-hidden="true">·</span><span>{source.details}</span></>}
+        {source.doi && <><span aria-hidden="true">·</span><span>DOI {source.doi}</span></>}
+      </small>
+    </span>
+    <span class="source-entry-kind">
+      <span>{source.type}</span>
+      <span class={`tier tier-${source.tier}`}>{source.tier}등급</span>
+    </span>
+    <span class="source-entry-arrow" aria-hidden="true">↗</span>
+  </a>
+</li>

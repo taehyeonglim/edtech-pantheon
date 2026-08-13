@@ -1,9 +1,41 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import SourceCard from '../../components/SourceCard.astro';
+import SourceEntry from '../../components/SourceEntry.astro';
 import { sources } from '../../data/sources';
+
+const tierGroups = [
+  { tier: 'A', label: '원저작과 당사자 기록', note: '핵심 정의와 직접 진술을 확인하는 1차 자료' },
+  { tier: 'B', label: '학술·기관 자료', note: '영향 관계와 역사적 맥락을 교차 확인하는 자료' },
+  { tier: 'C', label: '백과사전·탐색 자료', note: '후보 사실을 찾고 상위 출처로 이동하기 위한 색인' },
+] as const;
+
+const groupedSources = tierGroups.map((group) => ({
+  ...group,
+  sources: sources
+    .filter((source) => source.tier === group.tier)
+    .sort((a, b) => a.authors.localeCompare(b.authors, 'en') || a.title.localeCompare(b.title, 'en')),
+}));
 ---
 <BaseLayout title="통합 참고문헌">
   <section class="page-hero"><div class="shell"><div class="eyebrow">THE SOURCE ROOM / BIBLIOGRAPHY</div><h1>문장 뒤에<br />남는 것들.</h1><p>원저서, 연구서, 동료평가 논문과 기관 자료를 한 곳에 모았습니다. 등급 배지는 자료의 성격을 뜻하며, 자료의 질을 자동으로 보증하지는 않습니다.</p><div class="hero-meta"><span><b>{sources.length}</b> SOURCES</span><span><b>{sources.filter((s) => s.tier === 'A').length}</b> PRIMARY / EDITED</span><span><b>{sources.filter((s) => s.tier === 'B').length}</b> SCHOLARLY</span></div></div></section>
-  <section class="section sources-page"><div class="shell"><div class="source-grid">{sources.map((source) => <SourceCard source={source} />)}</div></div></section>
+  <section class="section sources-page">
+    <div class="shell source-index">
+      <p class="source-index-intro"><span>READING ORDER</span> 등급별로 묶고 저자명순으로 정리했습니다. 각 항목을 누르면 원문이 새 창에서 열립니다.</p>
+      {groupedSources.map((group) => (
+        <section class="source-group" aria-labelledby={`source-tier-${group.tier}`}>
+          <header class="source-group-head">
+            <span class={`tier tier-${group.tier}`}>{group.tier}등급</span>
+            <div>
+              <h2 id={`source-tier-${group.tier}`}>{group.label}</h2>
+              <p>{group.note}</p>
+            </div>
+            <strong>{String(group.sources.length).padStart(2, '0')} SOURCES</strong>
+          </header>
+          <ol class="source-list">
+            {group.sources.map((source, index) => <SourceEntry source={source} index={index} />)}
+          </ol>
+        </section>
+      ))}
+    </div>
+  </section>
 </BaseLayout>
