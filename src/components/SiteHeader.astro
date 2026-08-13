@@ -6,7 +6,9 @@ const current = Astro.url.pathname;
 <header class="site-header">
   <div class="shell header-inner">
     <a class="brand" href={base} aria-label="EdTech Pantheon 홈">
-      <span class="brand-mark" aria-hidden="true">EP</span>
+      <span class="brand-mark" aria-hidden="true">
+        <img src={`${base}brand-mark.png`} alt="" width="34" height="34" />
+      </span>
       <span class="brand-copy"><strong>EDTECH</strong><span>PANTHEON</span></span>
     </a>
     <nav class="main-nav" aria-label="주요 메뉴">

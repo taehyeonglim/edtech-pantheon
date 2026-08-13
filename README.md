@@ -40,7 +40,7 @@
 | --- | --- |
 | 타입·Astro 검사 | `npm run check` 통과 — 오류, 경고, 힌트 0건 |
 | 프로덕션 빌드 | `npm run build` 통과 — 정적 페이지 45개 생성 |
-| HTML 유효성 | 생성된 `dist/**/*.html` 전체 `html-validate` 통과 |
+| HTML 유효성 | 기본 `html-validate` 규칙에서 기존 inline style·ARIA·button type 항목 미통과 — 기준선 정리 필요 |
 | 의존성 보안 | 전체 439개 의존성 기준 `npm audit` 취약점 0건 |
 | 배포 일치성 | GitHub Pages 배포본과 로컬 빌드 HTML 해시 일치 |
 | 라우팅 | 배포 경로 45개 모두 정상 응답, 존재하지 않는 경로는 404 응답 |
@@ -88,6 +88,7 @@
 ### P3 — 유지보수
 
 - 핵심 사용자 동선을 보호하는 자동화 테스트가 없습니다.
+- 프로젝트 전체 `html-validate` 기준선이 없어 기존 위반과 새 회귀를 분리하기 어렵습니다.
 - `@xyflow/react` 의존성과 `apa-ethics` 출처 레코드는 현재 사용되지 않습니다.
 - 일부 한국어 음역과 생존 인물의 연도 표기 방식이 일관되지 않습니다.
 - 비교표 HTML 생성은 현재 로컬의 신뢰된 데이터만 사용하지만, 향후 외부 입력을 받을 경우 문자열 이스케이프가 필요합니다.
@@ -127,6 +128,7 @@ src/
 └── styles/          # 전역 디자인 시스템과 반응형 규칙
 public/
 ├── portraits/       # 초상 이미지 파일
+├── brand-mark.png   # 헤더와 favicon에 사용하는 투명 로고
 ├── favicon.svg
 └── robots.txt
 ```
@@ -138,7 +140,7 @@ public/
 - 직접 영향과 개념적 유사성을 구분하고 확실성 수준을 과장하지 않았는가?
 - 이름 음역, 원어명, 생몰연도와 저작명이 다른 화면에서도 일관적인가?
 - 새 초상의 저작자, 원본 URL, 라이선스와 신원 확인 근거를 기록했는가?
-- `npm run check`, `npm run build`, HTML 검증과 변경 화면의 브라우저 QA를 통과했는가?
+- `npm run check`, `npm run build`, HTML 검증 결과와 변경 화면의 브라우저 QA를 확인했으며 새 회귀가 없는가?
 
 수정 제안은 [GitHub Issues](https://github.com/taehyeonglim/edtech-pantheon/issues)에 근거 링크와 함께 남겨 주세요.
 

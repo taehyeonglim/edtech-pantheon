@@ -87,12 +87,14 @@ button {
 .brand-mark {
   display: grid;
   place-items: center;
-  border: 1px solid var(--gold);
-  color: var(--gold-light);
   width: 34px;
   height: 34px;
-  font: 500 11px var(--mono);
-  letter-spacing: -0.08em;
+}
+.brand-mark img {
+  display: block;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 .brand-copy {
   display: flex;
