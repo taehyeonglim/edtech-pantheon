@@ -1,6 +1,7 @@
 import { biographies } from "./biographies";
 import { affiliations, institutions } from "./affiliations";
 import { nationalities } from "./nationalities";
+import { countryFlagByName, getFlagIcons } from "./flag-icons";
 import { pioneers } from "./pioneers";
 import { portraits } from "./portraits";
 import { relationships } from "./relationships";
@@ -57,6 +58,8 @@ const validateArchive = () => {
     if (!portraits[pioneer.id]) errors.push(`${pioneer.id}: 초상 없음`);
     if (!nationalities[pioneer.id])
       errors.push(`${pioneer.id}: 국적 정보 없음`);
+    else if (getFlagIcons(nationalities[pioneer.id].flag).length === 0)
+      errors.push(`${pioneer.id}: 국기 이미지 매핑 없음`);
     if ((biographies[pioneer.id]?.length ?? 0) < 3) {
       errors.push(`${pioneer.id}: 상세 생애가 3개 장보다 적음`);
     }
@@ -119,6 +122,12 @@ const validateArchive = () => {
       errors.push(`${affiliation.id}: 소속 기간 역전`);
     }
     checkSources(`${affiliation.id}.sourceIds`, affiliation.sourceIds);
+  }
+
+  for (const institution of institutions) {
+    if (!countryFlagByName[institution.country]) {
+      errors.push(`${institution.id}: 기관 국가 국기 이미지 매핑 없음`);
+    }
   }
 
   const relationshipDegree = new Map(
