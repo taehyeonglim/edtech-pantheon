@@ -1674,7 +1674,8 @@ p {
 .atlas-record { min-width: 0; padding: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.018); }
 .atlas-record[hidden] { display: none; }
 .atlas-record-person { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; align-items: center; }
-.atlas-record-person img { width: 42px; height: 42px; border: 1px solid var(--gold); border-radius: 50%; object-fit: cover; object-position: 50% 24%; }
+.atlas-record-portrait { display: block; width: 42px; height: 42px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; }
+.atlas-record-person img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 24%; }
 .atlas-record-person h3 { margin: 0; color: var(--paper); font: 500 18px/1.15 var(--serif); }
 .atlas-record-person span, .atlas-record-period { color: var(--dim); font: var(--type-caption) var(--mono); }
 .atlas-record-role { margin: 15px 0 7px; color: var(--paper-soft); font-size: 13px; }

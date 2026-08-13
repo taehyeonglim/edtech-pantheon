@@ -78,7 +78,7 @@ const mappedAffiliations = affiliations;
           const countryFlag = countryFlagByName[institution.country];
           return <article class="atlas-record" data-atlas-record data-pioneer={pioneer.id} data-institution={institution.id} data-kind={institution.kind}>
             <div class="atlas-record-person">
-              {portrait && <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={[portrait.objectPosition && `object-position:${portrait.objectPosition}`, portrait.objectScale && `transform:scale(${portrait.objectScale})`, portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`].filter(Boolean).join(';')} />}
+              {portrait && <span class="atlas-record-portrait"><img src={`${base}${portrait.src}`} alt="" loading="lazy" style={[portrait.objectPosition && `object-position:${portrait.objectPosition}`, portrait.objectScale && `transform:scale(${portrait.objectScale})`, portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`].filter(Boolean).join(';')} /></span>}
               <div><h3>{pioneer.nameKo}</h3><span>{pioneer.nameEn}</span></div>
             </div>
             <p class="atlas-record-role">{affiliation.role}</p>
