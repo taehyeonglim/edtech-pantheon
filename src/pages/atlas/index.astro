@@ -40,7 +40,7 @@ const mappedAffiliations = affiliations;
       </div>
       <div class="atlas-map-wrap">
         <div class="atlas-map" data-atlas-map data-points={JSON.stringify(atlasMapData)} role="region" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 실제 지도"></div>
-        <p class="atlas-map-note"><span>MAP KEY</span> 대학·연구기관은 검증한 캠퍼스 또는 건물 좌표에 표시합니다. 점 안 숫자는 대표 활동 기록 수이며, 전문 활동 두 곳만 공개 주소가 없어 도시 중심 좌표를 사용합니다.</p>
+        <p class="atlas-map-note"><span>MAP KEY</span> 지도 위에서 마우스 휠로 확대·축소할 수 있습니다. 대학·연구기관은 검증한 캠퍼스 또는 건물 좌표에 표시하며, 전문 활동 두 곳만 공개 주소가 없어 도시 중심 좌표를 사용합니다.</p>
       </div>
       <aside class="atlas-detail" data-atlas-detail>
         <span>SELECT A POINT</span>
@@ -128,7 +128,7 @@ const mappedAffiliations = affiliations;
       zoom: 2,
       minZoom: 2,
       maxZoom: 18,
-      scrollWheelZoom: false,
+      scrollWheelZoom: true,
       worldCopyJump: true,
       zoomControl: true,
     }) : null;
