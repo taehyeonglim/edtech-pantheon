@@ -16,8 +16,9 @@
   --serif: "Fraunces", Georgia, serif;
   --sans: "IBM Plex Sans KR", system-ui, sans-serif;
   --mono: "DM Mono", monospace;
-  --type-caption: 9px;
-  --type-label: 10px;
+  --type-min: 12px; /* 9pt at the CSS reference pixel density */
+  --type-caption: var(--type-min);
+  --type-label: var(--type-min);
   --shell: min(1240px, calc(100% - 64px));
 }
 
@@ -101,12 +102,12 @@ button {
 .brand-copy {
   display: flex;
   flex-direction: column;
-  font: 500 11px/1.1 var(--mono);
+  font: 500 var(--type-min)/1.1 var(--mono);
   letter-spacing: 0.16em;
 }
 .brand-copy span {
   color: var(--gold);
-  font-size: 10px;
+  font-size: var(--type-min);
   margin-top: 3px;
 }
 .main-nav {
@@ -141,7 +142,7 @@ button {
   transform: scaleX(1);
 }
 .header-note {
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.1em;
   color: var(--dim);
   white-space: nowrap;
@@ -181,7 +182,7 @@ button {
   align-items: center;
   gap: 12px;
   color: var(--gold);
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -257,7 +258,7 @@ p {
   display: flex;
   justify-content: space-between;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -316,7 +317,7 @@ p {
   color: #6d7770;
 }
 .section-link {
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--gold);
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -329,7 +330,7 @@ p {
   width: fit-content;
   margin: 12px 0 0 auto;
   color: #8b5d20;
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -445,7 +446,7 @@ p {
 .hall-orbit-controls .hall-orbit-toggle {
   width: 63px;
   color: var(--gold-light);
-  font: 10px/1 var(--mono);
+  font: var(--type-min)/1 var(--mono);
 }
 .hall-orbit[data-auto-playing="true"] .hall-orbit-toggle::after {
   content: "";
@@ -520,7 +521,7 @@ p {
   top: 31px;
   left: 50%;
   color: rgba(240, 235, 223, 0.14);
-  font: 9px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.2em;
   transform: translateX(-50%);
 }
@@ -655,7 +656,7 @@ p {
   top: 15px;
   left: 16px;
   color: var(--gold-light);
-  font: 9px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.14em;
 }
 .orbit-card-number::after {
@@ -732,7 +733,7 @@ p {
   overflow: hidden;
   margin: 5px 0 9px;
   color: #c4cdc9;
-  font-size: 10px;
+  font-size: var(--type-min);
   line-height: 1.45;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -958,7 +959,7 @@ p {
   top: 17px;
   left: 20px;
   color: var(--gold-light);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .portrait-line {
   position: absolute;
@@ -1049,7 +1050,7 @@ p {
   border: 1px solid var(--line);
   color: var(--dim);
   padding: 2px 6px;
-  font-size: 10px;
+  font-size: var(--type-min);
 }
 .card-arrow {
   position: absolute;
@@ -1082,7 +1083,7 @@ p {
   align-items: center;
   gap: 40px;
   color: var(--muted);
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.04em;
 }
 .concept-track span::after {
@@ -1120,7 +1121,7 @@ p {
   align-items: center;
   gap: 9px;
   margin-top: 28px;
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--gold-light);
   border-bottom: 1px solid var(--gold);
   padding-bottom: 6px;
@@ -1152,7 +1153,7 @@ p {
     rgba(16, 25, 27, 0.26);
 }
 .panel-no {
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--gold);
 }
 .feature-panel h3 {
@@ -1172,7 +1173,7 @@ p {
 .feature-panel .panel-tag {
   align-self: flex-start;
   color: var(--gold-light);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.1em;
 }
 
@@ -1186,7 +1187,7 @@ p {
   align-items: center;
   gap: 20px;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.06em;
 }
 .archive-banner-inner strong {
@@ -1212,7 +1213,7 @@ p {
 .page-hero .hero-meta {
   display: flex;
   gap: 26px;
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--dim);
   letter-spacing: 0.06em;
   margin-top: 30px;
@@ -1246,7 +1247,7 @@ p {
   border: 1px solid var(--line);
   color: var(--muted);
   background: transparent;
-  font-size: 11px;
+  font-size: var(--type-min);
   padding: 7px 11px;
 }
 .filter-button:hover,
@@ -1256,7 +1257,7 @@ p {
 }
 .filter-count {
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   margin-left: 5px;
 }
 .empty-state {
@@ -1348,14 +1349,14 @@ p {
   top: 23px;
   left: 20px;
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .profile-photo-missing {
   position: absolute;
   left: 20px;
   bottom: 23px;
   color: var(--gold-light);
-  font: 10px/1.25 var(--mono);
+  font: var(--type-min)/1.25 var(--mono);
   letter-spacing: 0.12em;
   z-index: 2;
 }
@@ -1512,7 +1513,7 @@ p {
 .quote-card small {
   display: block;
   color: var(--dim);
-  font-size: 10px;
+  font-size: var(--type-min);
   margin: -4px 0 14px;
 }
 .content-block {
@@ -1542,7 +1543,7 @@ p {
   margin-bottom: 22px;
 }
 .content-block h2 .block-index {
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--gold);
   vertical-align: middle;
   margin-right: 12px;
@@ -1579,7 +1580,7 @@ p {
   align-items: center;
   gap: 5px;
   color: var(--muted);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   border-bottom: 1px dotted rgba(218, 226, 216, 0.25);
   padding-bottom: 2px;
 }
@@ -1596,7 +1597,7 @@ p {
   min-width: 18px;
   height: 18px;
   padding: 0 3px;
-  font: 9px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .tier-A {
   color: var(--gold-light);
@@ -1620,7 +1621,7 @@ p {
 }
 .work-card .work-year {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .work-card h3 {
   font: 500 21px/1.15 var(--serif);
@@ -1676,7 +1677,7 @@ p {
 }
 .aside-label {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.1em;
 }
 .aside-card h3 {
@@ -1705,7 +1706,7 @@ p {
 }
 .profile-source-count {
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 
 .graph-page {
@@ -1723,7 +1724,7 @@ p {
 }
 .graph-filter-label {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.08em;
 }
 .graph-filters {
@@ -1735,7 +1736,7 @@ p {
   background: transparent;
   color: var(--muted);
   border: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--type-min);
   padding: 6px 9px;
 }
 .graph-filters button:hover,
@@ -1764,7 +1765,7 @@ p {
   border-radius: 0;
   background: #111d1f;
   color: var(--paper);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .graph-legend {
   display: flex;
@@ -1787,7 +1788,7 @@ p {
 .graph-count {
   margin-left: 0;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .graph-instruction {
   margin: 0 0 14px;
@@ -1990,7 +1991,7 @@ p {
   margin-top: 13px;
   padding: 3px 6px 1px;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: var(--type-min);
   color: #d2d9d2;
   background: rgba(13, 21, 23, 0.88);
 }
@@ -2201,13 +2202,13 @@ p {
   gap: 10px;
   align-items: center;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .relation-pill {
   border: 1px solid var(--gold);
   color: var(--gold-light);
   padding: 3px 7px;
-  font-size: 10px;
+  font-size: var(--type-min);
   display: inline-block;
 }
 .graph-detail h3 {
@@ -2229,7 +2230,7 @@ p {
   margin-bottom: 12px;
 }
 .detail-sources {
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--dim);
 }
 .detail-sources span {
@@ -2243,7 +2244,7 @@ p {
 }
 .detail-links a {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .graph-detail-actions {
   display: flex;
@@ -2362,7 +2363,7 @@ p {
 }
 .graph-table th {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   text-align: left;
   letter-spacing: 0.08em;
   padding: 12px 10px;
@@ -2456,7 +2457,7 @@ p {
 .timeline-era-legend p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--type-min);
   line-height: 1.65;
 }
 .timeline-track-legend {
@@ -2500,7 +2501,7 @@ p {
 .timeline-track-legend p {
   margin: 0;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--type-min);
   line-height: 1.65;
 }
 .timeline-filter-bar {
@@ -2818,7 +2819,7 @@ p {
 }
 .timeline-empty-state span {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.1em;
 }
 .timeline-empty-state p {
@@ -2884,7 +2885,7 @@ p {
 .global-event > p {
   display: -webkit-box;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-min);
   line-height: 1.65;
   margin: 0 0 12px;
   overflow: hidden;
@@ -2952,7 +2953,7 @@ p {
   display: grid;
   place-items: center;
   color: var(--gold-light);
-  font: 500 9px var(--mono);
+  font: 500 var(--type-min) var(--mono);
 }
 .event-person-portrait:hover {
   z-index: 1;
@@ -3010,7 +3011,7 @@ p {
 .compare-controls-kicker {
   display: block;
   margin-bottom: 7px;
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   color: var(--gold);
   letter-spacing: 0.08em;
 }
@@ -3022,7 +3023,7 @@ p {
 }
 .compare-help {
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   text-align: right;
 }
 .compare-presets {
@@ -3077,7 +3078,7 @@ p {
   border-radius: 0;
   background: #111d1f;
   color: var(--paper);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .compare-filter-bar button {
   width: auto;
@@ -3213,7 +3214,7 @@ p {
   border: 1px solid var(--line);
   border-radius: 50%;
   color: var(--dim);
-  font: 9px var(--mono);
+  font: var(--type-min) var(--mono);
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 .compare-select-card.selected .compare-select-rank {
@@ -3243,7 +3244,7 @@ p {
 .compare-table thead th:first-child {
   width: 150px;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .compare-person {
   display: flex;
@@ -3284,7 +3285,7 @@ p {
 .compare-person span {
   display: block;
   color: var(--dim);
-  font: 9px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .compare-person .compare-portrait {
   display: grid;
@@ -3293,7 +3294,7 @@ p {
 }
 .compare-table tbody th {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.06em;
 }
 .compare-table td {
@@ -3361,7 +3362,7 @@ p {
 }
 .evidence-table th {
   color: var(--gold);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .method-note {
   border-left: 1px solid var(--gold);
@@ -3395,7 +3396,7 @@ p {
   display: flex;
   justify-content: space-between;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .source-card-top .tier {
   border: 0;
@@ -3408,7 +3409,7 @@ p {
 }
 .source-card p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--type-min);
   margin: 0;
 }
 .source-card-meta {
@@ -3416,7 +3417,7 @@ p {
   justify-content: space-between;
   gap: 5px;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
   margin-top: auto;
   padding-top: 20px;
 }
@@ -3459,7 +3460,7 @@ p {
 }
 .principle-no {
   color: var(--gold);
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .principle h3 {
   font: 500 20px var(--serif);
@@ -3483,7 +3484,7 @@ p {
 }
 .footer-brand {
   color: var(--gold);
-  font: 11px var(--mono);
+  font: var(--type-min) var(--mono);
   letter-spacing: 0.15em;
 }
 .footer-lede {
@@ -3508,7 +3509,7 @@ p {
   flex-direction: column;
   gap: 10px;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .footer-creator-card {
   display: grid;
@@ -3555,7 +3556,7 @@ p {
 .footer-creator-copy > span {
   margin-top: 7px;
   color: var(--muted);
-  font: 10px/1.45 var(--sans);
+  font: var(--type-min)/1.45 var(--sans);
 }
 .footer-creator-scope {
   color: var(--gold-light);
@@ -3573,7 +3574,7 @@ p {
   justify-content: space-between;
   gap: 20px;
   color: var(--dim);
-  font: 10px var(--mono);
+  font: var(--type-min) var(--mono);
 }
 .footer-bottom a {
   color: var(--gold);
@@ -3687,7 +3688,7 @@ p {
     right: 14px;
     left: 14px;
     color: var(--track-accent);
-    font: 9px var(--mono);
+    font: var(--type-min) var(--mono);
     letter-spacing: 0.07em;
   }
   .timeline-lane-event {
@@ -3750,7 +3751,7 @@ p {
     gap: 14px;
   }
   .main-nav a {
-    font-size: 11px;
+    font-size: var(--type-min);
     padding: 21px 0 19px;
   }
   .main-nav a:nth-child(4),
@@ -3885,10 +3886,10 @@ p {
     font-size: 21px;
   }
   .card-name-en {
-    font-size: 9px;
+    font-size: var(--type-min);
   }
   .card-role {
-    font-size: 10px;
+    font-size: var(--type-min);
   }
   .tag-row span {
     font-size: var(--type-caption);
@@ -3984,7 +3985,7 @@ p {
     top: 39px;
   }
   .graph-node-label {
-    font-size: 9px;
+    font-size: var(--type-min);
     margin-top: 13px;
     padding: 2px 4px;
   }
