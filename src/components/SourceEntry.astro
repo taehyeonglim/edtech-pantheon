@@ -1,21 +1,15 @@
 ---
 import type { Source } from '../data/types';
 
-const { source, index } = Astro.props as { source: Source; index: number };
+const { source, index, pioneerIds = [] } = Astro.props as {
+  source: Source;
+  index: number;
+  pioneerIds?: string[];
+};
 const number = String(index + 1).padStart(2, '0');
-const searchValue = [
-  source.tier,
-  source.type,
-  source.authors,
-  source.title,
-  source.year,
-  source.publisher,
-  source.details,
-  source.doi,
-].filter(Boolean).join(' ');
 ---
 
-<li class="source-entry" data-source-entry data-search-value={searchValue}>
+<li class="source-entry" data-source-entry data-pioneer-ids={pioneerIds.join(' ')}>
   <a class="source-entry-link" href={source.url} target="_blank" rel="noreferrer">
     <span class="source-entry-index" aria-hidden="true">{number}</span>
     <span class="source-entry-citation">
