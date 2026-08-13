@@ -159,9 +159,9 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
         <p data-timeline-result aria-live="polite">{events.length} / {events.length} EVENTS</p>
       </div>
 
-      <p class="timeline-scroll-hint">다섯 계보 트랙은 하나의 세로 연도 눈금에 고정됩니다. 작은 화면에서는 가로로 밀어 전체 흐름을 확인하세요.</p>
+      <p class="timeline-scroll-hint">큰 화면에서는 다섯 계보를 같은 연도축에서 비교하고, 좁은 화면에서는 계보별 시간순 목록으로 이어 읽습니다.</p>
       <div class="timeline-shared-scroll" tabindex="0" aria-label="다섯 연구 계보 트랙으로 구성된 통합 연표">
-        <div class="timeline-shared-frame" data-timeline-frame style={`--visible-track-count:${tracks.length};--timeline-frame-width:${62 + tracks.length * 270}px`}>
+        <div class="timeline-shared-frame" data-timeline-frame style={`--visible-track-count:${tracks.length}`}>
           <header class="timeline-lane-head">
             <div class="timeline-axis-heading"><span>YEAR</span><b>{timelineStart}—{timelineEnd}</b></div>
             {tracks.map((track) => (
@@ -207,7 +207,7 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
 
             <div class="timeline-lanes" data-timeline-lanes>
               {tracks.map((track) => (
-                <ol class="timeline-lane" data-timeline-lane data-track-id={track.id} style={`--track-accent:${track.accent}`} aria-label={track.title}>
+                <ol class="timeline-lane" data-timeline-lane data-track-id={track.id} data-track-label={`${track.label} / ${track.title}`} style={`--track-accent:${track.accent}`} aria-label={track.title}>
                   {track.events.map((event) => {
                     const portrait = portraitById[event.pioneer.id];
                     const nationality = nationalityById[event.pioneer.id];
@@ -282,6 +282,19 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
         const axisHeight = Number.parseFloat(getComputedStyle(canvas).getPropertyValue('--timeline-axis-height')) || 8200;
         const laneLayer = canvas.querySelector<HTMLElement>('[data-timeline-lanes]');
         let maximumBottom = axisHeight;
+
+        if (window.matchMedia('(max-width: 980px)').matches) {
+          canvas.querySelectorAll<HTMLElement>('[data-timeline-event]').forEach((event) => {
+            event.style.removeProperty('top');
+            event.style.setProperty('--anchor-offset', '0px');
+            event.style.setProperty('--connector-height', '0px');
+            event.classList.remove('is-displaced');
+          });
+          canvas.querySelectorAll<HTMLElement>('[data-timeline-lane]').forEach((lane) => lane.style.removeProperty('height'));
+          canvas.style.removeProperty('height');
+          laneLayer?.style.removeProperty('height');
+          return;
+        }
 
         canvas.querySelectorAll<HTMLElement>('[data-timeline-lane]').forEach((lane) => {
           const allLaneEvents = Array.from(lane.querySelectorAll<HTMLElement>('[data-timeline-event]'));
@@ -373,7 +386,6 @@ const getEraId = (year: number) => eras.find((era) => year >= era.start && year 
       });
 
       timelineFrame?.style.setProperty('--visible-track-count', String(Math.max(1, visibleTrackCount)));
-      timelineFrame?.style.setProperty('--timeline-frame-width', `${62 + Math.max(1, visibleTrackCount) * 270}px`);
       if (timelineEmpty) timelineEmpty.hidden = visibleCount > 0;
 
       const isFiltered = person !== 'all' || track !== 'all' || domain !== 'all' || era !== 'all';
