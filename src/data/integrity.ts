@@ -1,4 +1,5 @@
 import { biographies } from "./biographies";
+import { affiliations, institutions } from "./affiliations";
 import { nationalities } from "./nationalities";
 import { pioneers } from "./pioneers";
 import { portraits } from "./portraits";
@@ -18,6 +19,7 @@ const validateArchive = () => {
   const sourceIds = new Set(sources.map((source) => source.id));
   const pioneerIds = new Set(pioneers.map((pioneer) => pioneer.id));
   const timelineTrackIds = new Set(timelineTracks.map((track) => track.id));
+  const institutionIds = new Set(institutions.map((institution) => institution.id));
 
   for (const duplicate of duplicateValues(sources.map((source) => source.id))) {
     errors.push(`중복 출처 ID: ${duplicate}`);
@@ -26,6 +28,9 @@ const validateArchive = () => {
     pioneers.map((pioneer) => pioneer.id),
   )) {
     errors.push(`중복 인물 ID: ${duplicate}`);
+  }
+  for (const duplicate of duplicateValues(institutions.map((institution) => institution.id))) {
+    errors.push(`중복 기관 ID: ${duplicate}`);
   }
   for (const duplicate of duplicateValues(
     pioneers.map((pioneer) => pioneer.slug),
@@ -105,6 +110,15 @@ const validateArchive = () => {
       errors.push(`${relationship.id}: 자기 자신과의 관계`);
     }
     checkSources(`${relationship.id}.sourceIds`, relationship.sourceIds);
+  }
+
+  for (const affiliation of affiliations) {
+    if (!pioneerIds.has(affiliation.pioneerId)) errors.push(`${affiliation.id}: 인물 없음`);
+    if (!institutionIds.has(affiliation.institutionId)) errors.push(`${affiliation.id}: 기관 없음`);
+    if (affiliation.startYear && affiliation.endYear && affiliation.startYear > affiliation.endYear) {
+      errors.push(`${affiliation.id}: 소속 기간 역전`);
+    }
+    checkSources(`${affiliation.id}.sourceIds`, affiliation.sourceIds);
   }
 
   const relationshipDegree = new Map(

@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { affiliations, institutionById, institutions } from '../../data/affiliations';
+import { pioneers } from '../../data/pioneers';
+import { portraitById } from '../../data/portraits';
+import { sources } from '../../data/sources';
+
+const base = `${import.meta.env.BASE_URL}/`;
+const sourceById = Object.fromEntries(sources.map((source) => [source.id, source]));
+const byName = [...pioneers].sort((a, b) => a.nameKo.localeCompare(b.nameKo, 'ko'));
+const mapPoint = (longitude: number, latitude: number) => ({
+  x: ((longitude + 180) / 360) * 1000,
+  y: ((90 - latitude) / 180) * 520,
+});
+const mappedInstitutions = institutions.filter((institution) => affiliations.some((affiliation) => affiliation.institutionId === institution.id));
+const institutionMarkers = mappedInstitutions.map((institution) => {
+  const records = affiliations.filter((affiliation) => affiliation.institutionId === institution.id);
+  const point = mapPoint(institution.longitude, institution.latitude);
+  return { institution, records, ...point };
+});
+const mappedAffiliations = affiliations;
+---
+<BaseLayout title="지식의 좌표" description="교육공학 사상가들의 대표 교수·연구 활동 거점을 세계지도에서 읽습니다.">
+  <section class="page-hero atlas-hero"><div class="shell"><div class="eyebrow">THE ATLAS / INSTITUTIONAL GEOGRAPHY</div><h1>지식은<br />어디에 <em>머물렀나.</em></h1><p>이 지도는 출생지나 학위 취득지가 아니라, 현재 아카이브가 확인한 대표 교수·연구 활동 거점을 보여줍니다. 하나의 핀은 한 대학 또는 연구기관이며, 모든 경력의 완전한 목록은 아닙니다.</p><div class="hero-meta"><span><b>{pioneers.length}</b> SCHOLARS</span><span><b>{mappedInstitutions.length}</b> INSTITUTIONS</span><span><b>{mappedAffiliations.length}</b> VERIFIED ACTIVITY RECORDS</span></div></div></section>
+  <section class="section atlas-page">
+    <div class="shell atlas-layout">
+      <div class="atlas-controls">
+        <label for="atlas-pioneer"><span>FOLLOW A SCHOLAR</span><strong>학자 활동 거점</strong></label>
+        <select id="atlas-pioneer" data-atlas-pioneer>
+          <option value="">전체 학자 · 기관 분포</option>
+          {byName.map((pioneer) => <option value={pioneer.id}>{pioneer.nameKo} · {pioneer.nameEn}</option>)}
+        </select>
+        <div class="atlas-kind-filter" role="group" aria-label="기관 유형 필터">
+          <button type="button" class="is-active" data-atlas-kind="all">전체</button>
+          <button type="button" data-atlas-kind="university">대학</button>
+          <button type="button" data-atlas-kind="research">연구기관</button>
+          <button type="button" data-atlas-kind="professional">전문 활동</button>
+        </div>
+      </div>
+      <div class="atlas-map-wrap">
+        <svg class="atlas-map" viewBox="0 0 1000 520" role="img" aria-label="교육공학 사상가들의 대표 교수 및 연구 활동 기관 세계지도">
+          <defs><linearGradient id="atlas-grid" x1="0" x2="1"><stop stop-color="#d5a15b" stop-opacity=".12"/><stop offset="1" stop-color="#d5a15b" stop-opacity=".025"/></linearGradient></defs>
+          <rect width="1000" height="520" fill="url(#atlas-grid)" />
+          <g class="atlas-graticule" aria-hidden="true"><path d="M0 130H1000M0 260H1000M0 390H1000M125 0V520M250 0V520M375 0V520M500 0V520M625 0V520M750 0V520M875 0V520" /></g>
+          <g class="atlas-land" aria-hidden="true">
+            <path d="M54 109l47-40 65 6 38 34-15 28 27 26-28 39-43-4-23 29-41-17-10-47-28-26z" />
+            <path d="M204 201l32 18 12 39 29 39-17 69-30 67-25-20 7-58-22-42 6-50z" />
+            <path d="M435 111l42-21 59 11 36 32-13 30 45 16 27 38-24 39-49-8-36 22-47-24-26-47-37-20z" />
+            <path d="M485 248l42 10 27 49-12 74-35 59-31-36 5-75-21-41z" />
+            <path d="M604 127l54-18 69 29 66-4 69 30 47 10-16 58-60 11-50-14-41 26-55-3-49-44z" />
+            <path d="M759 276l56 13 39 43-31 44-64-16-20-45z" />
+            <path d="M870 395l40-8 34 21-19 29-54-6z" />
+          </g>
+          <g class="atlas-markers">
+            {institutionMarkers.map(({ institution, records, x, y }) => (
+              <g class="atlas-marker" style={`--x:${x}px;--y:${y}px`} data-atlas-marker data-institution={institution.id} data-kind={institution.kind} role="button" tabindex="0" aria-label={`${institution.nameKo}, ${institution.city}: ${records.length}명 활동 기록`}>
+                <circle r={Math.min(14, 6 + records.length * 1.3)} />
+                <circle class="atlas-marker-core" r="3" />
+              </g>
+            ))}
+          </g>
+        </svg>
+        <p class="atlas-map-note"><span>MAP KEY</span> 원의 크기는 이 아카이브의 대표 활동 기록 수입니다. 가까운 지점은 정확한 건물 위치가 아닌 기관 도시 중심을 표시합니다.</p>
+      </div>
+      <aside class="atlas-detail" data-atlas-detail>
+        <span>SELECT A POINT</span>
+        <h2>세계의 활동 거점</h2>
+        <p>지도 위의 원 또는 학자 선택 메뉴를 사용하세요. 선택하면 해당 기관과 연결된 활동 기록을 확인할 수 있습니다.</p>
+      </aside>
+    </div>
+    <div class="shell atlas-records" data-atlas-records>
+      <header><span>VERIFIED ACTIVITY RECORDS</span><strong data-atlas-count>{mappedAffiliations.length} RECORDS</strong></header>
+      <div class="atlas-record-grid">
+        {mappedAffiliations.map((affiliation) => {
+          const pioneer = pioneers.find((item) => item.id === affiliation.pioneerId)!;
+          const institution = institutionById[affiliation.institutionId];
+          const portrait = portraitById[pioneer.id];
+          const source = sourceById[affiliation.sourceIds[0]];
+          return <article class="atlas-record" data-atlas-record data-pioneer={pioneer.id} data-institution={institution.id} data-kind={institution.kind}>
+            <div class="atlas-record-person">
+              {portrait && <img src={`${base}${portrait.src}`} alt="" loading="lazy" style={[portrait.objectPosition && `object-position:${portrait.objectPosition}`, portrait.objectScale && `transform:scale(${portrait.objectScale})`, portrait.transformOrigin && `transform-origin:${portrait.transformOrigin}`].filter(Boolean).join(';')} />}
+              <div><h3>{pioneer.nameKo}</h3><span>{pioneer.nameEn}</span></div>
+            </div>
+            <p class="atlas-record-role">{affiliation.role}</p>
+            <p class="atlas-record-place">{institution.nameKo} <span>{institution.city} · {institution.country}</span></p>
+            <p class="atlas-record-period">{affiliation.startYear ? `${affiliation.startYear}—${affiliation.endYear ?? '현재'}` : '기간 공개 전거 미확인'}</p>
+            {source && <a href={source.url} target="_blank" rel="noreferrer">근거 · {source.publisher ?? source.authors} ↗</a>}
+          </article>;
+        })}
+      </div>
+      <p class="atlas-empty" data-atlas-empty hidden>선택한 조건에 맞는 대표 활동 기록이 없습니다.</p>
+    </div>
+  </section>
+  <script>
+    const select = document.querySelector('[data-atlas-pioneer]') as HTMLSelectElement | null;
+    const markers = [...document.querySelectorAll('[data-atlas-marker]')] as HTMLElement[];
+    const records = [...document.querySelectorAll('[data-atlas-record]')] as HTMLElement[];
+    const kindButtons = [...document.querySelectorAll('[data-atlas-kind]')] as HTMLButtonElement[];
+    const detail = document.querySelector('[data-atlas-detail]') as HTMLElement | null;
+    const count = document.querySelector('[data-atlas-count]') as HTMLElement | null;
+    const empty = document.querySelector('[data-atlas-empty]') as HTMLElement | null;
+    let kind = 'all';
+    let institution = '';
+
+    const update = () => {
+      const pioneer = select?.value || '';
+      let visible = 0;
+      records.forEach((record) => {
+        const matchesPioneer = !pioneer || record.dataset.pioneer === pioneer;
+        const matchesKind = kind === 'all' || record.dataset.kind === kind;
+        const matchesInstitution = !institution || record.dataset.institution === institution;
+        record.hidden = !(matchesPioneer && matchesKind && matchesInstitution);
+        if (!record.hidden) visible += 1;
+      });
+      markers.forEach((marker) => {
+        const id = marker.dataset.institution || '';
+        const matchingRecords = records.filter((record) => record.dataset.institution === id && !record.hidden);
+        marker.classList.toggle('is-muted', matchingRecords.length === 0);
+        marker.classList.toggle('is-selected', id === institution);
+      });
+      kindButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.atlasKind === kind));
+      if (count) count.textContent = `${String(visible).padStart(2, '0')} RECORDS`;
+      if (empty) empty.hidden = visible !== 0;
+      const url = new URL(window.location.href);
+      if (pioneer) url.searchParams.set('pioneer', pioneer); else url.searchParams.delete('pioneer');
+      if (kind !== 'all') url.searchParams.set('kind', kind); else url.searchParams.delete('kind');
+      if (institution) url.searchParams.set('institution', institution); else url.searchParams.delete('institution');
+      window.history.replaceState({}, '', url);
+    };
+
+    const selectInstitution = (marker: HTMLElement) => {
+      institution = institution === marker.dataset.institution ? '' : marker.dataset.institution || '';
+      const matching = records.filter((record) => record.dataset.institution === institution);
+      const first = matching[0];
+      if (detail && first) {
+        const place = first.querySelector('.atlas-record-place')?.textContent || '';
+        const role = first.querySelector('.atlas-record-role')?.textContent || '';
+        detail.innerHTML = `<span>INSTITUTION SELECTED</span><h2>${place}</h2><p>${matching.length}명의 대표 활동 기록이 있습니다. 첫 기록: ${role}</p>`;
+      }
+      update();
+    };
+    markers.forEach((marker) => {
+      marker.addEventListener('click', () => selectInstitution(marker));
+      marker.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectInstitution(marker); } });
+    });
+    kindButtons.forEach((button) => button.addEventListener('click', () => { kind = button.dataset.atlasKind || 'all'; institution = ''; update(); }));
+    select?.addEventListener('change', () => { institution = ''; update(); });
+    const params = new URLSearchParams(window.location.search);
+    if (select && [...select.options].some((option) => option.value === params.get('pioneer'))) select.value = params.get('pioneer') || '';
+    if (kindButtons.some((button) => button.dataset.atlasKind === params.get('kind'))) kind = params.get('kind') || 'all';
+    if (markers.some((marker) => marker.dataset.institution === params.get('institution'))) institution = params.get('institution') || '';
+    update();
+  </script>
+</BaseLayout>
