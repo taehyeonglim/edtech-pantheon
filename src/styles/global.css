@@ -3484,6 +3484,16 @@ p {
   color: var(--dim);
   font: 10px var(--mono);
 }
+.footer-creator {
+  margin-bottom: 5px;
+  color: var(--muted);
+}
+.footer-creator a {
+  color: var(--gold);
+}
+.footer-creator a:hover {
+  color: var(--gold-light);
+}
 .footer-bottom {
   border-top: 1px solid var(--line);
   padding-top: 18px;
